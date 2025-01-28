@@ -1,0 +1,14 @@
+{
+    "chooseYourLanguage":"भाषा निवडा",
+    "clickonnext" : "पुढे जा",
+    "username" : "युजर नेम (वापरकर्त्याचे नाव)",
+    "password" : "पासवर्ड",
+    "login" : "लॉगिन करा",
+    "register here" : "रजिस्टर करा",
+     "name" : "नाव",
+     "mobileNumber" : "मोबाईल नंबर",
+     "address" : "पत्ता",
+     "confirmPassword" : "Confirm Password ",
+     "submit" : "सबमिट",
+     "registrationForm": "भाषा निवडा"
+}

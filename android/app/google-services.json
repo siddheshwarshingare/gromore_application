@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "579134301857",
+    "project_id": "studentdata-d260d",
+    "storage_bucket": "studentdata-d260d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:579134301857:android:7717455ba553614e3e72e0",
+        "android_client_info": {
+          "package_name": "com.example.get_and_stoar_the_data"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDfURkIZT42fkNFlXBsxed_XOXUb1J7H8Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:579134301857:android:8f6c656eb4fdf6df3e72e0",
+        "android_client_info": {
+          "package_name": "com.example.gromore_application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDfURkIZT42fkNFlXBsxed_XOXUb1J7H8Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

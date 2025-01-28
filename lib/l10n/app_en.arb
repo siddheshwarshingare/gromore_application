@@ -1,0 +1,14 @@
+{
+     "chooseYourLanguage": "Language :",
+     "clickonnext" : "click on next",
+     "username" : "Username",
+     "password" : "Password",
+     "login" : "Login",
+     "registerhere" : "Register Here",
+     "name" : "Name",
+     "mobileNumber" : "Mobile Number",
+     "address" : "Address",
+     "confirmPassword" : "Confirm Password ",
+     "submit" : "Submit",
+     "registrationForm": "Registration Form" 
+}

@@ -4,14 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:gromore_application/firebase_options.dart';
 import 'package:gromore_application/languageSelector.dart';
+import 'package:gromore_application/loginScreen.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
 
-void main()  {
-   Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-);
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  Firebase.initializeApp();
+
   runApp(
     ChangeNotifierProvider(
       create: (_) => LocaleProvider(),
@@ -43,7 +45,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const Languageselector(),
+      home: Languageselector(),
     );
   }
 }

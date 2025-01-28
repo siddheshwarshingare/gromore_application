@@ -1,14 +1,27 @@
 {
      "chooseYourLanguage": "Language :",
-     "clickonnext" : "click on next",
+     "clickonnext" : "Click on Next",
      "username" : "Username",
      "password" : "Password",
      "login" : "Login",
      "registerhere" : "Register Here",
-     "name" : "Name",
+     "name" : "Enter your Name",
      "mobileNumber" : "Mobile Number",
      "address" : "Address",
      "confirmPassword" : "Confirm Password ",
+     "confirmPasswordisrequired" : "Confirm Password is required",
      "submit" : "Submit",
-     "registrationForm": "Registration Form" 
+     "registrationForm": "Registration Form",
+      "nameisrequired" : "Name is required",
+     "mobileNumberisrequired" :"Mobile Number is required",
+     "addressisrequired" : "Address is required",
+     "usernameisrequired" : "Username is required",
+     "passwordisrequired" :"Password is required",
+     "enteravalid10digitmobilenumber" : "Enter a valid 10-digit mobile number",
+     "addressisrequired" : "Address is required",
+     "usernameisrequired" : "Username is required",
+     "passwordmustbeatleast6characterslong" : "Password must be at least 6 characters long",
+     "passwordsdonotmatch" : "Passwords do not match",
+     "formsubmittedsuccessfully" : "Form submitted successfully"
+   
 }

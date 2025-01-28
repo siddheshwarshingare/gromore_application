@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 class CustomFormScreen extends StatefulWidget {
   const CustomFormScreen({Key? key}) : super(key: key);
 
@@ -15,19 +17,26 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
   final TextEditingController addressController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
 
   bool isSubmitting = false;
-
+  //instance...
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
   @override
   Widget build(BuildContext context) {
-    
     final applocalizations = AppLocalizations.of(context);
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
+        backgroundColor: Colors.yellow.shade50,
         appBar: AppBar(
-          title:  Text(applocalizations!.registrationForm),
+          toolbarHeight: 80,
+          backgroundColor: Colors.amber,
+          title: Text(
+            applocalizations!.registrationForm,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 27),
+          ),
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -36,102 +45,128 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Name Field
+                SizedBox(
+                  height: 10,
+                ),
+
                 TextFormField(
                   controller: nameController,
-                  decoration:  InputDecoration(
+                  decoration: InputDecoration(
                     labelText: applocalizations.name,
                     border: OutlineInputBorder(),
                   ),
-                  validator: (value) =>
-                      value == null || value.isEmpty ? 'Name is required' : null,
+                  validator: (value) => value == null || value.isEmpty
+                      ? applocalizations.nameisrequired
+                      : null,
                 ),
-                const SizedBox(height: 16.0),
 
+                const SizedBox(height: 20),
                 // Mobile Number Field
                 TextFormField(
                   controller: mobileController,
-                  decoration:  InputDecoration(
-                    labelText:applocalizations.mobileNumber,
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: applocalizations.mobileNumber,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(width: 10),
+                    ),
                   ),
                   keyboardType: TextInputType.phone,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Mobile number is required';
+                      return applocalizations.mobileNumberisrequired;
                     }
                     if (value.length != 10) {
-                      return 'Enter a valid 10-digit mobile number';
+                      return applocalizations.enteravalid10digitmobilenumber;
                     }
                     return null;
                   },
                 ),
-                const SizedBox(height: 16.0),
 
                 // Address Field
-                TextFormField(
-                  controller: addressController,
-                  decoration: const InputDecoration(
-                    labelText: 'Address',
-                    border: OutlineInputBorder(),
-                  ),
-                  maxLines: 3,
-                  validator: (value) =>
-                      value == null || value.isEmpty ? 'Address is required' : null,
-                ),
-                const SizedBox(height: 16.0),
+
+                const SizedBox(height: 20),
 
                 // Username Field
                 TextFormField(
                   controller: usernameController,
-                  decoration:  InputDecoration(
+                  decoration: InputDecoration(
                     labelText: applocalizations.username,
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(width: 10),
+                    ),
                   ),
-                  validator: (value) =>
-                      value == null || value.isEmpty ? 'Username is required' : null,
+                  validator: (value) => value == null || value.isEmpty
+                      ? applocalizations.usernameisrequired
+                      : null,
                 ),
-                const SizedBox(height: 16.0),
+                const SizedBox(height: 20),
 
                 // Password Field
                 TextFormField(
                   controller: passwordController,
                   obscureText: true,
-                  decoration:  InputDecoration(
+                  decoration: InputDecoration(
                     labelText: applocalizations.password,
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(width: 10),
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Password is required';
+                      return applocalizations.passwordisrequired;
                     }
                     if (value.length < 6) {
-                      return 'Password must be at least 6 characters long';
+                      return applocalizations
+                          .passwordmustbeatleast6characterslong;
                     }
                     return null;
                   },
                 ),
-                const SizedBox(height: 16.0),
+                const SizedBox(height: 20),
 
                 // Confirm Password Field
                 TextFormField(
                   controller: confirmPasswordController,
                   obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Confirm Password',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    hintStyle: TextStyle(fontSize: 40),
+                    labelText: applocalizations.confirmPassword,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(width: 10),
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Confirm Password is required';
+                      return applocalizations.confirmPasswordisrequired;
                     }
                     if (value != passwordController.text) {
-                      return 'Passwords do not match';
+                      return applocalizations.passwordsdonotmatch;
                     }
                     return null;
                   },
                 ),
-                const SizedBox(height: 24.0),
+                const SizedBox(height: 20),
+                TextFormField(
+                  controller: addressController,
+                  decoration: InputDecoration(
+                    labelText: applocalizations.address,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(width: 10),
+                    ),
+                  ),
+                  maxLines: 3,
+                  validator: (value) => value == null || value.isEmpty
+                      ? applocalizations.addressisrequired
+                      : null,
+                ),
+                SizedBox(
+                  height: 40,
+                ),
 
                 // Submit Button
                 Center(
@@ -143,14 +178,17 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
                               setState(() {
                                 isSubmitting = true;
                               });
-                              // Simulate form submission
+                              storeDataToFirebase();
+                              //  Simulate form submission
                               Future.delayed(const Duration(seconds: 2), () {
                                 setState(() {
                                   isSubmitting = false;
                                 });
+
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('Form submitted successfully!'),
+                                    content:
+                                        Text('Form submitted successfully!'),
                                   ),
                                 );
                               });
@@ -158,7 +196,11 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
                           },
                     child: isSubmitting
                         ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text('Submit'),
+                        : Text(
+                            applocalizations.submit,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 20),
+                          ),
                   ),
                 ),
               ],
@@ -167,5 +209,38 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
         ),
       ),
     );
+  }
+
+//
+  Future<void> storeDataToFirebase() async {
+    String name = nameController.text.trim();
+    String mobileNumber = mobileController.text.trim();
+    String userName = usernameController.text.trim();
+    String passWord = passwordController.text.trim();
+    String confirmPassword = confirmPasswordController.text.trim();
+    String address = addressController.text.trim();
+
+    try {
+      print("Name   ====== >$name");
+      print("Name   ====== >$mobileNumber");
+      print("Name   ====== >$userName");
+      print("Name   ====== >$confirmPassword");
+      print("Name   ====== >$address");
+      await firestore.collection('CustomerDetails').add({
+        "name": name,
+        // "mobileNumber": mobileNumber,
+        // "userName": userName,
+        // "passWord": passWord,
+        // "confirmPassword": confirmPassword,
+        // "address": address,
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Data added successfully!')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to add data: $e')),
+      );
+    }
   }
 }

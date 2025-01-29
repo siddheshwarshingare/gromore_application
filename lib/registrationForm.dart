@@ -189,6 +189,7 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
                                             'Form submitted successfully!'),
                                       ),
                                     );
+                                    Navigator.pop(context);
                                   });
                                 }
                               },

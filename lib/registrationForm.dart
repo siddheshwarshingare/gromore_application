@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:lottie/lottie.dart';
 
 class CustomFormScreen extends StatefulWidget {
   const CustomFormScreen({Key? key}) : super(key: key);
@@ -21,218 +21,243 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
       TextEditingController();
 
   bool isSubmitting = false;
-  //instance...
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+
   @override
   Widget build(BuildContext context) {
     final applocalizations = AppLocalizations.of(context);
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: Scaffold(
-        backgroundColor: Colors.yellow.shade50,
-        appBar: AppBar(
-          toolbarHeight: 80,
-          backgroundColor: Colors.amber,
-          title: Text(
-            applocalizations!.registrationForm,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 27),
-          ),
-        ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 10,
-                ),
 
-                TextFormField(
-                  controller: nameController,
-                  decoration: InputDecoration(
-                    labelText: applocalizations.name,
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) => value == null || value.isEmpty
-                      ? applocalizations.nameisrequired
-                      : null,
-                ),
-
-                const SizedBox(height: 20),
-                // Mobile Number Field
-                TextFormField(
-                  controller: mobileController,
-                  decoration: InputDecoration(
-                    labelText: applocalizations.mobileNumber,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(width: 10),
-                    ),
-                  ),
-                  keyboardType: TextInputType.phone,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return applocalizations.mobileNumberisrequired;
-                    }
-                    if (value.length != 10) {
-                      return applocalizations.enteravalid10digitmobilenumber;
-                    }
-                    return null;
-                  },
-                ),
-
-                // Address Field
-
-                const SizedBox(height: 20),
-
-                // Username Field
-                TextFormField(
-                  controller: usernameController,
-                  decoration: InputDecoration(
-                    labelText: applocalizations.username,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(width: 10),
-                    ),
-                  ),
-                  validator: (value) => value == null || value.isEmpty
-                      ? applocalizations.usernameisrequired
-                      : null,
-                ),
-                const SizedBox(height: 20),
-
-                // Password Field
-                TextFormField(
-                  controller: passwordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: applocalizations.password,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(width: 10),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return applocalizations.passwordisrequired;
-                    }
-                    if (value.length < 6) {
-                      return applocalizations
-                          .passwordmustbeatleast6characterslong;
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 20),
-
-                // Confirm Password Field
-                TextFormField(
-                  controller: confirmPasswordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    hintStyle: TextStyle(fontSize: 40),
-                    labelText: applocalizations.confirmPassword,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(width: 10),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return applocalizations.confirmPasswordisrequired;
-                    }
-                    if (value != passwordController.text) {
-                      return applocalizations.passwordsdonotmatch;
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 20),
-                TextFormField(
-                  controller: addressController,
-                  decoration: InputDecoration(
-                    labelText: applocalizations.address,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(width: 10),
-                    ),
-                  ),
-                  maxLines: 3,
-                  validator: (value) => value == null || value.isEmpty
-                      ? applocalizations.addressisrequired
-                      : null,
-                ),
-                SizedBox(
-                  height: 40,
-                ),
-
-                // Submit Button
-                Center(
-                  child: ElevatedButton(
-                    onPressed: isSubmitting
-                        ? null
-                        : () {
-                            if (_formKey.currentState?.validate() ?? false) {
-                              setState(() {
-                                isSubmitting = true;
-                              });
-                              storeDataToFirebase();
-                              //  Simulate form submission
-                              Future.delayed(const Duration(seconds: 2), () {
-                                setState(() {
-                                  isSubmitting = false;
-                                });
-
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content:
-                                        Text('Form submitted successfully!'),
-                                  ),
-                                );
-                              });
-                            }
-                          },
-                    child: isSubmitting
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : Text(
-                            applocalizations.submit,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 20),
-                          ),
-                  ),
-                ),
-              ],
+    return Scaffold(
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Container(
+              height: double.infinity,
+              width: double.infinity,
+              child: const Image(
+                alignment: Alignment.center,
+                image: AssetImage('assets/color.avif'),
+                fit: BoxFit.fill,
+              ),
             ),
           ),
-        ),
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.purple,
+                  Colors.purpleAccent,
+                  Colors.purple,
+                  Colors.deepPurpleAccent,
+                  Colors.deepPurple,
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            height: MediaQuery.of(context).size.height,
+          ),
+          // Form Content
+          SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Center(
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 80),
+                    Center(
+                      child: Text(
+                        applocalizations!.registrationForm,
+                        style: const TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Name Field
+                    TextFormField(
+                      controller: nameController,
+                      decoration: _inputDecoration(applocalizations.name),
+                      validator: (value) => value == null || value.isEmpty
+                          ? applocalizations.nameisrequired
+                          : null,
+                    ),
+                    const SizedBox(height: 15),
+
+                    // Mobile Field
+                    TextFormField(
+                      controller: mobileController,
+                      decoration:
+                          _inputDecoration(applocalizations.mobileNumber),
+                      keyboardType: TextInputType.phone,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return applocalizations.mobileNumberisrequired;
+                        }
+                        if (value.length != 10) {
+                          return applocalizations
+                              .enteravalid10digitmobilenumber;
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 15),
+
+                    // Username Field
+                    TextFormField(
+                      controller: usernameController,
+                      decoration: _inputDecoration(applocalizations.username),
+                      validator: (value) => value == null || value.isEmpty
+                          ? applocalizations.usernameisrequired
+                          : null,
+                    ),
+                    const SizedBox(height: 15),
+
+                    // Password Field
+                    TextFormField(
+                      controller: passwordController,
+                      obscureText: true,
+                      decoration: _inputDecoration(applocalizations.password),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return applocalizations.passwordisrequired;
+                        }
+                        if (value.length < 6) {
+                          return applocalizations
+                              .passwordmustbeatleast6characterslong;
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 15),
+
+                    // Confirm Password Field
+                    TextFormField(
+                      controller: confirmPasswordController,
+                      obscureText: true,
+                      decoration:
+                          _inputDecoration(applocalizations.confirmPassword),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return applocalizations.confirmPasswordisrequired;
+                        }
+                        if (value != passwordController.text) {
+                          return applocalizations.passwordsdonotmatch;
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 15),
+
+                    // Address Field
+                    TextFormField(
+                      controller: addressController,
+                      decoration: _inputDecoration(applocalizations.address),
+                      maxLines: 3,
+                      validator: (value) => value == null || value.isEmpty
+                          ? applocalizations.addressisrequired
+                          : null,
+                    ),
+                    const SizedBox(height: 30),
+
+                    // Submit Button
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: isSubmitting
+                            ? null
+                            : () {
+                                if (_formKey.currentState?.validate() ??
+                                    false) {
+                                  setState(() {
+                                    isSubmitting = true;
+                                  });
+                                  storeDataToFirebase();
+                                  Future.delayed(const Duration(seconds: 2),
+                                      () {
+                                    setState(() {
+                                      isSubmitting = false;
+                                    });
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                            'Form submitted successfully!'),
+                                      ),
+                                    );
+                                  });
+                                }
+                              },
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.black,
+                          backgroundColor: isSubmitting
+                              ? Colors.grey
+                              : Colors.orange.shade200,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 15, horizontal: 45),
+                          elevation: 10,
+                          shadowColor: Colors.black.withOpacity(0.2),
+                        ),
+                        child: isSubmitting
+                            ? const CircularProgressIndicator(
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                              )
+                            : Text(
+                                applocalizations.submit,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                  letterSpacing: 1.2,
+                                ),
+                              ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-//
-  Future<void> storeDataToFirebase() async {
-    String name = nameController.text.trim();
-    String mobileNumber = mobileController.text.trim();
-    String userName = usernameController.text.trim();
-    String passWord = passwordController.text.trim();
-    String confirmPassword = confirmPasswordController.text.trim();
-    String address = addressController.text.trim();
+  InputDecoration _inputDecoration(String labelText) {
+    return InputDecoration(
+      labelText: labelText,
+      labelStyle: const TextStyle(color: Colors.white),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(color: Colors.white),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(color: Colors.white),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(color: Colors.orange),
+      ),
+    );
+  }
 
+  Future<void> storeDataToFirebase() async {
     try {
-      print("Name   ====== >$name");
-      print("Name   ====== >$mobileNumber");
-      print("Name   ====== >$userName");
-      print("Name   ====== >$confirmPassword");
-      print("Name   ====== >$address");
       await firestore.collection('CustomerDetails').add({
-        "name": name,
-        "mobileNumber": mobileNumber,
-        "userName": userName,
-        "passWord": passWord,
-        "confirmPassword": confirmPassword,
-        "address": address,
+        "name": nameController.text.trim(),
+        "mobileNumber": mobileController.text.trim(),
+        "userName": usernameController.text.trim(),
+        "passWord": passwordController.text.trim(),
+        "confirmPassword": confirmPasswordController.text.trim(),
+        "address": addressController.text.trim(),
       });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Data added successfully!')),

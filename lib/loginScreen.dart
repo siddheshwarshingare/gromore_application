@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gromore_application/registrationForm.dart';
@@ -17,6 +18,38 @@ class _LoginscreenState extends State<Loginscreen> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _isPasswordVisible = false;
+  String userName = '';
+  String passWord = '';
+
+  Future<String?> login(String userName, String passWord) async {
+    try {
+      // Fetch user details from Firestore based on the userName
+      QuerySnapshot userSnapshot = await FirebaseFirestore.instance
+          .collection('CustomerDetails')
+          .where('userName', isEqualTo: userName)
+          .get();
+
+      print("rrrrrrrr${userSnapshot}");
+
+      if (userSnapshot.docs.isNotEmpty) {
+        // If user exists, check the password
+        var userDoc = userSnapshot.docs.first;
+        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+
+        // Check if the passwords match
+        if (userData['passWord'] == passWord) {
+          return userData['passWord']; // Password matches, return success
+        } else {
+          return 'Invalid password'; // Password mismatch error
+        }
+      } else {
+        return 'Username does not exist'; // No user found with this username
+      }
+    } catch (e) {
+      print('Login error: $e');
+      return 'Error occurred during login'; // Error handling
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -189,33 +222,66 @@ class _LoginscreenState extends State<Loginscreen> {
                                   HapticFeedback.mediumImpact();
                                   String username = _usernameController.text;
                                   String password = _passwordController.text;
+                                  print("1111111111==$username");
+                                  print("1111111111==$password");
 
                                   if (_formKey.currentState!.validate()) {
-                                    showDialog(
-                                      context: context,
-                                      barrierDismissible: false,
-                                      builder: (BuildContext context) {
-                                        return const Text('');
-                                      },
-                                    );
-                                    await Future.delayed(
-                                        const Duration(seconds: 1));
-                                    Navigator.of(context).pop();
+                                    setState(() {
+                                      _isLoading = true;
+                                    });
 
-                                    _loginMethod(username, password);
+                                    String? loginResult =
+                                        await login(username, password);
+
+                                    if (loginResult != null) {
+                                      if (loginResult == password) {
+                                        // Navigate to the next screen if login is successful
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  CustomFormScreen()),
+                                        );
+                                      } else {
+                                        // Show error message if login fails
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text(loginResult),
+                                            backgroundColor: Colors.red,
+                                          ),
+                                        );
+                                      }
+                                    } else {
+                                      // Show generic error if something went wrong
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                              "An error occurred, please try again."),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                    }
+
+                                    setState(() {
+                                      _isLoading = false;
+                                    });
                                   }
-
                                   return false;
                                 },
                                 label: Center(
-                                  child: Text(
-                                    applocalizations.login,
-                                    style: const TextStyle(
-                                        color:
-                                            Color.fromARGB(255, 212, 113, 113),
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20),
-                                  ),
+                                  child: _isLoading
+                                      ? CircularProgressIndicator() // Show loading spinner while logging in
+                                      : Text(
+                                          applocalizations!.login,
+                                          style: const TextStyle(
+                                            color: Color.fromARGB(
+                                                255, 212, 113, 113),
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20,
+                                          ),
+                                        ),
                                 ),
                                 icon: const Icon(Icons.swipe_right_outlined),
                               ),

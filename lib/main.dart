@@ -5,8 +5,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:gromore_application/firebase_options.dart';
 import 'package:gromore_application/languageSelector.dart';
 import 'package:gromore_application/loginScreen.dart';
+import 'package:gromore_application/splashScreen.dart';
 import 'package:provider/provider.dart';
-
+import 'package:flutter_localization/flutter_localization.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -45,7 +46,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: Languageselector(),
+      home: Splashscreen(),
     );
   }
 }

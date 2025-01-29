@@ -11,6 +11,7 @@
      "confirmPassword" : "कन्फर्म पासवर्ड",
      "submit" : "सबमिट",
      "registrationForm": "नोंदणी फॉर्म",
+    "welcomeToOurGromoreFarming": "ग्रोमोरे फार्ममिंग मधे आपले स्वागत आहे",
      "nameisrequired" : "कृपया नाव भरा",
      "mobileNumberisrequired" :"मोबाईल नंबर भरा",
      "addressisrequired" : "कृपया तुमचा पत्ता भरा",
@@ -20,6 +21,6 @@
      "usernameisrequired" : "युजर नेम भरा",
      "passwordmustbeatleast6characterslong" : "कृपया पासवर्ड हा कमीत कमी सहा अंकी भरा",
      "passwordsdonotmatch" : "पासवर्ड मॅच होत नाही कृपया दोनी पासवर्ड सारखे ठेवा",
-         "confirmPasswordisrequired" : "कन्फर्म पासवर्ड आवश्यक आहे",
+     "confirmPasswordisrequired" : "कन्फर्म पासवर्ड आवश्यक आहे",
      "formsubmittedsuccessfully" : "तुमचे रजिस्ट्रेशन पूर्ण झाले कृपया लॉगिन करा"
 }

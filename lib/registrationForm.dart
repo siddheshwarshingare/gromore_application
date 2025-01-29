@@ -228,11 +228,11 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
       print("Name   ====== >$address");
       await firestore.collection('CustomerDetails').add({
         "name": name,
-        // "mobileNumber": mobileNumber,
-        // "userName": userName,
-        // "passWord": passWord,
-        // "confirmPassword": confirmPassword,
-        // "address": address,
+        "mobileNumber": mobileNumber,
+        "userName": userName,
+        "passWord": passWord,
+        "confirmPassword": confirmPassword,
+        "address": address,
       });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Data added successfully!')),

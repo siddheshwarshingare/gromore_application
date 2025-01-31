@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gromore_application/languageSelector.dart';
+import 'package:gromore_application/loginScreen.dart';
+import 'package:gromore_application/vegetablesMenuHomeScreen.dart';
 import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Splashscreen extends StatefulWidget {
   const Splashscreen({super.key});
@@ -16,17 +19,54 @@ class _SplashscreenState extends State<Splashscreen> {
     'assets/animation/vegetable2.json',
     'assets/animation/vegetable4.json',
   ];
+  String? userName = '';
+  String? passWord = '';
+
+  void _navigateToNextScreen() async {
+    // Simulate a delay for 1 second
+    await Future.delayed(const Duration(seconds: 2));
+
+    // Check login status
+    bool isLoggedIn = await _checkLoginStatus();
+
+    // Navigate based on login status
+    if (isLoggedIn) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => HomeScreen()),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const Loginscreen()),
+      );
+    }
+  }
+
+  Future<bool> _checkLoginStatus() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // Retrieve the username from SharedPreferences
+    setState(() {
+      userName = prefs.getString('userName');
+      passWord = prefs.getString('passWord');
+    });
+
+    // Check if the username is not null or empty
+    return userName != null;
+  }
 
   @override
   void initState() {
     super.initState();
 
     Future.delayed(Duration.zero, () {
+      _navigateToNextScreen();
       _startAutoSlide();
     });
 
     // Navigate to LoginScreen after 6 seconds
-    Future.delayed(const Duration(seconds: 6), () {
+    Future.delayed(const Duration(seconds: 2), () {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => Languageselector()),

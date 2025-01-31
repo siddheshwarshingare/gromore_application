@@ -1,5 +1,5 @@
 {
-    "chooseYourLanguage":"भाषा निवडा",
+    "chooseYourLanguage":"    भाषा निवडा :",
     "clickonnext" : "पुढे जा",
     "username" : "युजर नेम (वापरकर्त्याचे नाव)",
     "password" : "पासवर्ड",
@@ -10,7 +10,7 @@
      "address" : "पत्ता",
      "confirmPassword" : "कन्फर्म पासवर्ड",
      "submit" : "सबमिट",
-     "registrationForm": "नोंदणी फॉर्म",
+     "registrationForm": "नोंदणी (रजिस्टर) फॉर्म",
     "welcomeToOurGromoreFarming": "ग्रोमोरे फार्ममिंग मधे आपले स्वागत आहे",
      "nameisrequired" : "कृपया नाव भरा",
      "mobileNumberisrequired" :"मोबाईल नंबर भरा",
@@ -22,5 +22,26 @@
      "passwordmustbeatleast6characterslong" : "कृपया पासवर्ड हा कमीत कमी सहा अंकी भरा",
      "passwordsdonotmatch" : "पासवर्ड मॅच होत नाही कृपया दोनी पासवर्ड सारखे ठेवा",
      "confirmPasswordisrequired" : "कन्फर्म पासवर्ड आवश्यक आहे",
-     "formsubmittedsuccessfully" : "तुमचे रजिस्ट्रेशन पूर्ण झाले कृपया लॉगिन करा"
+     "formsubmittedsuccessfully" : "तुमचे रजिस्ट्रेशन पूर्ण झाले कृपया लॉगिन करा",
+     "loginWithMobileNumber" : "मोबाईल नंबर ने लॉगिन करा ",
+      "or" : "किंवा",
+     "pleaseenterthemobilenumber" : "कृपया मोबाइल नंबर प्रविष्ट करा",
+     "invalidMobileNumber" : "अवैध मोबाइल नंबर",
+     "mobileNumberDoesNotExist" : "हा मोबाईल नंबर अस्तिवात नाही",
+     "vegetablesPriceScreen" : "Vegetables Price Screen",
+     "enterPalakVegetablesPrice" : "Enter Palak Vegetables Price",
+     "enterMethiVegetablesPrice" : "Enter Methi Vegetables Price",
+     "enterChavalikVegetablesPrice" : "Enter Chavali Vegetables Price",
+     "enterDodkaVegetablesPrice" : "Enter Dodka Vegetables Price",
+     "enterKandaPathVegetablesPrice" : "Enter Kanda Path Vegetables Price",
+     "enterkakdiVegetablesPrice" : "Enter Palak Vegetables Price",
+     "enterGavarVegetablesPrice" : "Enter Gavar Vegetables Price",
+     "enterkandeVegetablesPrice" : "Enter Kande Vegetables Price",
+     "enterKarleVegetablesPrice" : "Enter Karle Vegetables Price",
+     "enterKothimbirVegetablesPrice" : "Enter Kothimbir Vegetables Price",
+     "enterShepuVegetablesPrice" : "Enter Shepu Vegetables Price",
+     "enterBhendiVegetablesPrice" : "Enter Bhendi Vegetables Price",
+     "enterChukaVegetablesPrice" : "Enter Chuka Vegetables Price",
+     "enterKandeVegetablesPrice" : "Enter Kande Vegetables Price"
+    
 }

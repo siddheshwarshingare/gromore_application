@@ -120,14 +120,15 @@ class _LanguageselectorState extends State<Languageselector>
               SlideTransition(
                 position: _slideAnimation,
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 500, left: 5, right: 5),
+                  padding: const EdgeInsets.only(top: 500, left: 10, right: 20),
                   child: Row(
                     children: [
                       Text(
-                        applocalizations.registrationForm,
+                        applocalizations.chooseYourLanguage,
                         style: const TextStyle(
                           color: Colors.red,
-                          fontSize: 26,
+                          
+                          fontSize: 22,
                           fontWeight: FontWeight.bold,
                         ),
                       ),

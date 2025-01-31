@@ -1,5 +1,5 @@
 {
-     "chooseYourLanguage": "Language :",
+     "chooseYourLanguage": "Select Language :",
      "clickonnext" : "Click on Next",
      "username" : "Username",
      "password" : "Password",
@@ -23,6 +23,27 @@
      "usernameisrequired" : "Username is required",
      "passwordmustbeatleast6characterslong" : "Password must be at least 6 characters long",
      "passwordsdonotmatch" : "Passwords do not match",
-     "formsubmittedsuccessfully" : "Form submitted successfully"
+     "formsubmittedsuccessfully" : "Form submitted successfully",
+     "loginWithMobileNumber" : "Login with Mobile Number",
+     "or" : "OR",
+     "pleaseenterthemobilenumber" : "Please Enter the Mobile Number",
+     "invalidMobileNumber" : "Invalid Mobile Number",
+     "mobileNumberDoesNotExist" : "Mobile number does not exist",
+     "vegetablesPriceScreen" : "Vegetables Price Screen",
+     "enterPalakVegetablesPrice" : "Enter Palak Vegetables Price",
+     "enterMethiVegetablesPrice" : "Enter Methi Vegetables Price",
+     "enterChavalikVegetablesPrice" : "Enter Chavali Vegetables Price",
+     "enterDodkaVegetablesPrice" : "Enter Dodka Vegetables Price",
+     "enterKandaPathVegetablesPrice" : "Enter Kanda Path Vegetables Price",
+     "enterkakdiVegetablesPrice" : "Enter Kakdi Vegetables Price",
+     "enterGavarVegetablesPrice" : "Enter Gavar Vegetables Price",
+     "enterkandeVegetablesPrice" : "Enter Kande Vegetables Price",
+     "enterKarleVegetablesPrice" : "Enter Karle Vegetables Price",
+     "enterKothimbirVegetablesPrice" : "Enter Kothimbir Vegetables Price",
+     "enterShepuVegetablesPrice" : "Enter Shepu Vegetables Price",
+     "enterBhendiVegetablesPrice" : "Enter Bhendi Vegetables Price",
+     "enterChukaVegetablesPrice" : "Enter Chuka Vegetables Price",
+     "enterKandeVegetablesPrice" : "Enter Kande Vegetables Price"
+
    
 }

@@ -2,14 +2,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:gromore_application/firebase_options.dart';
 import 'package:gromore_application/languageSelector.dart';
-import 'package:gromore_application/loginScreen.dart';
 import 'package:gromore_application/splashScreen.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_localization/flutter_localization.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:provider/provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

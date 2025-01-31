@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gromore_application/loginWithMobileNumber.dart';
 import 'package:gromore_application/registrationForm.dart';
+import 'package:gromore_application/vegetablesMenuHomeScreen.dart';
 import 'package:slider_button/slider_button.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Loginscreen extends StatefulWidget {
   const Loginscreen({super.key});
@@ -167,7 +170,7 @@ class _LoginscreenState extends State<Loginscreen> {
                             TextFormField(
                               controller: _passwordController,
                               decoration: InputDecoration(
-                                labelText: applocalizations!.password,
+                                labelText: applocalizations.password,
                                 labelStyle: const TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.bold,
@@ -217,74 +220,116 @@ class _LoginscreenState extends State<Loginscreen> {
                             ),
                             const SizedBox(height: 20),
                             Center(
-                              child: SliderButton(
-                                action: () async {
-                                  HapticFeedback.mediumImpact();
-                                  String username = _usernameController.text;
-                                  String password = _passwordController.text;
-                                  print("1111111111==$username");
-                                  print("1111111111==$password");
-
-                                  if (_formKey.currentState!.validate()) {
-                                    setState(() {
-                                      _isLoading = true;
-                                    });
-
-                                    String? loginResult =
-                                        await login(username, password);
-
-                                    if (loginResult != null) {
-                                      if (loginResult == password) {
-                                        // Navigate to the next screen if login is successful
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  CustomFormScreen()),
-                                        );
+                              child: SizedBox(
+                                height: 50,
+                                width: 230,
+                                child: SliderButton(
+                                  action: () async {
+                                    HapticFeedback.mediumImpact();
+                                    String username = _usernameController.text;
+                                    String password = _passwordController.text;
+                                    print("1111111111==$username");
+                                    print("1111111111==$password");
+                                    if (_formKey.currentState!.validate()) {
+                                      setState(() {
+                                        _isLoading = true;
+                                      });
+                                      String? loginResult =
+                                          await login(username, password);
+                                
+                                      if (loginResult != null) {
+                                        if (loginResult == password) {
+                                          SharedPreferences prefs = await SharedPreferences.getInstance();
+                                          prefs.setString("userName", username);
+                                          prefs.setString("passWord", password);
+                                          // Navigate to the next screen if login is successful
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                   HomeScreen()),
+                                          );
+                                        } else {
+                                          // Show error message if login fails
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(loginResult),
+                                              backgroundColor: Colors.red,
+                                            ),
+                                          );
+                                        }
                                       } else {
-                                        // Show error message if login fails
+                                        // Show generic error if something went wrong
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
                                           SnackBar(
-                                            content: Text(loginResult),
+                                            content: Text(
+                                                "An error occurred, please try again."),
                                             backgroundColor: Colors.red,
                                           ),
                                         );
                                       }
-                                    } else {
-                                      // Show generic error if something went wrong
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                              "An error occurred, please try again."),
-                                          backgroundColor: Colors.red,
-                                        ),
-                                      );
+                                
+                                      setState(() {
+                                        _isLoading = false;
+                                      });
                                     }
-
-                                    setState(() {
-                                      _isLoading = false;
-                                    });
-                                  }
-                                  return false;
-                                },
-                                label: Center(
-                                  child: _isLoading
-                                      ? CircularProgressIndicator() // Show loading spinner while logging in
-                                      : Text(
-                                          applocalizations!.login,
-                                          style: const TextStyle(
-                                            color: Color.fromARGB(
-                                                255, 212, 113, 113),
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 20,
+                                    return false;
+                                  },
+                                  label: Center(
+                                    child: _isLoading
+                                        ? CircularProgressIndicator() // Show loading spinner while logging in
+                                        : Text(
+                                            applocalizations.login,
+                                            style: const TextStyle(
+                                              color: Color.fromARGB(
+                                                  255, 212, 113, 113),
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
                                           ),
-                                        ),
+                                  ),
+                                  icon: const Icon(Icons.swipe_right_outlined),
                                 ),
-                                icon: const Icon(Icons.swipe_right_outlined),
                               ),
+                            ),
+                            SizedBox(height: 10,),
+                            Center(child: Text(applocalizations.or,style: TextStyle(color: Colors.pink,fontSize: 16),)),
+                          
+                            //Login With Mobile Number 
+
+                            Padding(
+                              padding: const EdgeInsets.only(left: 20),
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const loginWithMobileNumber (),
+                                      ),
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.black,
+                                      backgroundColor: Colors.grey.shade400,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(15),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 15, horizontal: 30),
+                                      elevation: 10,
+                                      shadowColor: Colors.black),
+                                  child: Text(
+                                    applocalizations.loginWithMobileNumber,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      letterSpacing: 1.2,
+                                    ),
+                                  ),
+                                ),
                             ),
                             const SizedBox(height: 20),
                             Center(
@@ -306,13 +351,13 @@ class _LoginscreenState extends State<Loginscreen> {
                                     ),
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 15, horizontal: 30),
-                                    elevation: 50,
+                                    elevation: 10,
                                     shadowColor: Colors.black),
                                 child: Text(
                                   applocalizations.registerhere,
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 18,
+                                    fontSize: 16,
                                     letterSpacing: 1.2,
                                   ),
                                 ),

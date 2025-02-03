@@ -352,7 +352,7 @@ class _CustomFormScreenState extends State<Vegetablespricescreen> {
 
   Future<void> storeDataToFirebase() async {
     try {
-      await firestore.collection('VegetablesPrice').add({
+      await firestore.collection('VegetablesPrice').doc('vegetablePrices').set({
         "methiVegetablesPrice": methiBhajiController.text.trim(),
         "palakVegetablesPrice": palakBhajiController.text.trim(),
         "bhendiVegetablesPrice": bhendiBhajiController.text.trim(),

@@ -202,7 +202,7 @@ class _LoginscreenState extends State<loginWithMobileNumber> {
                                       "1111111111111111111111111${loginResult}");
                                   if (loginResult == mobileNumber) {
                                      SharedPreferences prefs = await SharedPreferences.getInstance();
-                                          prefs.setString("userName", mobileNumber);
+                                          prefs.setString("mobileNumber", mobileNumber);
                                     // Successful login
                                     Navigator.push(
                                       context,

@@ -7,12 +7,23 @@ class CartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final cartProvider = Provider.of<CartProvider>(context);
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("Your Cart"),
+        title: const Text("Your Cart"),
         backgroundColor: Colors.green[700],  // Dark green AppBar
       ),
       body: cartProvider.cartItems.isEmpty
-          ? Center(child: Text("Your cart is empty", style: TextStyle(fontSize: 18, color: Colors.black),))
+          ? const Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 300,
+                child: Center(child: Image(image: AssetImage('assets/greenVegetables/shopping-cart.gif')))),
+              Text("Your cart is empty", style: TextStyle(fontSize: 23, color: Colors.black),),
+            ],
+          )
+          
           : ListView.builder(
               itemCount: cartProvider.cartItems.length,
               itemBuilder: (context, index) {
@@ -21,7 +32,7 @@ class CartScreen extends StatelessWidget {
                 final totalPrice = price * (item['quantity'] ?? 0);
 
                 return ListTile(
-                  title: Text(item['title'], style: TextStyle(color: Colors.black)),
+                  title: Text(item['title'], style: const TextStyle(color: Colors.black)),
                   subtitle: Text(
                     '₹${totalPrice.toStringAsFixed(2)}', // Calculating total price
                     style: TextStyle(
@@ -39,7 +50,7 @@ class CartScreen extends StatelessWidget {
                           cartProvider.removeFromCart(item);
                         },
                       ),
-                      Text(item['quantity'].toString(), style: TextStyle(color: Colors.black)),
+                      Text(item['quantity'].toString(), style: const TextStyle(color: Colors.black)),
                       IconButton(
                         icon: Icon(Icons.add, color: Colors.green[600]), // Slightly lighter green for the icon
                         onPressed: () {
@@ -63,20 +74,37 @@ class CartScreen extends StatelessWidget {
                     Text(
                       'Total: ₹${cartProvider.totalPrice.toStringAsFixed(2)}',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Colors.green[700], // Dark green for total price
                       ),
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Implement checkout functionality here
-                      },
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(Colors.green[700]), // Dark green button
-                      ),
-                      child: Text('Proceed to Checkout', style: TextStyle(color: Colors.white)), // White text
-                    ),
+                 ElevatedButton(
+                onPressed: () {
+                 showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+      
+          content: const Text("Your order has been successfully added to the cart.",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 19),),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("OK",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
+              onPressed: () {
+                Navigator.of(context).pop(); 
+              },
+            ),
+          ],
+        );
+      },
+    );
+  },
+  style: ButtonStyle(
+    backgroundColor: MaterialStateProperty.all(Colors.green[500]), 
+  ),
+  child: const Text('Proceed to Checkout', style: TextStyle(color: Colors.black,fontSize: 18)), 
+),
+
                   ],
                 ),
               ),

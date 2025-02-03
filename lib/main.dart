@@ -8,17 +8,6 @@ import 'package:gromore_application/splashScreen.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-// void main() {
-//   WidgetsFlutterBinding.ensureInitialized();
-//   Firebase.initializeApp();
-
-//   runApp(
-//     ChangeNotifierProvider(
-//       create: (_) => LocaleProvider(),
-//       child: const MyApp(),
-//     ),
-//   );
-// }
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   Firebase.initializeApp();

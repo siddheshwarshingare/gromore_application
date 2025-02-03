@@ -2,22 +2,38 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:gromore_application/addToCartScreen.dart';
 import 'package:gromore_application/languageSelector.dart';
 import 'package:gromore_application/splashScreen.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+// void main() {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   Firebase.initializeApp();
+
+//   runApp(
+//     ChangeNotifierProvider(
+//       create: (_) => LocaleProvider(),
+//       child: const MyApp(),
+//     ),
+//   );
+// }
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   Firebase.initializeApp();
 
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => LocaleProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => LocaleProvider()),
+        ChangeNotifierProvider(create: (_) => CartProvider()), // ✅ Added CartProvider
+      ],
       child: const MyApp(),
     ),
   );
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

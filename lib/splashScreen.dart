@@ -21,6 +21,8 @@ class _SplashscreenState extends State<Splashscreen> {
   ];
   String? userName = '';
   String? passWord = '';
+  String? mobileNumber = '';
+  String? result = '';
 
   void _navigateToNextScreen() async {
     // Simulate a delay for 1 second
@@ -50,10 +52,12 @@ class _SplashscreenState extends State<Splashscreen> {
     setState(() {
       userName = prefs.getString('userName');
       passWord = prefs.getString('passWord');
+      mobileNumber = prefs.getString("mobileNumber");
+      result=  userName == null ? mobileNumber : userName;
     });
 
     // Check if the username is not null or empty
-    return userName != null;
+    return result != null;
   }
 
   @override

@@ -7,7 +7,6 @@ import 'package:gromore_application/eggs_screen.dart';
 import 'package:gromore_application/order_screen.dart';
 import 'package:provider/provider.dart';
 
-
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -254,48 +253,64 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               child: Column(
                 children: [
-                
-             SizedBox(
-    
-              height: 130,
-              child: Image(image: AssetImage('assets/greenVegetables/vegetable.png'),),)
+                  SizedBox(
+                    height: 130,
+                    child: Image(image: AssetImage('assets/greenVegetables/vegetable.png'),),
+                  )
                 ],
               ),
             ),
-              SizedBox(height: 10,),
-           
+            SizedBox(height: 10),
             ListTile(
               leading: Image(image: AssetImage('assets/greenVegetables/home.gif')),
-
               title: const Text('Home',style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/tttt');
               },
             ),
-               SizedBox(height: 10,),
-           
+               SizedBox(height: 10),
             ListTile(
-                  leading: Image(image: AssetImage('assets/greenVegetables/cart.gif')),
-              
+  leading: Image(image: AssetImage('assets/greenVegetables/grocery.gif')),
+  title: const Text(
+    'Cart',
+    style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+  ),
+  onTap: () {
+    Navigator.pop(context); // Close the Drawer
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => CartScreen(
+        
+      ),
+      ), // Navigate to CartScreen
+    );
+  },
+),
+
+            SizedBox(height: 10),
+            ListTile(
+              leading: Image(image: AssetImage('assets/greenVegetables/cart.gif')),
               title: const Text('Order History',style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
               onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/orders',);
+
+Navigator.push(context, MaterialPageRoute(builder: (context) => OrderScreen(),));
+                // Navigator.pop(context);
+                // Navigator.pushNamed(context, '/orders');
               },
             ),
-            SizedBox(height: 10,),
+            SizedBox(height: 10),
             ListTile(
-                  leading: Image(image: AssetImage('assets/greenVegetables/profile.gif')),
+              leading: Image(image: AssetImage('assets/greenVegetables/profile.gif')),
               title: const Text('Profile',style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/profile');
               },
             ),
-               SizedBox(height: 10,),
+            SizedBox(height: 10),
             ListTile(
-                  leading: Image(image: AssetImage('assets/greenVegetables/settings.gif')),
+              leading: Image(image: AssetImage('assets/greenVegetables/settings.gif')),
               title: const Text('Settings',style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
               onTap: () {
                 Navigator.pop(context);
@@ -307,197 +322,193 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  AnimatedTextKit(
-                    animatedTexts: [
-                      TypewriterAnimatedText(
-                        offerDetails,
-                        textStyle: const TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.red,
-                        ),
-                        speed: const Duration(milliseconds: 50),
-                      ),
-                    ],
-                    totalRepeatCount: 8,
-                    pause: const Duration(milliseconds: 500),
-                    displayFullTextOnTap: true,
-                    stopPauseOnTap: true,
-                  ),
-                  Consumer<CartProvider>(
-                    builder: (context, cartProvider, child) {
-                      return Expanded(
-                        child: GridView.builder(
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            childAspectRatio: 0.65,
-                            crossAxisSpacing: 16,
-                            mainAxisSpacing: 16,
-                          ),
-                          itemCount: menuItems.length,
-                          itemBuilder: (context, index) {
-                            int currentCount =
-                                cartProvider.cartItems.firstWhere(
-                                  (cartItem) =>
-                                      cartItem['title'] == menuItems[index]["title"],
-                                  orElse: () => {}, // Return an empty map if no matching item is found
-                                )['quantity'] ??
-                                0;
-
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, menuItems[index]["vegetablesName"]);
-                              },
-                              child: Card(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                elevation: 10,
-                                color: Colors.white,
-                                shadowColor: Colors.greenAccent,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const SizedBox(height: 10),
-                                    Image.asset(
-                                      menuItems[index]["image"],
-                                      height: 140,
-                                      width: 140,
-                                      fit: BoxFit.fill,
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Text(
-                                      menuItems[index]["title"],
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.green,
-                                      ),
-                                    ),
-                                    Text(
-                                      menuItems[index]["price"],
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.green,
-                                      ),
-                                    ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        IconButton(
-                                          icon: const Icon(Icons.remove),
-                                          onPressed: () {
-                                            if (currentCount > 0) {
-                                              cartProvider.removeFromCart(menuItems[index]);
-                                            }
-                                          },
-                                        ),
-                                        AnimatedSwitcher(
-                                          duration: const Duration(milliseconds: 200),
-                                          child: currentCount == 0
-                                              ? const Text(
-                                                  "Add",
-                                                  key: ValueKey<int>(0),
-                                                  style: TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                )
-                                              : Text(
-                                                  '$currentCount',
-                                                  key: ValueKey<int>(currentCount),
-                                                  style: const TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                        ),
-                                        IconButton(
-                                          icon: const Icon(Icons.add),
-                                          onPressed: () {
-                                            cartProvider.addToCart(menuItems[index]);
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      );
-                    },
-                  )
-                ],
-              ),
+          : _buildScreenBody(),
+      bottomNavigationBar: 
+     
+      BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.black,
+        type: BottomNavigationBarType.fixed,
+        onTap: _onItemTapped,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.grass,
+              size: 30,
+              color: Colors.black,
             ),
-     bottomNavigationBar: BottomNavigationBar(
-  currentIndex: _selectedIndex,
-  selectedItemColor: Colors.black,
-  unselectedItemColor: Colors.black,
-  type: BottomNavigationBarType.fixed,
-  onTap: _onItemTapped,
-  items: const [
-    BottomNavigationBarItem(
-  icon: Icon(
-    Icons.grass,
-    size: 30,
-    color: Colors.black, 
-  ),
-  label: 'Veggie',
-  
-),
-
-    BottomNavigationBarItem(
-      icon: Icon(Icons.egg,size: 30,), 
-      label: 'Eggs',
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.list,size: 30,),
-      label: 'Orders',
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.shopping_cart,size: 30,),
-      label: 'Cart',
-    ),
-  ],
-),
-
+            label: 'Veggie',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.egg, size: 30), 
+            label: 'Eggs',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list, size: 30),
+            label: 'Orders',
+          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.shopping_cart, size: 30),
+          //   label: 'Cart',
+          // ),
+        ],
+      ),
     );
   }
 
- void _onItemTapped(int index) {
-  setState(() {
-    _selectedIndex = index;
-    // Navigate to different screens based on the index
-    if (index == 0) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => HomeScreen()), // Home (Veggie)
-      );
-    } else if (index == 1) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => EggsScreen()), // Eggs screen
-      );
-    } else if (index == 2) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => OrderScreen()), // Orders screen
-      );
-    } else if (index == 3) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => CartScreen()), // Cart screen
-      );
-    }
-  });
-}
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
+  // Function to handle different body content based on selected index
+  Widget _buildScreenBody() {
+    switch (_selectedIndex) {
+      case 0:
+        return _buildVeggieScreen();
+      case 1:
+        return EggsScreen();
+      case 2:
+        return OrderScreen();
+   
+      default:
+        return SizedBox();
+    }
+  }
+
+  Widget _buildVeggieScreen() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          AnimatedTextKit(
+            animatedTexts: [
+              TypewriterAnimatedText(
+                offerDetails,
+                textStyle: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red,
+                ),
+                speed: const Duration(milliseconds: 50),
+              ),
+            ],
+            totalRepeatCount: 8,
+            pause: const Duration(milliseconds: 500),
+            displayFullTextOnTap: true,
+            stopPauseOnTap: true,
+          ),
+          Consumer<CartProvider>(
+            builder: (context, cartProvider, child) {
+              return Expanded(
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.65,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                  ),
+                  itemCount: menuItems.length,
+                  itemBuilder: (context, index) {
+                    int currentCount =
+                        cartProvider.cartItems.firstWhere(
+                          (cartItem) =>
+                              cartItem['title'] == menuItems[index]["title"],
+                          orElse: () => {}, // Return an empty map if no matching item is found
+                        )['quantity'] ??
+                        0;
+
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(
+                            context, menuItems[index]["vegetablesName"]);
+                      },
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        elevation: 10,
+                        color: Colors.white,
+                        shadowColor: Colors.greenAccent,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const SizedBox(height: 10),
+                            Image.asset(
+                              menuItems[index]["image"],
+                              height: 140,
+                              width: 140,
+                              fit: BoxFit.fill,
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              menuItems[index]["title"],
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green,
+                              ),
+                            ),
+                            Text(
+                              menuItems[index]["price"],
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green,
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.remove),
+                                  onPressed: () {
+                                    if (currentCount > 0) {
+                                      cartProvider.removeFromCart(menuItems[index]);
+                                    }
+                                  },
+                                ),
+                                AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 200),
+                                  child: currentCount == 0
+                                      ? const Text(
+                                          "Add",
+                                          key: ValueKey<int>(0),
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        )
+                                      : Text(
+                                          '$currentCount',
+                                          key: ValueKey<int>(currentCount),
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.add),
+                                  onPressed: () {
+                                    cartProvider.addToCart(menuItems[index]);
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
 }

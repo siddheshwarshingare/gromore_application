@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gromore_application/addToCartScreen.dart';
-import 'package:gromore_application/cartScreen.dart';
+
 import 'package:provider/provider.dart';
 
 class EggsScreen extends StatefulWidget {
@@ -28,51 +28,9 @@ class _EggsScreenState extends State<EggsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Eggs",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25),),
-        backgroundColor: Colors.green,
-        actions: [
-          // Cart Icon
-          Consumer<CartProvider>(
-            builder: (context, cartProvider, child) {
-              return IconButton(
-                icon: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    const Icon(
-                      Icons.shopping_cart_outlined,
-                      size: 31,
-                      color: Colors.black,
-                    ),
-                    if (cartProvider.cartItemCount > 0)
-                      Positioned(
-                        top: 0,
-                        right: 0,
-                        child: CircleAvatar(
-                          radius: 10,
-                          backgroundColor: Colors.red,
-                          child: Text(
-                            cartProvider.cartItemCount.toString(),
-                            style: const TextStyle(fontSize: 12, color: Colors.white),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-                onPressed: () {
-                  // Navigate to cart screen
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => CartScreen()), 
-                  );
-                },
-              );
-            },
-          ),
-        ],
-      ),
+      
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.only(top: 30,left: 10,right: 10),
         child: Consumer<CartProvider>(
           builder: (context, cartProvider, child) {
             return GridView.builder(

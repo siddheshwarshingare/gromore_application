@@ -15,7 +15,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   // List to store counts for each item
-  final List<int> itemCounts = List.filled(8, 0);
+  final List<int> itemCounts = List.filled(12, 0);
   bool isLoading = true;
   String offerDetails = '';
   int _selectedIndex = 0;
@@ -23,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Map<String, dynamic>> menuItems = [
     {
       "title": "मेथी",
-      "image": "assets/greenVegetables/methiBhaji.jpg",
+      "image": "assets/greenVegetables/methi.jpg",
       "vegetablesName": "/vegetables",
       "price": ''
     },
@@ -41,25 +41,25 @@ class _HomeScreenState extends State<HomeScreen> {
     },
     {
       "title": "चवली",
-      "image": "assets/greenVegetables/chvali.jpeg",
+      "image": "assets/greenVegetables/chawli.png",
       "vegetablesName": "/orders",
       "price": ''
     },
     {
       "title": "कथिम्बीर",
-      "image": "assets/greenVegetables/kothimbir.jpg",
+      "image": "assets/greenVegetables/kothimbir.jpeg",
       "vegetablesName": "/profile",
       "price": ''
     },
     {
       "title": "शेपू",
-      "image": "assets/greenVegetables/shepu.jpg",
+      "image": "assets/greenVegetables/sepu.jpg",
       "vegetablesName": "/settings",
       "price": ''
     },
     {
       "title": "कंदे",
-      "image": "assets/greenVegetables/kande.jpg",
+      "image": "assets/greenVegetables/kandhe.jpg",
       "vegetablesName": "/vegetables",
       "price": ''
     },
@@ -69,6 +69,34 @@ class _HomeScreenState extends State<HomeScreen> {
       "vegetablesName": "/fruits",
       "price": ''
     },
+    {
+      "title": "आलू",
+      "image": "assets/greenVegetables/batate.jpg",
+      "vegetablesName": "/fruits",
+      "price": ''
+    },
+   
+      {
+      "title": "काकड़ी",
+      "image": "assets/greenVegetables/kakdi.jpeg",
+      "vegetablesName": "/fruits",
+      "price": ''
+    },
+      {
+      "title": "कांदा पथ",
+      "image": "assets/greenVegetables/kandhapath.jpg",
+      "vegetablesName": "/fruits",
+      "price": ''
+    },
+
+      {
+      "title": "करले",
+      "image": "assets/greenVegetables/karela.jpg",
+      "vegetablesName": "/fruits",
+      "price": ''
+    },
+      
+      
   ];
 
   Future<void> fetchVegetablePrices() async {
@@ -103,6 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
             "methi": fetchedPrices["methiVegetablesPrice"] ?? "N/A",
             "palak": fetchedPrices["palakVegetablesPrice"] ?? "N/A",
             "shepu": fetchedPrices["shepuVegetablesPrice"] ?? "N/A",
+            "allu": fetchedPrices["alluVegetablesPrice"] ?? "N/A"
           };
 
           // Mapping between Hindi titles and the corresponding vegetable keys
@@ -120,6 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
             "करले": "karle",
             "डोकडा": "dodka",
             "काकड़ी": "kakdi",
+            "आलू": "allu",
           };
 
           // Update menuItems prices dynamically
@@ -389,7 +419,7 @@ Navigator.push(context, MaterialPageRoute(builder: (context) => OrderScreen(),))
 
   Widget _buildVeggieScreen() {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.only(top: 20,right: 10,left: 10),
       child: Column(
         children: [
           AnimatedTextKit(
@@ -428,27 +458,28 @@ Navigator.push(context, MaterialPageRoute(builder: (context) => OrderScreen(),))
                           orElse: () => {}, // Return an empty map if no matching item is found
                         )['quantity'] ??
                         0;
-
+      
                     return GestureDetector(
                       onTap: () {
                         Navigator.pushNamed(
                             context, menuItems[index]["vegetablesName"]);
                       },
-                      child: Card(
+                      child: 
+                      Card(
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                        elevation: 10,
+                        elevation: 20,
                         color: Colors.white,
-                        shadowColor: Colors.greenAccent,
+                        shadowColor: Colors.black45,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const SizedBox(height: 10),
+                             SizedBox(height: 10),
                             Image.asset(
                               menuItems[index]["image"],
                               height: 140,
-                              width: 140,
+                              width: double.maxFinite,
                               fit: BoxFit.fill,
                             ),
                             const SizedBox(height: 10),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:lottie/lottie.dart';
+import 'package:flutter/services.dart';
 
 class CustomFormScreen extends StatefulWidget {
   const CustomFormScreen({Key? key}) : super(key: key);
@@ -28,6 +28,17 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
     final applocalizations = AppLocalizations.of(context);
 
     return Scaffold(
+      appBar: AppBar(
+        title: Center(
+            child: Text(
+          applocalizations!.registrationForm,
+          style: const TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        )),
+      ),
       body: Stack(
         children: [
           Positioned.fill(
@@ -66,27 +77,33 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 80),
-                    Center(
-                      child: Text(
-                        applocalizations!.registrationForm,
-                        style: const TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
                     const SizedBox(height: 20),
+                    // Center(
+                    //   child: Text(
+                    //     applocalizations!.registrationForm,
+                    //     style: const TextStyle(
+                    //       fontSize: 30,
+                    //       fontWeight: FontWeight.bold,
+                    //       color: Colors.black,
+                    //     ),
+                    //   ),
+                    // ),
+                    // const SizedBox(height: 20),
 
                     // Name Field
+
                     TextFormField(
                       controller: nameController,
                       decoration: _inputDecoration(applocalizations.name),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(
+                            r'^[a-zA-Z ]*$')), // Only alphabets and space
+                      ],
                       validator: (value) => value == null || value.isEmpty
                           ? applocalizations.nameisrequired
                           : null,
                     ),
+
                     const SizedBox(height: 15),
 
                     // Mobile Field
@@ -95,6 +112,12 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
                       decoration:
                           _inputDecoration(applocalizations.mobileNumber),
                       keyboardType: TextInputType.phone,
+                      inputFormatters: [
+                        FilteringTextInputFormatter
+                            .digitsOnly, // Allow only digits
+                        LengthLimitingTextInputFormatter(
+                            10), // Limit to 10 digits
+                      ],
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return applocalizations.mobileNumberisrequired;
@@ -106,6 +129,7 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
                         return null;
                       },
                     ),
+
                     const SizedBox(height: 15),
 
                     // Username Field

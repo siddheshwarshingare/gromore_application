@@ -1,0 +1,503 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:gromore_application/addToCartScreen.dart';
+import 'package:gromore_application/cartScreen.dart';
+import 'package:gromore_application/eggs_screen.dart';
+import 'package:gromore_application/order_screen.dart';
+import 'package:provider/provider.dart';
+
+
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  // List to store counts for each item
+  final List<int> itemCounts = List.filled(8, 0);
+  bool isLoading = true;
+  String offerDetails = '';
+  int _selectedIndex = 0;
+
+  final List<Map<String, dynamic>> menuItems = [
+    {
+      "title": "मेथी",
+      "image": "assets/greenVegetables/methiBhaji.jpg",
+      "vegetablesName": "/vegetables",
+      "price": ''
+    },
+    {
+      "title": "गवार",
+      "image": "assets/greenVegetables/gavar.jpg",
+      "vegetablesName": "/fruits",
+      "price": ''
+    },
+    {
+      "title": "पालक",
+      "image": "assets/greenVegetables/palak.jpg",
+      "vegetablesName": "/cart",
+      "price": ''
+    },
+    {
+      "title": "चवली",
+      "image": "assets/greenVegetables/chvali.jpeg",
+      "vegetablesName": "/orders",
+      "price": ''
+    },
+    {
+      "title": "कथिम्बीर",
+      "image": "assets/greenVegetables/kothimbir.jpg",
+      "vegetablesName": "/profile",
+      "price": ''
+    },
+    {
+      "title": "शेपू",
+      "image": "assets/greenVegetables/shepu.jpg",
+      "vegetablesName": "/settings",
+      "price": ''
+    },
+    {
+      "title": "कंदे",
+      "image": "assets/greenVegetables/kande.jpg",
+      "vegetablesName": "/vegetables",
+      "price": ''
+    },
+    {
+      "title": "भेंडी",
+      "image": "assets/greenVegetables/bhendi.jpg",
+      "vegetablesName": "/fruits",
+      "price": ''
+    },
+  ];
+
+  Future<void> fetchVegetablePrices() async {
+    try {
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance
+          .collection('VegetablesPrice')
+          .doc('vegetablePrices') // Ensure this is the correct Firestore document ID
+          .get();
+
+      if (snapshot.exists) {
+        Map<String, dynamic> fetchedPrices =
+            snapshot.data() as Map<String, dynamic>;
+
+        // Debugging: Print fetched prices to see if the data is being fetched correctly
+        print("Fetched prices: $fetchedPrices");
+
+        setState(() {
+          isLoading = false;
+
+          // Store all fetched prices in a map
+          Map<String, String> vegetablePrices = {
+            "bhendi": fetchedPrices["bhendiVegetablesPrice"] ?? "N/A",
+            "chavali": fetchedPrices["chavaliVegetablesPrice"] ?? "N/A",
+            "chuka": fetchedPrices["chukaVegetablesPrice"] ?? "N/A",
+            "dodka": fetchedPrices["dodkaVegetablesPrice"] ?? "N/A",
+            "gavar": fetchedPrices["gavarVegetablesPrice"] ?? "N/A",
+            "kakdi": fetchedPrices["kakdivegetablesPrice"] ?? "N/A",
+            "kandaPath": fetchedPrices["kandaPathVegetablesPrice"] ?? "N/A",
+            "kande": fetchedPrices["kandeVegetablesPrice"] ?? "N/A",
+            "karle": fetchedPrices["karleVegetablesPrice"] ?? "N/A",
+            "kothimbir": fetchedPrices["kothimbirVegetablesPrice"] ?? "N/A",
+            "methi": fetchedPrices["methiVegetablesPrice"] ?? "N/A",
+            "palak": fetchedPrices["palakVegetablesPrice"] ?? "N/A",
+            "shepu": fetchedPrices["shepuVegetablesPrice"] ?? "N/A",
+          };
+
+          // Mapping between Hindi titles and the corresponding vegetable keys
+          Map<String, String> titleToKeyMap = {
+            "मेथी": "methi",
+            "गवार": "gavar",
+            "पालक": "palak",
+            "चवली": "chavali",
+            "चूका": "chuka",
+            "कथिम्बीर": "kothimbir",
+            "शेपू": "shepu",
+            "भेंडी": "bhendi",
+            "कांदा पथ": "kandaPath",
+            "कंदे": "kande",
+            "करले": "karle",
+            "डोकडा": "dodka",
+            "काकड़ी": "kakdi",
+          };
+
+          // Update menuItems prices dynamically
+          for (var item in menuItems) {
+            // Get the title and map it to the corresponding vegetable key
+            String vegetableKey = titleToKeyMap[item["title"]] ?? "";
+
+            // Debugging: Print the vegetable key to check if it matches correctly
+            print("Looking for price for: $vegetableKey");
+
+            if (vegetablePrices.containsKey(vegetableKey)) {
+              item["price"] =
+                  "₹${vegetablePrices[vegetableKey]}"; // Assign the price dynamically
+            }
+          }
+        });
+      } else {
+        print("No data found in Firestore.");
+        setState(() => isLoading = false);
+      }
+    } catch (e) {
+      print('Error fetching vegetable prices: $e');
+      setState(() => isLoading = false);
+    }
+  }
+
+  Future<void> fetchOfferDetails() async {
+    try {
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance
+          .collection('OfferDetails')
+          .doc('tcQ5jNhydeqxtiVMTWWK') // Ensure this is the correct Firestore document ID
+          .get();
+
+      if (snapshot.exists) {
+        setState(() {
+          offerDetails = snapshot["offer"] ?? "No offer available";
+        });
+      } else {
+        setState(() {
+          offerDetails = "No offer available";
+        });
+      }
+    } catch (e) {
+      print('Error fetching offer details: $e');
+      setState(() {
+        offerDetails = "Error loading offer details";
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchOfferDetails();
+    fetchVegetablePrices();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 70,
+        title: const Center(
+          child: Text.rich(
+            TextSpan(
+              text: "Veggie",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 32,
+                color: Colors.black,
+              ),
+              children: <TextSpan>[
+                TextSpan(
+                  text: " Fresh",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 32,
+                    color: Colors.orange,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        backgroundColor: Colors.green,
+        actions: [
+          Consumer<CartProvider>(
+            builder: (context, cartProvider, child) {
+              return IconButton(
+                icon: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    const Icon(
+                      Icons.shopping_cart_outlined,
+                      size: 31,
+                      color: Colors.black,
+                    ),
+                    if (cartProvider.cartItemCount > 0)
+                      Positioned(
+                        top: 0,
+                        right: 0,
+                        child: CircleAvatar(
+                          radius: 10,
+                          backgroundColor: Colors.red,
+                          child: Text(
+                            cartProvider.cartItemCount.toString(),
+                            style: const TextStyle(fontSize: 12, color: Colors.white),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => CartScreen()),
+                  );
+                },
+              );
+            },
+          ),
+        ],
+      ),
+      drawer: Drawer(
+        backgroundColor: Colors.white,
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.green,
+              ),
+              child: Column(
+                children: [
+                
+             SizedBox(
+    
+              height: 130,
+              child: Image(image: AssetImage('assets/greenVegetables/vegetable.png'),),)
+                ],
+              ),
+            ),
+              SizedBox(height: 10,),
+           
+            ListTile(
+              leading: Image(image: AssetImage('assets/greenVegetables/home.gif')),
+
+              title: const Text('Home',style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/tttt');
+              },
+            ),
+               SizedBox(height: 10,),
+           
+            ListTile(
+                  leading: Image(image: AssetImage('assets/greenVegetables/cart.gif')),
+              
+              title: const Text('Order History',style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/orders',);
+              },
+            ),
+            SizedBox(height: 10,),
+            ListTile(
+                  leading: Image(image: AssetImage('assets/greenVegetables/profile.gif')),
+              title: const Text('Profile',style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/profile');
+              },
+            ),
+               SizedBox(height: 10,),
+            ListTile(
+                  leading: Image(image: AssetImage('assets/greenVegetables/settings.gif')),
+              title: const Text('Settings',style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/settings');
+              },
+            ),
+          ],
+        ),
+      ),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  AnimatedTextKit(
+                    animatedTexts: [
+                      TypewriterAnimatedText(
+                        offerDetails,
+                        textStyle: const TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ),
+                        speed: const Duration(milliseconds: 50),
+                      ),
+                    ],
+                    totalRepeatCount: 8,
+                    pause: const Duration(milliseconds: 500),
+                    displayFullTextOnTap: true,
+                    stopPauseOnTap: true,
+                  ),
+                  Consumer<CartProvider>(
+                    builder: (context, cartProvider, child) {
+                      return Expanded(
+                        child: GridView.builder(
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 0.65,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                          ),
+                          itemCount: menuItems.length,
+                          itemBuilder: (context, index) {
+                            int currentCount =
+                                cartProvider.cartItems.firstWhere(
+                                  (cartItem) =>
+                                      cartItem['title'] == menuItems[index]["title"],
+                                  orElse: () => {}, // Return an empty map if no matching item is found
+                                )['quantity'] ??
+                                0;
+
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, menuItems[index]["vegetablesName"]);
+                              },
+                              child: Card(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                elevation: 10,
+                                color: Colors.white,
+                                shadowColor: Colors.greenAccent,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const SizedBox(height: 10),
+                                    Image.asset(
+                                      menuItems[index]["image"],
+                                      height: 140,
+                                      width: 140,
+                                      fit: BoxFit.fill,
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Text(
+                                      menuItems[index]["title"],
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.green,
+                                      ),
+                                    ),
+                                    Text(
+                                      menuItems[index]["price"],
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.green,
+                                      ),
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(Icons.remove),
+                                          onPressed: () {
+                                            if (currentCount > 0) {
+                                              cartProvider.removeFromCart(menuItems[index]);
+                                            }
+                                          },
+                                        ),
+                                        AnimatedSwitcher(
+                                          duration: const Duration(milliseconds: 200),
+                                          child: currentCount == 0
+                                              ? const Text(
+                                                  "Add",
+                                                  key: ValueKey<int>(0),
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                )
+                                              : Text(
+                                                  '$currentCount',
+                                                  key: ValueKey<int>(currentCount),
+                                                  style: const TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(Icons.add),
+                                          onPressed: () {
+                                            cartProvider.addToCart(menuItems[index]);
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  )
+                ],
+              ),
+            ),
+     bottomNavigationBar: BottomNavigationBar(
+  currentIndex: _selectedIndex,
+  selectedItemColor: Colors.black,
+  unselectedItemColor: Colors.black,
+  type: BottomNavigationBarType.fixed,
+  onTap: _onItemTapped,
+  items: const [
+    BottomNavigationBarItem(
+  icon: Icon(
+    Icons.grass,
+    size: 30,
+    color: Colors.black, 
+  ),
+  label: 'Veggie',
+  
+),
+
+    BottomNavigationBarItem(
+      icon: Icon(Icons.egg,size: 30,), 
+      label: 'Eggs',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.list,size: 30,),
+      label: 'Orders',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.shopping_cart,size: 30,),
+      label: 'Cart',
+    ),
+  ],
+),
+
+    );
+  }
+
+ void _onItemTapped(int index) {
+  setState(() {
+    _selectedIndex = index;
+    // Navigate to different screens based on the index
+    if (index == 0) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => HomeScreen()), // Home (Veggie)
+      );
+    } else if (index == 1) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => EggsScreen()), // Eggs screen
+      );
+    } else if (index == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => OrderScreen()), // Orders screen
+      );
+    } else if (index == 3) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => CartScreen()), // Cart screen
+      );
+    }
+  });
+}
+
+}

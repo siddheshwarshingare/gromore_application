@@ -24,6 +24,47 @@ class _LoginscreenState extends State<Loginscreen> {
   String userName = '';
   String passWord = '';
 
+  // Future<void> fetchUserDetails() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   userName = prefs.getString('userName');
+  //   passWord = prefs.getString('passWord');
+  //   mobileNumber = prefs.getString("mobileNumber");
+
+  //   if (passWord != null || mobileNumber != null) {
+  //     try {
+  //       QuerySnapshot querySnapshot;
+
+  //       if (userName != null && userName!.isNotEmpty) {
+  //         querySnapshot = await FirebaseFirestore.instance
+  //             .collection('CustomerDetails')
+  //             .where('userName', isEqualTo: userName)
+  //             .where('passWord', isEqualTo: passWord)
+  //             .get();
+  //       } else if (mobileNumber != null && mobileNumber!.isNotEmpty) {
+  //         querySnapshot = await FirebaseFirestore.instance
+  //             .collection('CustomerDetails')
+  //             .where('mobileNumber', isEqualTo: mobileNumber)
+  //             .where('passWord', isEqualTo: passWord)
+  //             .get();
+  //       } else {
+  //         print("No valid login credentials found!");
+  //         return;
+  //       }
+
+  //       if (querySnapshot.docs.isNotEmpty) {
+  //         setState(() {
+  //           userData = querySnapshot.docs.first.data() as Map<String, dynamic>;
+  //         });
+  //       } else {
+  //         print("User not found!");
+  //       }
+  //     } catch (e) {
+  //       print("Error fetching user data: $e");
+  //     }
+  //   } else {
+  //     print("Password is missing in SharedPreferences");
+  //   }
+  // }
   Future<String?> login(String userName, String passWord) async {
     try {
       // Fetch user details from Firestore based on the userName

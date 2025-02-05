@@ -1,8 +1,8 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:gromore_application/addToCartScreen.dart';
-import 'package:gromore_application/cartScreen.dart';
+import 'package:gromore_application/cart/addToCartScreen.dart';
+import 'package:gromore_application/cart/cartScreen.dart';
 import 'package:provider/provider.dart';
 
 class EggsScreen extends StatefulWidget {

@@ -1,13 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:gromore_application/addToCartScreen.dart';
-import 'package:gromore_application/cartScreen.dart';
-import 'package:gromore_application/eggs_screen.dart';
-import 'package:gromore_application/order_screen.dart';
-import 'package:gromore_application/totalOrderScreen.dart';
-import 'package:gromore_application/userProfileScreen.dart';
+import 'package:gromore_application/cart/addToCartScreen.dart';
+import 'package:gromore_application/cart/cartScreen.dart';
+import 'package:gromore_application/contact/contact_us.dart';
+import 'package:gromore_application/eggs/eggs_screen.dart';
+import 'package:gromore_application/login/loginScreen.dart';
+import 'package:gromore_application/order/order_screen.dart';
+import 'package:gromore_application/order/totalOrderScreen.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -47,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
       "price": ''
     },
     {
-      "title": "कथिम्बीर",
+      "title": "कोथिंबीर",
       "image": "assets/greenVegetables/kothimbir.jpeg",
       "vegetablesName": "/profile",
       "price": ''
@@ -76,35 +78,43 @@ class _HomeScreenState extends State<HomeScreen> {
       "vegetablesName": "/fruits",
       "price": ''
     },
-   
-      {
+    {
       "title": "काकड़ी",
       "image": "assets/greenVegetables/kakdi.jpeg",
       "vegetablesName": "/fruits",
       "price": ''
     },
-      {
+    {
       "title": "कांदा पथ",
       "image": "assets/greenVegetables/kandhapath.jpg",
       "vegetablesName": "/fruits",
       "price": ''
     },
-
-      {
+    {
       "title": "करले",
       "image": "assets/greenVegetables/karela.jpg",
       "vegetablesName": "/fruits",
       "price": ''
     },
-      
-      
+    {
+      "title": "चूका",
+      "image": "assets/greenVegetables/chuka.jpg",
+      "vegetablesName": "/fruits",
+      "price": ''
+    },
+    {
+      "title": "दोडका",
+      "image": "assets/greenVegetables/dodka.jpg",
+      "vegetablesName": "/fruits",
+      "price": ''
+    },
   ];
 
   Future<void> fetchVegetablePrices() async {
     try {
       DocumentSnapshot snapshot = await FirebaseFirestore.instance
           .collection('VegetablesPrice')
-          .doc('vegetablePrices') // Ensure this is the correct Firestore document ID
+          .doc('vegetablePrices')
           .get();
 
       if (snapshot.exists) {
@@ -142,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
             "पालक": "palak",
             "चवली": "chavali",
             "चूका": "chuka",
-            "कथिम्बीर": "kothimbir",
+            "कोथिंबीर": "kothimbir",
             "शेपू": "shepu",
             "भेंडी": "bhendi",
             "कांदा पथ": "kandaPath",
@@ -151,6 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
             "डोकडा": "dodka",
             "काकड़ी": "kakdi",
             "आलू": "allu",
+            "दोडका": "dodka",
           };
 
           // Update menuItems prices dynamically
@@ -181,7 +192,8 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       DocumentSnapshot snapshot = await FirebaseFirestore.instance
           .collection('OfferDetails')
-          .doc('tcQ5jNhydeqxtiVMTWWK') // Ensure this is the correct Firestore document ID
+          .doc(
+              'tcQ5jNhydeqxtiVMTWWK') // Ensure this is the correct Firestore document ID
           .get();
 
       if (snapshot.exists) {
@@ -257,7 +269,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           backgroundColor: Colors.red,
                           child: Text(
                             cartProvider.cartItemCount.toString(),
-                            style: const TextStyle(fontSize: 12, color: Colors.white),
+                            style: const TextStyle(
+                                fontSize: 12, color: Colors.white),
                           ),
                         ),
                       ),
@@ -279,101 +292,107 @@ class _HomeScreenState extends State<HomeScreen> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            const DrawerHeader(
+             DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.green,
+                color: Colors.white,
               ),
               child: Column(
                 children: [
                   SizedBox(
                     height: 130,
-                    child: Image(image: AssetImage('assets/greenVegetables/vegetable.png'),),
+                    child: Image(
+                      image: AssetImage('assets/animation/pp.png'),
+                    ),
                   )
                 ],
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             ListTile(
-              leading: Image(image: AssetImage('assets/greenVegetables/home.gif')),
-              title: const Text('Home',style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
+              leading:
+                  const Image(image: AssetImage('assets/animation/home.gif')),
+              title: const Text(
+                'Home',
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+              ),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/tttt');
               },
             ),
-               SizedBox(height: 10),
+            const SizedBox(height: 10),
             ListTile(
-  leading: Image(image: AssetImage('assets/greenVegetables/grocery.gif')),
-  title: const Text(
-    'Cart',
-    style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-  ),
-  onTap: () {
-    Navigator.pop(context); // Close the Drawer
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => CartScreen(
-        
-      ),
-      ), // Navigate to CartScreen
-    );
-  },
-),
-
-            SizedBox(height: 10),
-            ListTile(
-              leading: Image(image: AssetImage('assets/greenVegetables/cart.gif')),
-              title: const Text('Order History',style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
+              leading:
+                  const Image(image: AssetImage('assets/animation/cart.gif')),
+              title: const Text(
+                'Cart',
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+              ),
               onTap: () {
-
-Navigator.push(context, MaterialPageRoute(builder: (context) => OrderScreen(),));
-                // Navigator.pop(context);
-                // Navigator.pushNamed(context, '/orders');
+                Navigator.pop(context); // Close the Drawer
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CartScreen(),
+                  ), // Navigate to CartScreen
+                );
               },
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             ListTile(
-              leading: Image(image: AssetImage('assets/greenVegetables/profile.gif')),
-              title: const Text('Profile',style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
+              leading: const Image(
+                  image: AssetImage('assets/animation/shopping-cart.gif')),
+              title: const Text(
+                'Order History',
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+              ),
               onTap: () {
- Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => AllOrdersScreen(
-        
-      ),
-      ), // Navigate to CartScreen
-    );
-                
-               // Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const OrderScreen(),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 10),
+            ListTile(
+              leading: const Image(
+                image: AssetImage('assets/animation/profile.gif'),
+              ),
+              title: const Text(
+                'Profile',
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+              ),
+              onTap: () {
                 Navigator.pushNamed(context, '/profile');
               },
             ),
-            SizedBox(height: 10),
-            ListTile(
-              leading: Image(image: AssetImage('assets/greenVegetables/settings.gif')),
-              title: const Text('Settings',style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
+            const SizedBox(height: 10),
+        ListTile(
+              leading: const Image(
+                image: AssetImage('assets/animation/contact.gif'),
+              ),
+              title:  Text(
+                'Contact us',
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+              ),
               onTap: () {
- Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => ProfileScreen(
-        
-      ),
-      ), // Navigate to CartScreen
-    );
-               
-               // Navigator.pop(context);
-                Navigator.pushNamed(context, '/settings');
+                Navigator.push(context, MaterialPageRoute(builder: (context) => ContactUs(),));
+                Navigator.pushNamed(context, '/contact');
               },
             ),
+           
+           
           ],
         ),
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
           : _buildScreenBody(),
-      bottomNavigationBar: 
-     
-      BottomNavigationBar(
+      bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.black,
         unselectedItemColor: Colors.black,
@@ -389,17 +408,13 @@ Navigator.push(context, MaterialPageRoute(builder: (context) => OrderScreen(),))
             label: 'Veggie',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.egg, size: 30), 
+            icon: Icon(Icons.egg, size: 30),
             label: 'Eggs',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.list, size: 30),
             label: 'Orders',
           ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(Icons.shopping_cart, size: 30),
-          //   label: 'Cart',
-          // ),
         ],
       ),
     );
@@ -417,18 +432,18 @@ Navigator.push(context, MaterialPageRoute(builder: (context) => OrderScreen(),))
       case 0:
         return _buildVeggieScreen();
       case 1:
-        return EggsScreen();
+        return const EggsScreen();
       case 2:
-        return OrderScreen();
-   
+        return const OrderScreen();
+
       default:
-        return SizedBox();
+        return const SizedBox();
     }
   }
 
   Widget _buildVeggieScreen() {
     return Padding(
-      padding: const EdgeInsets.only(top: 20,right: 10,left: 10),
+      padding: const EdgeInsets.only(top: 20, right: 10, left: 10),
       child: Column(
         children: [
           AnimatedTextKit(
@@ -448,33 +463,35 @@ Navigator.push(context, MaterialPageRoute(builder: (context) => OrderScreen(),))
             displayFullTextOnTap: true,
             stopPauseOnTap: true,
           ),
+          SizedBox(
+            height: 20,
+          ),
           Consumer<CartProvider>(
             builder: (context, cartProvider, child) {
               return Expanded(
                 child: GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    childAspectRatio: 0.65,
+                    childAspectRatio: 0.7,
                     crossAxisSpacing: 16,
                     mainAxisSpacing: 16,
                   ),
                   itemCount: menuItems.length,
                   itemBuilder: (context, index) {
-                    int currentCount =
-                        cartProvider.cartItems.firstWhere(
+                    int currentCount = cartProvider.cartItems.firstWhere(
                           (cartItem) =>
                               cartItem['title'] == menuItems[index]["title"],
-                          orElse: () => {}, // Return an empty map if no matching item is found
+                          orElse: () =>
+                              {}, // Return an empty map if no matching item is found
                         )['quantity'] ??
                         0;
-      
+
                     return GestureDetector(
                       onTap: () {
                         Navigator.pushNamed(
                             context, menuItems[index]["vegetablesName"]);
                       },
-                      child: 
-                      Card(
+                      child: Card(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
@@ -484,7 +501,7 @@ Navigator.push(context, MaterialPageRoute(builder: (context) => OrderScreen(),))
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                             SizedBox(height: 10),
+                            const SizedBox(height: 10),
                             Image.asset(
                               menuItems[index]["image"],
                               height: 140,
@@ -515,7 +532,8 @@ Navigator.push(context, MaterialPageRoute(builder: (context) => OrderScreen(),))
                                   icon: const Icon(Icons.remove),
                                   onPressed: () {
                                     if (currentCount > 0) {
-                                      cartProvider.removeFromCart(menuItems[index]);
+                                      cartProvider
+                                          .removeFromCart(menuItems[index]);
                                     }
                                   },
                                 ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gromore_application/languageSelector.dart';
-import 'package:gromore_application/loginScreen.dart';
-import 'package:gromore_application/vegetablesMenuHomeScreen.dart';
+import 'package:gromore_application/language/languageSelector.dart';
+import 'package:gromore_application/vegetables/vegetablesMenuHomeScreen.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -40,7 +39,7 @@ class _SplashscreenState extends State<Splashscreen> {
     } else {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const Loginscreen()),
+        MaterialPageRoute(builder: (_) => const Languageselector()),
       );
     }
   }

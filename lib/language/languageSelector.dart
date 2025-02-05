@@ -4,7 +4,7 @@ import 'package:flutter_localization/flutter_localization.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'loginScreen.dart'; // Make sure this is correctly imported
+import '../login/loginScreen.dart'; // Make sure this is correctly imported
 
 // LocaleProvider
 class LocaleProvider with ChangeNotifier {
@@ -104,7 +104,7 @@ class _LanguageselectorState extends State<Languageselector>
                 decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage(
-                        'assets/market.jpg'), // Update to your image path
+                        'assets/splash_screenlogo.jpg'), // Update to your image path
                     fit: BoxFit.cover,
                   ),
                 ),

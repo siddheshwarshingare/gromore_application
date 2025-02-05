@@ -6,6 +6,7 @@ import 'package:gromore_application/cartScreen.dart';
 import 'package:gromore_application/eggs_screen.dart';
 import 'package:gromore_application/order_screen.dart';
 import 'package:gromore_application/totalOrderScreen.dart';
+import 'package:gromore_application/userProfileScreen.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -337,7 +338,7 @@ Navigator.push(context, MaterialPageRoute(builder: (context) => OrderScreen(),))
               onTap: () {
  Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => TotalOrderScreen(
+      MaterialPageRoute(builder: (context) => AllOrdersScreen(
         
       ),
       ), // Navigate to CartScreen
@@ -352,7 +353,15 @@ Navigator.push(context, MaterialPageRoute(builder: (context) => OrderScreen(),))
               leading: Image(image: AssetImage('assets/greenVegetables/settings.gif')),
               title: const Text('Settings',style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
               onTap: () {
-                Navigator.pop(context);
+ Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ProfileScreen(
+        
+      ),
+      ), // Navigate to CartScreen
+    );
+               
+               // Navigator.pop(context);
                 Navigator.pushNamed(context, '/settings');
               },
             ),

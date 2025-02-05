@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gromore_application/loginWithMobileNumber.dart';
-import 'package:gromore_application/registrationForm.dart';
-import 'package:gromore_application/vegetablesMenuHomeScreen.dart';
+import 'package:gromore_application/login/loginWithMobileNumber.dart';
+import 'package:gromore_application/form/registrationForm.dart';
+import 'package:gromore_application/vegetables/vegetablesMenuHomeScreen.dart';
 import 'package:slider_button/slider_button.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,47 +24,6 @@ class _LoginscreenState extends State<Loginscreen> {
   String userName = '';
   String passWord = '';
 
-  // Future<void> fetchUserDetails() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   userName = prefs.getString('userName');
-  //   passWord = prefs.getString('passWord');
-  //   mobileNumber = prefs.getString("mobileNumber");
-
-  //   if (passWord != null || mobileNumber != null) {
-  //     try {
-  //       QuerySnapshot querySnapshot;
-
-  //       if (userName != null && userName!.isNotEmpty) {
-  //         querySnapshot = await FirebaseFirestore.instance
-  //             .collection('CustomerDetails')
-  //             .where('userName', isEqualTo: userName)
-  //             .where('passWord', isEqualTo: passWord)
-  //             .get();
-  //       } else if (mobileNumber != null && mobileNumber!.isNotEmpty) {
-  //         querySnapshot = await FirebaseFirestore.instance
-  //             .collection('CustomerDetails')
-  //             .where('mobileNumber', isEqualTo: mobileNumber)
-  //             .where('passWord', isEqualTo: passWord)
-  //             .get();
-  //       } else {
-  //         print("No valid login credentials found!");
-  //         return;
-  //       }
-
-  //       if (querySnapshot.docs.isNotEmpty) {
-  //         setState(() {
-  //           userData = querySnapshot.docs.first.data() as Map<String, dynamic>;
-  //         });
-  //       } else {
-  //         print("User not found!");
-  //       }
-  //     } catch (e) {
-  //       print("Error fetching user data: $e");
-  //     }
-  //   } else {
-  //     print("Password is missing in SharedPreferences");
-  //   }
-  // }
   Future<String?> login(String userName, String passWord) async {
     try {
       // Fetch user details from Firestore based on the userName

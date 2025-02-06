@@ -167,12 +167,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     height: 50,
                     width: 200,
                     child: ElevatedButton(
-                        onPressed: () {
+
+
+                        onPressed: () async {
+                          SharedPreferences prefs = await SharedPreferences.getInstance();
+
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => const Loginscreen(),
-                              ));
+                              ),
+                              );
+                              prefs.clear();
+                              
+
                         },
                         child: const Text(
                           "लॉगआउट",

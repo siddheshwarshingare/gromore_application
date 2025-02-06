@@ -14,44 +14,46 @@ class _ContactUsState extends State<ContactUs> {
       backgroundColor: Colors.grey.shade200,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        toolbarHeight: 110,
+        toolbarHeight:110,
         flexibleSpace: const Column(
           children: [
             SizedBox(
               height: 50 ,
             ),
-            SizedBox(
+         SizedBox(
                height:100,
-                child: Image(image: AssetImage('assets/animation/pp.png')))
+                child: Image(image: AssetImage('assets/animation/pp.png'),
+                ),
+                ),
           ],
         ),
       ),
-      body: SingleChildScrollView(
-        child: const Column(
+      body: const SingleChildScrollView(
+        child: Column(
           children: [
              SizedBox(
               height: 10,
             ),
             ContactUsItemCard(
-                titleString: 'Contact us',
-                infoString: 'Call (or) Whats App\nPhone No : +91 7769032792\n',
+                titleString: 'संपर्क साधा',
+                infoString: 'कॉल (किंवा) व्हॉट्सअ‍ॅप फोन नंबर :\n +91 7769032792\n',
                 iconPath: 'assets/phone-call.png',
           ),
             SizedBox(
               height: 10,
             ),
             ContactUsItemCard(
-                titleString: 'Email Id',
-                infoString: 'For any Queries\nsiddheshwarshingare99@gmail.com',
+                titleString: 'ईमेल आयडी',
+                infoString: 'कुठल्याही प्रश्नांसाठी\nsiddheshwarshingare99@gmail.com',
                 iconPath: 'assets/gmail.png',
               ),
             SizedBox(
               height: 10,
             ),
             ContactUsItemCard(
-                titleString: 'Address',
+                titleString: 'पत्ता',
                 infoString:
-                    'At post Chanai (Our Farm Address : Near to Dyaneshwar maharaj chowk Near adas phata chanai Tq : Ambajogai \nDist : Beed (431517)',
+                    'पोस्ट चनाई येथे (आमचा शेताचा पत्ता) : Near to Dyaneshwar maharaj chowk Near adas phata chanai Tq : Ambajogai \nDist : Beed (431517)',
                 iconPath: 'assets/map.png',
               ),
           ],
@@ -92,7 +94,7 @@ class ContactUsItemCard extends StatelessWidget {
                 color: Colors.black,
               ),
               borderRadius: const BorderRadius.all(
-                Radius.circular(10),
+                Radius.circular(17),
               ),
             ),
             child: Column(

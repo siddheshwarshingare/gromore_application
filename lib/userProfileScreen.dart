@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gromore_application/login/loginScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -77,12 +78,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Address updated successfully!")),
+        const SnackBar(content: Text("Address updated successfully!")),
       );
     } catch (e) {
       print("Error updating address: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to update address")),
+        const SnackBar(content: Text("Failed to update address")),
       );
     }
   }
@@ -92,10 +93,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("Edit Address"),
+          title: const Text("Edit Address"),
           content: TextField(
             controller: _addressController,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               hintText: "Enter new address",
               border: OutlineInputBorder(),
             ),
@@ -103,14 +104,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text("Cancel"),
+              child: const Text("Cancel"),
             ),
             ElevatedButton(
               onPressed: () {
                 _updateAddress(_addressController.text);
                 Navigator.pop(context);
               },
-              child: Text("Save"),
+              child: const Text("Save"),
             ),
           ],
         );
@@ -123,51 +124,73 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       appBar: _buildGradientAppBar(),
       body: userData == null
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : Padding(
               padding: const EdgeInsets.all(20.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.blue.shade400,
-                      Colors.pink.shade700,
-                      Colors.yellow,
-                      Colors.green
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Card(
-                  elevation: 14,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  color: Colors.transparent,
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(height: 20),
-                        _buildProfileRow(Icons.person, "Name", userData!['name']),
-                        _buildProfileRow(Icons.account_circle, "Username",
-                            userData!['userName']),
-                        _buildProfileRow(
-                            Icons.phone, "Mobile", userData!['mobileNumber']),
-                        _buildEditableProfileRow(
-                            Icons.home, "Address", userData!['address']),
-                        Spacer(),
-                        ElevatedButton(
-                          onPressed: () {},
-                          child: Text("Logout"),
+              child: Column(
+                children: [
+                  Container(
+                    height: 500,
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 156, 237, 248),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Card(
+                      elevation: 5,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      color: Colors.transparent,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const SizedBox(height: 20),
+                            _buildProfileRow(
+                                Icons.person, "नाव", userData!['name']),
+                            _buildProfileRow(Icons.account_circle, "वापरकर्त्याचे नाव",
+                                userData!['userName']),
+                            _buildProfileRow(Icons.phone, "मोबाईल",
+                                userData!['mobileNumber']),
+                            _buildEditableProfileRow(
+                                Icons.home, "पत्ता", userData!['address']),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
-                ),
+                  const SizedBox(
+                    height: 200,
+                  ),
+                  SizedBox(
+                    height: 50,
+                    width: 200,
+                    child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const Loginscreen(),
+                              ));
+                        },
+                        child: const Text(
+                          "लॉगआउट",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                              color: Colors.black),
+                        ),
+                        style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                Colors.green.shade500),
+                            shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.zero,
+                                    side: BorderSide(color: Colors.green))))),
+                  ),
+                ],
               ),
             ),
     );
@@ -175,23 +198,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   AppBar _buildGradientAppBar() {
     return AppBar(
-      title: Text(
-        "Profile",
-        style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+      title: const Text(
+        "प्रोफाइल स्क्रीन",
+        style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
       ),
       centerTitle: true,
       flexibleSpace: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Colors.blue.shade400,
-              Colors.pink.shade700,
-              Colors.yellow,
-              Colors.green
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+        decoration: const BoxDecoration(
+          color: Colors.green,
         ),
       ),
     );
@@ -202,11 +216,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: Row(
         children: [
-          Icon(icon, color: Colors.blueAccent, size: 26),
-          SizedBox(width: 16),
+          Icon(icon, color: Colors.black, size: 26),
+          const SizedBox(width: 16),
           Text(
             "$title: ",
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
               color: Colors.black87,
@@ -215,7 +229,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Expanded(
             child: Text(
               value,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -229,11 +243,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: Row(
         children: [
-          Icon(icon, color: Colors.blueAccent, size: 26),
-          SizedBox(width: 16),
+          Icon(icon, color: Colors.black, size: 26),
+          const SizedBox(width: 16),
           Text(
             "$title: ",
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
               color: Colors.black87,
@@ -242,12 +256,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Expanded(
             child: Text(
               value,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               overflow: TextOverflow.ellipsis,
             ),
           ),
           IconButton(
-            icon: Icon(Icons.edit, color: Colors.blueAccent),
+            icon: const Icon(Icons.edit, color: Colors.black),
             onPressed: _showEditAddressDialog,
           ),
         ],

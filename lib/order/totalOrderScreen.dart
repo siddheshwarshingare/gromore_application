@@ -15,7 +15,7 @@ class _AllOrdersScreenState extends State<AllOrdersScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('All Orders', style: TextStyle(fontSize: 25)),
+        title: const Text('सर्व ऑर्डर्स', style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold)),
         backgroundColor: Colors.green,
       ),
       body: FutureBuilder<QuerySnapshot>(
@@ -52,17 +52,17 @@ class _AllOrdersScreenState extends State<AllOrdersScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Date: $formattedDate',
+                        'तारीख: $formattedDate',
                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        'Customer Name: ${order['customerName'] ?? "Unknown"}',
+                        'ग्राहकाचे नाव: ${order['customerName'] ?? "Unknown"}',
                         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        'Address: ${order['customerAddress'] ?? "No Address"}',
-                        style: const TextStyle(fontSize: 16),
+                        'पत्ता: ${order['customerAddress'] ?? "No Address"}',
+                        style: const TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
                       ...orderItems.map((item) {
@@ -78,7 +78,7 @@ class _AllOrdersScreenState extends State<AllOrdersScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Total:',
+                          const Text(' टोटल (Total):',
                               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                           Text('₹${order['totalPrice']}',
                               style: const TextStyle(

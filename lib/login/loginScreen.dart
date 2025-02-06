@@ -296,7 +296,7 @@ class _LoginscreenState extends State<Loginscreen> {
                             ),
                             SizedBox(height: 10,),
                             Center(child: Text(applocalizations.or,style: TextStyle(color: Colors.pink,fontSize: 16),)),
-                          
+                          SizedBox(height: 10,),
                             //Login With Mobile Number 
 
                             Padding(
@@ -313,7 +313,7 @@ class _LoginscreenState extends State<Loginscreen> {
                                   },
                                   style: ElevatedButton.styleFrom(
                                       foregroundColor: Colors.black,
-                                      backgroundColor: Colors.grey.shade400,
+                                      backgroundColor: Colors.grey.shade200,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(15),
                                       ),
@@ -345,7 +345,7 @@ class _LoginscreenState extends State<Loginscreen> {
                                 },
                                 style: ElevatedButton.styleFrom(
                                     foregroundColor: Colors.black,
-                                    backgroundColor: Colors.grey.shade400,
+                                    backgroundColor: Colors.grey.shade200,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(15),
                                     ),
@@ -354,7 +354,7 @@ class _LoginscreenState extends State<Loginscreen> {
                                     elevation: 10,
                                     shadowColor: Colors.black),
                                 child: Text(
-                                  applocalizations.registerhere,
+                                  applocalizations.createAccount,
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,

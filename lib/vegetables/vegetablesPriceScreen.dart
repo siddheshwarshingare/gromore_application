@@ -23,7 +23,8 @@ class _CustomFormScreenState extends State<Vegetablespricescreen> {
   final TextEditingController methiBhajiController = TextEditingController();
   final TextEditingController palakBhajiController = TextEditingController();
   final TextEditingController bhendiBhajiController = TextEditingController();
-  final TextEditingController kandaPathBhajiController =  TextEditingController();
+  final TextEditingController kandaPathBhajiController =
+      TextEditingController();
   final TextEditingController chavaliBhajiController = TextEditingController();
   final TextEditingController shepuBhajiController = TextEditingController();
   final TextEditingController dodkaBhajiController = TextEditingController();
@@ -31,10 +32,10 @@ class _CustomFormScreenState extends State<Vegetablespricescreen> {
   final TextEditingController karleBhajiController = TextEditingController();
   final TextEditingController gavarBhajiController = TextEditingController();
   final TextEditingController kandeBhajiController = TextEditingController();
-  final TextEditingController kothimbirBhajiController = TextEditingController();
+  final TextEditingController kothimbirBhajiController =
+      TextEditingController();
   final TextEditingController chukaBhajiController = TextEditingController();
-   final TextEditingController kandeController = TextEditingController();
-
+  final TextEditingController kandeController = TextEditingController();
 
   // final TextEditingController BhajiController = TextEditingController();
 
@@ -116,7 +117,9 @@ class _CustomFormScreenState extends State<Vegetablespricescreen> {
                         applocalizations.enterChukaVegetablesPrice),
                     const SizedBox(height: 15),
 
-                    CommonTextFormField(applocalizations,chavaliBhajiController ,
+                    CommonTextFormField(
+                        applocalizations,
+                        chavaliBhajiController,
                         applocalizations.enterChavalikVegetablesPrice),
                     const SizedBox(height: 15),
 
@@ -124,7 +127,7 @@ class _CustomFormScreenState extends State<Vegetablespricescreen> {
                         applocalizations.enterDodkaVegetablesPrice),
                     const SizedBox(height: 15),
 
-                    CommonTextFormField(applocalizations,kaddiBhajiController,
+                    CommonTextFormField(applocalizations, kaddiBhajiController,
                         applocalizations.enterkakdiVegetablesPrice),
                     const SizedBox(height: 15),
 
@@ -138,19 +141,19 @@ class _CustomFormScreenState extends State<Vegetablespricescreen> {
 
                     CommonTextFormField(applocalizations, karleBhajiController,
                         applocalizations.enterKarleVegetablesPrice),
-                        const SizedBox(height: 15),
-                          CommonTextFormField(applocalizations, kothimbirBhajiController,
+                    const SizedBox(height: 15),
+                    CommonTextFormField(
+                        applocalizations,
+                        kothimbirBhajiController,
                         applocalizations.enterKothimbirVegetablesPrice),
-                        const SizedBox(height: 15),
-                          CommonTextFormField(applocalizations, shepuBhajiController,
+                    const SizedBox(height: 15),
+                    CommonTextFormField(applocalizations, shepuBhajiController,
                         applocalizations.enterShepuVegetablesPrice),
-                        const SizedBox(height: 15),
-                        CommonTextFormField(applocalizations, chukaBhajiController,
+                    const SizedBox(height: 15),
+                    CommonTextFormField(applocalizations, chukaBhajiController,
                         applocalizations.enterChukaVegetablesPrice),
-                        CommonTextFormField(applocalizations, kandeController,
-                        applocalizations. enterKandeVegetablesPrice),
-                     
-
+                    CommonTextFormField(applocalizations, kandeController,
+                        applocalizations.enterKandeVegetablesPrice),
 
 //                    TextFormField(
 //   controller: methiBhajiController,

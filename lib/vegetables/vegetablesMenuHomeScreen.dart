@@ -8,6 +8,7 @@ import 'package:gromore_application/eggs/eggs_screen.dart';
 import 'package:gromore_application/login/loginScreen.dart';
 import 'package:gromore_application/order/order_screen.dart';
 import 'package:gromore_application/order/totalOrderScreen.dart';
+import 'package:gromore_application/userProfileScreen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -96,25 +97,14 @@ class _HomeScreenState extends State<HomeScreen> {
       "vegetablesName": "/fruits",
       "price": ''
     },
-    {
-      "title": "चूका",
-      "image": "assets/greenVegetables/chuka.jpg",
-      "vegetablesName": "/fruits",
-      "price": ''
-    },
-    {
-      "title": "दोडका",
-      "image": "assets/greenVegetables/dodka.jpg",
-      "vegetablesName": "/fruits",
-      "price": ''
-    },
   ];
 
   Future<void> fetchVegetablePrices() async {
     try {
       DocumentSnapshot snapshot = await FirebaseFirestore.instance
           .collection('VegetablesPrice')
-          .doc('vegetablePrices')
+          .doc(
+              'vegetablePrices') // Ensure this is the correct Firestore document ID
           .get();
 
       if (snapshot.exists) {
@@ -301,7 +291,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(
                     height: 130,
                     child: Image(
-                      image: AssetImage('assets/animation/pp.png'),
+                      image: AssetImage('assets/greenVegetables/vegetable.png'),
                     ),
                   )
                 ],
@@ -310,7 +300,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 10),
             ListTile(
               leading:
-                  const Image(image: AssetImage('assets/animation/home.gif')),
+                  Image(image: AssetImage('assets/greenVegetables/home.gif')),
               title: const Text(
                 'Home',
                 style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
@@ -320,10 +310,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.pushNamed(context, '/tttt');
               },
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
             ListTile(
-              leading:
-                  const Image(image: AssetImage('assets/animation/cart.gif')),
+              leading: Image(
+                  image: AssetImage('assets/greenVegetables/grocery.gif')),
               title: const Text(
                 'Cart',
                 style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
@@ -338,48 +328,65 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
             ListTile(
-              leading: const Image(
-                  image: AssetImage('assets/animation/shopping-cart.gif')),
+              leading:
+                  Image(image: AssetImage('assets/greenVegetables/cart.gif')),
               title: const Text(
                 'Order History',
                 style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
               onTap: () {
                 Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const OrderScreen(),
-                  ),
-                );
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AllOrdersScreen(),
+                      
+                      
+                     // OrderScreen(),
+                    ));
+                // Navigator.pop(context);
+                // Navigator.pushNamed(context, '/orders');
               },
             ),
             const SizedBox(height: 10),
             ListTile(
-              leading: const Image(
-                image: AssetImage('assets/animation/profile.gif'),
-              ),
+              leading: Image(
+                  image: AssetImage('assets/greenVegetables/profile.gif')),
               title: const Text(
                 'Profile',
                 style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
               onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>ProfileScreen(),
+                  ), // Navigate to CartScreen
+                );
+
+                // Navigator.pop(context);
                 Navigator.pushNamed(context, '/profile');
               },
             ),
-            const SizedBox(height: 10),
-        ListTile(
-              leading: const Image(
-                image: AssetImage('assets/animation/contact.gif'),
-              ),
-              title:  Text(
-                'Contact us',
+            SizedBox(height: 10),
+            ListTile(
+              leading: Image(
+                  image: AssetImage('assets/greenVegetables/settings.gif')),
+              title: const Text(
+                'Settings',
                 style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => ContactUs(),));
-                Navigator.pushNamed(context, '/contact');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ContactUs(),
+                  ), // Navigate to CartScreen
+                );
+
+                // Navigator.pop(context);
+                Navigator.pushNamed(context, '/settings');
               },
             ),
            
@@ -434,7 +441,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case 1:
         return const EggsScreen();
       case 2:
-        return const OrderScreen();
+        return OrderScreen();
 
       default:
         return const SizedBox();
@@ -501,7 +508,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const SizedBox(height: 10),
+                            SizedBox(height: 10),
                             Image.asset(
                               menuItems[index]["image"],
                               height: 140,

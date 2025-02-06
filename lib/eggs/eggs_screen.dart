@@ -2,7 +2,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gromore_application/cart/addToCartScreen.dart';
-import 'package:gromore_application/cart/cartScreen.dart';
+
 import 'package:provider/provider.dart';
 
 class EggsScreen extends StatefulWidget {
@@ -27,9 +27,11 @@ class _EggsScreenState extends State<EggsScreen> {
           .get();
 
       if (snapshot.exists) {
-        setState(() {
+        setState(
+          () {
           offerDetails = snapshot["offer"] ?? "No offer available";
-        });
+        }
+        );
       } else {
         setState(() {
           offerDetails = "No offer available";
@@ -82,7 +84,7 @@ class _EggsScreenState extends State<EggsScreen> {
   // List to store only two eggs items
   final List<Map<String, String>> eggItems = [
     {
-      "title": "अंडी (Dozen)",
+      "title": " अंडी (Dozen)",
       "image": "assets/greenVegetables/egg1.jpeg",
       "price": "",
     },

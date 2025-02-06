@@ -61,7 +61,8 @@ class _CartScreenState extends State<CartScreen> {
       }
 
       if (querySnapshot.docs.isNotEmpty) {
-        final userData = querySnapshot.docs.first.data() as Map<String, dynamic>;
+        final userData =
+            querySnapshot.docs.first.data() as Map<String, dynamic>;
         setState(() {
           customerName = userData['name'] ?? "Unknown";
           customerAddress = userData['address'] ?? "No Address Provided";
@@ -88,7 +89,8 @@ class _CartScreenState extends State<CartScreen> {
     }
 
     try {
-      List<Map<String, dynamic>> orderItems = cartProvider.cartItems.map((item) {
+      List<Map<String, dynamic>> orderItems =
+          cartProvider.cartItems.map((item) {
         final price = double.tryParse(item['price'].substring(1)) ?? 0.0;
         final totalPrice = price * (item['quantity'] ?? 0);
         return {
@@ -116,7 +118,8 @@ class _CartScreenState extends State<CartScreen> {
             actions: <Widget>[
               TextButton(
                 child: const Text("OK",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                 onPressed: () {
                   Navigator.of(context).pop();
                   cartProvider.cartItems.clear();
@@ -137,7 +140,8 @@ class _CartScreenState extends State<CartScreen> {
             actions: <Widget>[
               TextButton(
                 child: const Text("OK",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -157,7 +161,10 @@ class _CartScreenState extends State<CartScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Cart Items', style: TextStyle(fontSize: 25)),
+        title: Center(
+          child: const Text('कार्ट',
+              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
+        ),
         backgroundColor: Colors.green,
       ),
       body: cartProvider.cartItems.isEmpty
@@ -171,15 +178,19 @@ class _CartScreenState extends State<CartScreen> {
                         child: Image(
                             image: AssetImage(
                                 'assets/greenVegetables/shopping-cart.gif')))),
-                Text("Your cart is empty",
-                    style: TextStyle(fontSize: 23, color: Colors.black)),
+                Text("तुमची कार्ट रिकामी आहे...",
+                    style: TextStyle(
+                        fontSize: 23,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold)),
               ],
             )
           : ListView.builder(
               itemCount: cartProvider.cartItems.length,
               itemBuilder: (context, index) {
                 final item = cartProvider.cartItems[index];
-                final price = double.tryParse(item['price'].substring(1)) ?? 0.0;
+                final price =
+                    double.tryParse(item['price'].substring(1)) ?? 0.0;
                 final totalPrice = price * (item['quantity'] ?? 0);
 
                 return ListTile(
@@ -237,7 +248,8 @@ class _CartScreenState extends State<CartScreen> {
                         placeOrderAndStoreInFirebase(context);
                       },
                       style: ButtonStyle(
-                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.zero,
                             side: BorderSide(color: Colors.green),

@@ -35,10 +35,7 @@ class _OrderScreenState extends State<OrderScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('Order History', style: TextStyle(fontSize: 25)),
-        backgroundColor: Colors.green,
-      ),
+     
       body: result == null || result == ''  // Check if result is still null or empty
           ? const Center(child: CircularProgressIndicator())
           : FutureBuilder<QuerySnapshot>(
@@ -79,7 +76,7 @@ class _OrderScreenState extends State<OrderScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(' Date: $formattedDate', // Use formatted date
+                            Text(' तारीख: $formattedDate', // Use formatted date
                               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                             ),
                             const SizedBox(height: 10),
@@ -94,7 +91,7 @@ class _OrderScreenState extends State<OrderScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text('Total:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                                const Text('टोटल(एकूण):', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                                 Text('₹${order['totalPrice']}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green)),
                               ],
                             ),

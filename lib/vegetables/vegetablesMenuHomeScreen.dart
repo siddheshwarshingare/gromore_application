@@ -5,12 +5,10 @@ import 'package:gromore_application/cart/addToCartScreen.dart';
 import 'package:gromore_application/cart/cartScreen.dart';
 import 'package:gromore_application/contact/contact_us.dart';
 import 'package:gromore_application/eggs/eggs_screen.dart';
-import 'package:gromore_application/login/loginScreen.dart';
 import 'package:gromore_application/order/order_screen.dart';
 import 'package:gromore_application/order/totalOrderScreen.dart';
 import 'package:gromore_application/userProfileScreen.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -226,7 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               children: <TextSpan>[
                 TextSpan(
-                  text: " Fresh",
+                  text: "Fresh",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 32,
@@ -269,7 +267,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => CartScreen()),
+                    MaterialPageRoute(builder: (context) => CartScreen(),
+                    ),
                   );
                 },
               );
@@ -282,7 +281,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-             DrawerHeader(
+             const DrawerHeader(
               decoration: BoxDecoration(
                 color: Colors.white,
               ),
@@ -291,7 +290,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(
                     height: 130,
                     child: Image(
-                      image: AssetImage('assets/greenVegetables/vegetable.png'),
+                      image: AssetImage('assets/animation/pp.png'),
                     ),
                   )
                 ],
@@ -302,7 +301,7 @@ class _HomeScreenState extends State<HomeScreen> {
               leading:
                   Image(image: AssetImage('assets/greenVegetables/home.gif')),
               title: const Text(
-                'Home',
+                'होम',
                 style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
               onTap: () {
@@ -315,14 +314,14 @@ class _HomeScreenState extends State<HomeScreen> {
               leading: Image(
                   image: AssetImage('assets/greenVegetables/grocery.gif')),
               title: const Text(
-                'Cart',
+                'कार्ट',
                 style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
               onTap: () {
                 Navigator.pop(context); // Close the Drawer
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
+                MaterialPageRoute(
                     builder: (context) => CartScreen(),
                   ), // Navigate to CartScreen
                 );
@@ -333,7 +332,7 @@ class _HomeScreenState extends State<HomeScreen> {
               leading:
                   Image(image: AssetImage('assets/greenVegetables/cart.gif')),
               title: const Text(
-                'Order History',
+                'ऑर्डर हिस्ट्री',
                 style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
               onTap: () {
@@ -345,8 +344,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       
                      // OrderScreen(),
                     ));
-                // Navigator.pop(context);
-                // Navigator.pushNamed(context, '/orders');
+               
               },
             ),
             const SizedBox(height: 10),
@@ -354,39 +352,28 @@ class _HomeScreenState extends State<HomeScreen> {
               leading: Image(
                   image: AssetImage('assets/greenVegetables/profile.gif')),
               title: const Text(
-                'Profile',
+                'प्रोफाइल',
                 style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>ProfileScreen(),
-                  ), // Navigate to CartScreen
-                );
-
-                // Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (context) => ProfileScreen()
+                   ));
                 Navigator.pushNamed(context, '/profile');
               },
             ),
-            SizedBox(height: 10),
-            ListTile(
-              leading: Image(
-                  image: AssetImage('assets/greenVegetables/settings.gif')),
-              title: const Text(
-                'Settings',
+            const SizedBox(height: 10),
+        ListTile(
+              leading: const Image(
+                image: AssetImage('assets/animation/contact.gif'),
+              ),
+              title:  const Text(
+                'संपर्क साधा',
                 style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ContactUs(),
-                  ), // Navigate to CartScreen
-                );
-
-                // Navigator.pop(context);
-                Navigator.pushNamed(context, '/settings');
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const ContactUs(),));
+                Navigator.pushNamed(context, '/contact');
               },
             ),
            
@@ -400,6 +387,8 @@ class _HomeScreenState extends State<HomeScreen> {
             )
           : _buildScreenBody(),
       bottomNavigationBar: BottomNavigationBar(
+    
+
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.black,
         unselectedItemColor: Colors.black,
@@ -407,20 +396,22 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: _onItemTapped,
         items: const [
           BottomNavigationBarItem(
+            
             icon: Icon(
               Icons.grass,
               size: 30,
               color: Colors.black,
             ),
-            label: 'Veggie',
+            label: 'भाजी',
           ),
           BottomNavigationBarItem(
+            
             icon: Icon(Icons.egg, size: 30),
-            label: 'Eggs',
+            label: 'अंडी',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.list, size: 30),
-            label: 'Orders',
+            label: 'ऑर्डर',
           ),
         ],
       ),
@@ -470,7 +461,7 @@ class _HomeScreenState extends State<HomeScreen> {
             displayFullTextOnTap: true,
             stopPauseOnTap: true,
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Consumer<CartProvider>(

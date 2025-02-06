@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 class CartProvider with ChangeNotifier {
   List<Map<String, dynamic>> _cartItems = [];
 
@@ -7,7 +8,8 @@ class CartProvider with ChangeNotifier {
   double get totalPrice {
     double total = 0.0;
     for (var item in _cartItems) {
-      final price = double.tryParse(item['price'].substring(1)) ?? 0.0; // Convert price string to double
+      final price = double.tryParse(item['price'].substring(1)) ??
+          0.0; // Convert price string to double
       total += price * (item['quantity'] ?? 0);
     }
     return total;
@@ -41,12 +43,12 @@ class CartProvider with ChangeNotifier {
     }
     notifyListeners();
   }
-int get cartItemCount {
-  int count = 0;
-  for (var item in _cartItems) {
-    count += (item['quantity'] ?? 0) as int; // Casting to int
-  }
-  return count;
-}
 
+  int get cartItemCount {
+    int count = 0;
+    for (var item in _cartItems) {
+      count += (item['quantity'] ?? 0) as int; // Casting to int
+    }
+    return count;
+  }
 }

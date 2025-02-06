@@ -4,7 +4,7 @@
     "username" : "युजर नेम (वापरकर्त्याचे नाव)",
     "password" : "पासवर्ड",
     "login" : "लॉगिन करा",
-    "registerhere" : "रजिस्टर करा",
+    "createAccount" : "रजिस्टर करा",
      "name" : "कृपया नाव भरा",
      "mobileNumber" : "मोबाईल नंबर",
      "address" : "पत्ता",

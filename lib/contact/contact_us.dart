@@ -14,43 +14,48 @@ class _ContactUsState extends State<ContactUs> {
       backgroundColor: Colors.grey.shade200,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        toolbarHeight: 170,
+        toolbarHeight: 110,
         flexibleSpace: const Column(
           children: [
             SizedBox(
-              height: 50,
+              height: 50 ,
             ),
             SizedBox(
-                height: 150,
+               height:100,
                 child: Image(image: AssetImage('assets/animation/pp.png')))
           ],
         ),
       ),
-      body: const Column(
-        children: [
-          ContactUsItemCard(
-              titleString: 'Contact us',
-              infoString: 'Call (or) Whats App\nPhone No : +91 7769032792\n',
-              iconPath: 'assets/phone-call.png',
+      body: SingleChildScrollView(
+        child: const Column(
+          children: [
+             SizedBox(
+              height: 10,
+            ),
+            ContactUsItemCard(
+                titleString: 'Contact us',
+                infoString: 'Call (or) Whats App\nPhone No : +91 7769032792\n',
+                iconPath: 'assets/phone-call.png',
+          ),
+            SizedBox(
+              height: 10,
+            ),
+            ContactUsItemCard(
+                titleString: 'Email Id',
+                infoString: 'For any Queries\nsiddheshwarshingare99@gmail.com',
+                iconPath: 'assets/gmail.png',
+              ),
+            SizedBox(
+              height: 10,
+            ),
+            ContactUsItemCard(
+                titleString: 'Address',
+                infoString:
+                    'At post Chanai (Our Farm Address : Near to Dyaneshwar maharaj chowk Near adas phata chanai Tq : Ambajogai \nDist : Beed (431517)',
+                iconPath: 'assets/map.png',
+              ),
+          ],
         ),
-          SizedBox(
-            height: 20,
-          ),
-          ContactUsItemCard(
-              titleString: 'Email Id',
-              infoString: 'For any Queries\nsiddheshwarshingare99@gmail.com',
-              iconPath: 'assets/gmail.png',
-            ),
-          SizedBox(
-            height: 20,
-          ),
-          ContactUsItemCard(
-              titleString: 'Address',
-              infoString:
-                  'At post Chanai (Our Farm Address : Near to Dyaneshwar maharaj chowk Near adas phata chanai Tq : Ambajogai \nDist : Beed (431517)',
-              iconPath: 'assets/map.png',
-            ),
-        ],
       ),
     );
   }
@@ -105,7 +110,7 @@ class ContactUsItemCard extends StatelessWidget {
                   color: Colors.green,
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: 10,
                 ),
                 RichText(
                   textAlign: TextAlign.center,

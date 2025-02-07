@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gromore_application/cart/addToCartScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gromore_application/cart/addToCartScreen.dart';
 
@@ -24,111 +25,114 @@ class _CartScreenState extends State<CartScreen> {
   String? mobileNumber = '';
   String? result = '';
   String? customerName;
+  String? custmerMobilenumber;
   String? customerAddress;
-@override
-void initState() {
-  super.initState();
+  @override
+  void initState() {
+    super.initState();
 
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    _checkLoginStatus();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkLoginStatus();
 
-    // Initialize cart items only once after the first frame
-    Future.microtask(() {
-      final cartProvider = Provider.of<CartProvider>(context, listen: false);
-      if (widget.orderItems != null && widget.orderItems!.isNotEmpty) {
-        cartProvider.cartItems.clear();
-        cartProvider.cartItems.addAll(widget.orderItems!);
-        cartProvider.notifyListeners(); // Notify after setting items
-      } 
+      // Initialize cart items only once after the first frame
+      Future.microtask(() {
+        final cartProvider = Provider.of<CartProvider>(context, listen: false);
+        if (widget.orderItems != null && widget.orderItems!.isNotEmpty) {
+          cartProvider.cartItems.clear();
+          cartProvider.cartItems.addAll(widget.orderItems!);
+          cartProvider.notifyListeners(); // Notify after setting items
+        }
+      });
     });
-  });
-}
-
+  }
 
   Future<void> placeOrderAndStoreInFirebase(BuildContext context) async {
-  final cartProvider = Provider.of<CartProvider>(context, listen: false);
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
 
-  if (cartProvider.cartItems.isEmpty) return;
+    if (cartProvider.cartItems.isEmpty) return;
 
-  if (customerName == null || customerAddress == null) {
-    ScaffoldMessenger.of(context).showSnackBar( 
-      const SnackBar(content: Text("Address is required to place an order")),
-    );
-    return;
+    if (customerName == null || customerAddress == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Address is required to place an order")),
+      );
+      return;
+    }
+
+    try {
+      List<Map<String, dynamic>> orderItems =
+          cartProvider.cartItems.map((item) {
+        final priceString = item['price'] ?? '₹0';
+        final price =
+            double.tryParse(priceString.replaceAll(RegExp(r'[^\d.]'), '')) ??
+                0.0;
+
+        return {
+          'title': item['title'],
+          'quantity': item['quantity'],
+          'totalPrice': price,
+        };
+      }).toList();
+
+      await FirebaseFirestore.instance.collection('orders').add({
+        'userId': result,
+        'customerName': customerName,
+        'customerAddress': customerAddress,
+        'items': orderItems,
+        'totalPrice': cartProvider.totalPrice,
+        'mobileNumber': custmerMobilenumber,
+        'orderDate': Timestamp.now(),
+      });
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: const Text("Order Placed Successfully!",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 19)),
+            actions: <Widget>[
+              TextButton(
+                child: const Text("OK",
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  cartProvider.cartItems.clear();
+                  cartProvider.notifyListeners();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: const Text("Failed to place order, please try again.",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 19)),
+            actions: <Widget>[
+              TextButton(
+                child: const Text("OK",
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+      print("Error placing order: $e");
+    }
   }
-
-  try {
-    List<Map<String, dynamic>> orderItems =
-        cartProvider.cartItems.map((item) {
-    final priceString = item['price'] ?? '₹0';
-final price = double.tryParse(priceString.replaceAll(RegExp(r'[^\d.]'), '')) ?? 0.0;
-
-      return {
-        'title': item['title'],
-        'quantity': item['quantity'],
-        'totalPrice': price,
-      };
-    }).toList();
-
-    await FirebaseFirestore.instance.collection('orders').add({
-      'userId': result,
-      'customerName': customerName,
-      'customerAddress': customerAddress,
-      'items': orderItems,
-      'totalPrice': cartProvider.totalPrice,
-      'orderDate': Timestamp.now(),
-    });
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: const Text("Order Placed Successfully!",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 19)),
-          actions: <Widget>[
-            TextButton(
-              child: const Text("OK",
-                  style:
-                      TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-              onPressed: () {
-                Navigator.of(context).pop();
-                cartProvider.cartItems.clear();
-                cartProvider.notifyListeners();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  } catch (e) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: const Text("Failed to place order, please try again.",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 19)),
-          actions: <Widget>[
-            TextButton(
-              child: const Text("OK",
-                  style:
-                      TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-    print("Error placing order: $e");
-  }
-}
-
 
   // Fetch logged-in user ID and details
   Future<void> _checkLoginStatus() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
+    // Retrieve the username from SharedPreferences
     setState(() {
       userName = prefs.getString('userName');
       passWord = prefs.getString('passWord');
@@ -167,6 +171,7 @@ final price = double.tryParse(priceString.replaceAll(RegExp(r'[^\d.]'), '')) ?? 
             querySnapshot.docs.first.data() as Map<String, dynamic>;
         setState(() {
           customerName = userData['name'] ?? "Unknown";
+          custmerMobilenumber = userData['mobileNumber'] ?? "Unknown";
           customerAddress = userData['address'] ?? "No Address Provided";
         });
       } else {
@@ -219,42 +224,76 @@ final price = double.tryParse(priceString.replaceAll(RegExp(r'[^\d.]'), '')) ?? 
       },
     );
   }
-
-  // Update the Firestore database after modifying the cart
-Future<void> updateOrderInFirestore() async {
-  if (widget.orderItems == null || widget.orderItems!.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("No items to update")),
-    );
-    return;
-  }
-
-  try {
-    double totalPrice = 0.0;
-
-    for (var item in widget.orderItems!) {
-      final priceString = item['price'] ?? '₹0'; // Default to ₹0 if price is null
-      final price = double.tryParse(priceString.replaceAll(RegExp(r'[^\d.]'), '')) ?? 0.0;
-      final quantity = item['quantity'] ?? 0;
-      totalPrice += price * quantity;
-    }
-
-    await FirebaseFirestore.instance.collection('orders').doc(widget.orderId).update({
-      'items': widget.orderItems,
-      'totalPrice': totalPrice,
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Order updated successfully")),
-    );
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Error updating order: $e")),
-    );
-  }
+void _showOrderConfirmationDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text("आर्डर कन्फर्म करा",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+        content: const Text("तुम्ही खरेदी निश्चित करू इच्छिता का?",
+            style: TextStyle(fontSize: 18)),
+        actions: <Widget>[
+          TextButton(
+            child: const Text("नाही",
+                style: TextStyle(fontSize: 18, color: Colors.red)),
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the popup
+            },
+          ),
+          TextButton(
+            child: const Text("हो",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            onPressed: () {
+              Navigator.of(context).pop(); // Close confirmation popup
+              placeOrderAndStoreInFirebase(context); // Proceed with order
+            },
+          ),
+        ],
+      );
+    },
+  );
 }
 
+  // Update the Firestore database after modifying the cart
+  Future<void> updateOrderInFirestore() async {
+    if (widget.orderItems == null || widget.orderItems!.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("No items to update")),
+      );
+      return;
+    }
 
+    try {
+      double totalPrice = 0.0;
+
+      for (var item in widget.orderItems!) {
+        final priceString =
+            item['price'] ?? '₹0'; // Default to ₹0 if price is null
+        final price =
+            double.tryParse(priceString.replaceAll(RegExp(r'[^\d.]'), '')) ??
+                0.0;
+        final quantity = item['quantity'] ?? 0;
+        totalPrice += price * quantity;
+      }
+
+      await FirebaseFirestore.instance
+          .collection('orders')
+          .doc(widget.orderId)
+          .update({
+        'items': widget.orderItems,
+        'totalPrice': totalPrice,
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Order updated successfully")),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error updating order: $e")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -280,12 +319,14 @@ Future<void> updateOrderInFirestore() async {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(
-                    height: 300,
-                    child: Center(
-                        child: Image(
-                            image: AssetImage(
-                                'assets/greenVegetables/shopping-cart.gif'),),),
-                                ),
+                  height: 300,
+                  child: Center(
+                    child: Image(
+                      image: AssetImage(
+                          'assets/greenVegetables/shopping-cart.gif'),
+                    ),
+                  ),
+                ),
                 Text("तुमची कार्ट रिकामी आहे...",
                     style: TextStyle(
                         fontSize: 23,
@@ -297,7 +338,8 @@ Future<void> updateOrderInFirestore() async {
               itemCount: cartProvider.cartItems.length,
               itemBuilder: (context, index) {
                 final item = cartProvider.cartItems[index];
-                final price = double.tryParse(item['price'].substring(1)) ?? 0.0;
+                final price =
+                    double.tryParse(item['price'].substring(1)) ?? 0.0;
                 final totalPrice = price * (item['quantity'] ?? 0);
 
                 return ListTile(
@@ -331,7 +373,7 @@ Future<void> updateOrderInFirestore() async {
                       IconButton(
                         icon: const Icon(Icons.edit, color: Colors.blue),
                         onPressed: () {
-                          _editCartItem(item);  // Edit item when clicked
+                          _editCartItem(item); // Edit item when clicked
                         },
                       ),
                     ],
@@ -356,26 +398,25 @@ Future<void> updateOrderInFirestore() async {
                         color: Colors.green[700],
                       ),
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        placeOrderAndStoreInFirebase(context);
-                      },
-                      style: ButtonStyle(
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.zero,
-                            side: BorderSide(color: Colors.green),
-                          ),
-                        ),
-                      ),
-                      child: const Text(
-                        'Place Order',
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 19,
-                              fontWeight: FontWeight.bold)),
-                    ),
+                  ElevatedButton(
+  onPressed: () {
+    _showOrderConfirmationDialog(context);
+  },
+  style: ButtonStyle(
+    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+      RoundedRectangleBorder(
+        borderRadius: BorderRadius.zero,
+        side: BorderSide(color: Colors.green),
+      ),
+    ),
+  ),
+  child: const Text('ऑर्डर करा',
+      style: TextStyle(
+          color: Colors.black,
+          fontSize: 19,
+          fontWeight: FontWeight.bold)),
+),
+
                   ],
                 ),
               ),

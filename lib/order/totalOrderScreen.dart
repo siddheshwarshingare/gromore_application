@@ -60,11 +60,17 @@ class _AllOrdersScreenState extends State<AllOrdersScreen> {
                         'ग्राहकाचे नाव: ${order['customerName'] ?? "Unknown"}',
                         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
+                        const SizedBox(height: 10),
+                       Text(
+                        'ग्राहकाच मोबाईल नंबर : ${order['mobileNumber'] ?? "Unknown"}',
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                        const SizedBox(height: 10),
                       Text(
                         'पत्ता: ${order['customerAddress'] ?? "No Address"}',
                         style: const TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
                       ),
-                      const SizedBox(height: 10),
+                     // const SizedBox(height: 10),
                       ...orderItems.map((item) {
                         return ListTile(
                           title: Text(item['title'],
@@ -78,7 +84,7 @@ class _AllOrdersScreenState extends State<AllOrdersScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(' टोटल (Total):',
+                          const Text('टोटल (Total):',
                               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                           Text('₹${order['totalPrice']}',
                               style: const TextStyle(

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gromore_application/cart/addToCartScreen.dart';
 import 'package:gromore_application/cart/cartScreen.dart';
 import 'package:gromore_application/contact/contact_us.dart';
@@ -9,6 +10,7 @@ import 'package:gromore_application/order/order_screen.dart';
 import 'package:gromore_application/order/totalOrderScreen.dart';
 import 'package:gromore_application/userProfileScreen.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -18,9 +20,11 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   // List to store counts for each item
   final List<int> itemCounts = List.filled(12, 0);
+  final TextEditingController _searchController = TextEditingController();
   bool isLoading = true;
   String offerDetails = '';
   int _selectedIndex = 0;
+  List<Map<String, dynamic>> _filteredItems = [];
 
   final List<Map<String, dynamic>> menuItems = [
     {
@@ -95,6 +99,30 @@ class _HomeScreenState extends State<HomeScreen> {
       "vegetablesName": "/fruits",
       "price": ''
     },
+    {
+      "title": "वांगे",
+      "image": "assets/greenVegetables/vange.jpg",
+      "vegetablesName": "/fruits",
+      "price": ''
+    },
+    {
+      "title": "फुलगोबी",
+      "image": "assets/greenVegetables/gobi.jpg",
+      "vegetablesName": "/fruits",
+      "price": ''
+    },
+    {
+      "title": "पत्तागोबी",
+      "image": "assets/greenVegetables/pattagobi.jpg",
+      "vegetablesName": "/fruits",
+      "price": ''
+    },
+    {
+      "title": "वालाच्या शेंगा",
+      "image": "assets/greenVegetables/valachyashenga.png",
+      "vegetablesName": "/fruits",
+      "price": ''
+    },
   ];
 
   Future<void> fetchVegetablePrices() async {
@@ -130,7 +158,13 @@ class _HomeScreenState extends State<HomeScreen> {
             "methi": fetchedPrices["methiVegetablesPrice"] ?? "N/A",
             "palak": fetchedPrices["palakVegetablesPrice"] ?? "N/A",
             "shepu": fetchedPrices["shepuVegetablesPrice"] ?? "N/A",
-            "allu": fetchedPrices["alluVegetablesPrice"] ?? "N/A"
+            "allu": fetchedPrices["alluVegetablesPrice"] ?? "N/A",
+            "vange": fetchedPrices["vangeVegetablesPrice"] ?? "N/A",
+            "gobi": fetchedPrices["gobiVegetablesPrice"] ?? "N/A",
+            "pattagobi": fetchedPrices["pattagobiVegetablesPrice"] ?? "N/A",
+            "valachyashenga":
+                fetchedPrices["valachyashengaVegetablesPrice"] ?? "N/A"
+                
           };
 
           // Mapping between Hindi titles and the corresponding vegetable keys
@@ -150,6 +184,10 @@ class _HomeScreenState extends State<HomeScreen> {
             "काकड़ी": "kakdi",
             "आलू": "allu",
             "दोडका": "dodka",
+            "वांगे": "vange",
+            "फुलगोबी": "gobi",
+            "पत्तागोबी": "pattagobi",
+            "वालाच्या शेंगा": "valachyashenga",
           };
 
           // Update menuItems prices dynamically
@@ -176,6 +214,16 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _launchUrl(Uri url) async {
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      debugPrint("Could not launch $url");
+    }
+  }
+
+ 
+
   Future<void> fetchOfferDetails() async {
     try {
       DocumentSnapshot snapshot = await FirebaseFirestore.instance
@@ -201,11 +249,27 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void _filterSearchResults(String query) {
+    List<Map<String, dynamic>> results = [];
+    if (query.isEmpty) {
+      results = menuItems; // No search query, show all items
+    } else {
+      // Check if any part of the vegetable name contains the query (case-insensitive)
+      results = menuItems.where((item) {
+        return item["title"].toLowerCase().contains(query.toLowerCase());
+      }).toList();
+    }
+    setState(() {
+      _filteredItems = results;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     fetchOfferDetails();
     fetchVegetablePrices();
+    _filteredItems = menuItems;
   }
 
   @override
@@ -216,18 +280,18 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Center(
           child: Text.rich(
             TextSpan(
-              text: "Veggie",
+              text: "फ्रेश ",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 32,
+                fontSize: 34,
                 color: Colors.black,
               ),
               children: <TextSpan>[
                 TextSpan(
-                  text: "Fresh",
+                  text: "भाजीपाला",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 32,
+                    fontSize: 35,
                     color: Colors.orange,
                   ),
                 ),
@@ -267,7 +331,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => CartScreen(),
+                    MaterialPageRoute(
+                      builder: (context) => CartScreen(),
                     ),
                   );
                 },
@@ -281,7 +346,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-             const DrawerHeader(
+            const DrawerHeader(
               decoration: BoxDecoration(
                 color: Colors.white,
               ),
@@ -290,7 +355,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(
                     height: 130,
                     child: Image(
-                      image: AssetImage('assets/animation/pp.png'),
+                      image: AssetImage('assets/greenVegetables/vegetable.png'),
                     ),
                   )
                 ],
@@ -298,8 +363,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 10),
             ListTile(
-              leading:
-                  Image(image: AssetImage('assets/greenVegetables/home.gif')),
+              leading: const Image(
+                  image: AssetImage('assets/greenVegetables/home.gif')),
               title: const Text(
                 'होम',
                 style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
@@ -309,9 +374,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.pushNamed(context, '/tttt');
               },
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             ListTile(
-              leading: Image(
+              leading: const Image(
                   image: AssetImage('assets/greenVegetables/grocery.gif')),
               title: const Text(
                 'कार्ट',
@@ -321,16 +386,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.pop(context); // Close the Drawer
                 Navigator.push(
                   context,
-                MaterialPageRoute(
+                  MaterialPageRoute(
                     builder: (context) => CartScreen(),
                   ), // Navigate to CartScreen
                 );
               },
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             ListTile(
-              leading:
-                  Image(image: AssetImage('assets/greenVegetables/cart.gif')),
+              leading: const Image(
+                  image: AssetImage('assets/greenVegetables/cart.gif')),
               title: const Text(
                 'ऑर्डर हिस्ट्री',
                 style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
@@ -339,45 +404,99 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AllOrdersScreen(),
-                      
-                      
-                     // OrderScreen(),
+                      builder: (context) => const AllOrdersScreen(),
+
+                      // OrderScreen(),
                     ));
-               
               },
             ),
             const SizedBox(height: 10),
             ListTile(
-              leading: Image(
-                  image: AssetImage('assets/greenVegetables/profile.gif')),
+              leading: const Image(
+                  image: AssetImage('assets/greenVegetables/profile.gif'),
+                  ),
               title: const Text(
                 'प्रोफाइल',
                 style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(
-                  builder: (context) => ProfileScreen()
-                   ));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => ProfileScreen()));
                 Navigator.pushNamed(context, '/profile');
               },
             ),
             const SizedBox(height: 10),
-        ListTile(
+            ListTile(
               leading: const Image(
                 image: AssetImage('assets/animation/contact.gif'),
               ),
-              title:  const Text(
+              title: const Text(
                 'संपर्क साधा',
                 style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const ContactUs(),));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ContactUs(),
+                    ));
                 Navigator.pushNamed(context, '/contact');
               },
             ),
-           
-           
+            const SizedBox(
+              height: 250,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    final Uri whatsappGroupUrl = Uri.parse(
+                        'https://chat.whatsapp.com/L3dnGGUjzvcJok4vQqsoI8');
+                    launchUrl(whatsappGroupUrl,
+                        mode: LaunchMode.externalApplication);
+                  },
+                  icon: const FaIcon(
+                    FontAwesomeIcons.whatsapp,
+                    color: Colors.green,
+                    size: 32.0,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    debugPrint(
+                      'Facebook Tapped',
+                    );
+                    Uri fburl = Uri.parse(
+                        'https://www.facebook.com/eenadupellipandiriofficial');
+                    _launchUrl(fburl);
+                  },
+                  icon: const FaIcon(
+                    FontAwesomeIcons.facebook,
+                    color: Colors.blue,
+                    size: 32.0,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    debugPrint(
+                      'Instagram Tapped',
+                    );
+                    Uri instaurl = Uri.parse(
+                        'instagram://user?username=rajelove99');
+                    _launchUrl(instaurl);
+                  },
+                  icon: const FaIcon(
+                    FontAwesomeIcons.instagram,
+                    color: Colors.red,
+                    size: 32.0,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 20,
+            ),
           ],
         ),
       ),
@@ -387,8 +506,7 @@ class _HomeScreenState extends State<HomeScreen> {
             )
           : _buildScreenBody(),
       bottomNavigationBar: BottomNavigationBar(
-    
-
+        // selectedLabelStyle: TextStyle(fontSize: 25),
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.black,
         unselectedItemColor: Colors.black,
@@ -396,7 +514,6 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: _onItemTapped,
         items: const [
           BottomNavigationBarItem(
-            
             icon: Icon(
               Icons.grass,
               size: 30,
@@ -405,7 +522,6 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'भाजी',
           ),
           BottomNavigationBarItem(
-            
             icon: Icon(Icons.egg, size: 30),
             label: 'अंडी',
           ),
@@ -432,7 +548,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case 1:
         return const EggsScreen();
       case 2:
-        return OrderScreen();
+        return const OrderScreen();
 
       default:
         return const SizedBox();
@@ -461,6 +577,21 @@ class _HomeScreenState extends State<HomeScreen> {
             displayFullTextOnTap: true,
             stopPauseOnTap: true,
           ),
+          SizedBox(
+            height: 10,
+          ),
+          TextField(
+            cursorHeight: 25,
+            controller: _searchController,
+            decoration: InputDecoration(
+              labelText: 'इथे भाज्या मराठी अक्षरांमध्ये शोधा...',
+              hintStyle: TextStyle(color: Colors.black, fontSize: 35),
+              border: OutlineInputBorder(),
+            ),
+            onChanged: (query) {
+              _filterSearchResults(query);
+            },
+          ),
           const SizedBox(
             height: 20,
           ),
@@ -470,24 +601,30 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    childAspectRatio: 0.7,
+                    childAspectRatio: 0.6,
                     crossAxisSpacing: 16,
                     mainAxisSpacing: 16,
                   ),
-                  itemCount: menuItems.length,
+                  itemCount: _filteredItems.length,
                   itemBuilder: (context, index) {
-                    int currentCount = cartProvider.cartItems.firstWhere(
-                          (cartItem) =>
-                              cartItem['title'] == menuItems[index]["title"],
-                          orElse: () =>
-                              {}, // Return an empty map if no matching item is found
-                        )['quantity'] ??
-                        0;
+                    // Use the title from _filteredItems as it is the filtered list
+                    var filteredItem = _filteredItems[index];
+
+                    // Safely find the cart item with a matching title
+                    var cartItem = cartProvider.cartItems.firstWhere(
+                      (cartItem) => cartItem['title'] == filteredItem['title'],
+                      orElse: () =>
+                          {}, // Return an empty map if no matching item is found
+                    );
+
+                    // Safely access the quantity
+                    int currentCount =
+                        cartItem.isNotEmpty ? cartItem['quantity'] ?? 0 : 0;
 
                     return GestureDetector(
                       onTap: () {
                         Navigator.pushNamed(
-                            context, menuItems[index]["vegetablesName"]);
+                            context, _filteredItems[index]["vegetablesName"]);
                       },
                       child: Card(
                         shape: RoundedRectangleBorder(
@@ -499,16 +636,28 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                             Image.asset(
-                              menuItems[index]["image"],
+                              _filteredItems[index]["image"],
                               height: 140,
                               width: double.maxFinite,
                               fit: BoxFit.fill,
                             ),
                             const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                Text(
+                                  '    250 ग्राम (पावकीलो)',
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.pink.shade400,
+                                  ),
+                                ),
+                              ],
+                            ),
                             Text(
-                              menuItems[index]["title"],
+                              '${_filteredItems[index]["title"]}',
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -516,7 +665,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                             Text(
-                              menuItems[index]["price"],
+                              _filteredItems[index]["price"],
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,

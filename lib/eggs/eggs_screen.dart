@@ -2,7 +2,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gromore_application/cart/addToCartScreen.dart';
-
+import 'package:gromore_application/cart/cartScreen.dart';
 import 'package:provider/provider.dart';
 
 class EggsScreen extends StatefulWidget {
@@ -22,16 +22,13 @@ class _EggsScreenState extends State<EggsScreen> {
     try {
       DocumentSnapshot snapshot = await FirebaseFirestore.instance
           .collection('OfferDetails')
-          .doc(
-              'eggsOffer') // Ensure this is the correct Firestore document ID
+          .doc('eggsOffer') // Ensure this is the correct Firestore document ID
           .get();
 
       if (snapshot.exists) {
-        setState(
-          () {
+        setState(() {
           offerDetails = snapshot["offer"] ?? "No offer available";
-        }
-        );
+        });
       } else {
         setState(() {
           offerDetails = "No offer available";
@@ -64,9 +61,9 @@ class _EggsScreenState extends State<EggsScreen> {
 
           // Directly updating the prices inside eggItems
           for (var item in eggItems) {
-            if (item["title"] == "अंडी (Dozen)") {
+            if (item["title"] == "अंडी (12 नग)") {
               item["price"] = "₹${fetchedPrices["oneDozen"] ?? "N/A"}";
-            } else if (item["title"] == "अंडी (halfDozen)") {
+            } else if (item["title"] == "अंडी (6 नग)") {
               item["price"] = "₹${fetchedPrices["halfDozen"] ?? "N/A"}";
             }
           }
@@ -84,12 +81,12 @@ class _EggsScreenState extends State<EggsScreen> {
   // List to store only two eggs items
   final List<Map<String, String>> eggItems = [
     {
-      "title": " अंडी (Dozen)",
+      "title": "अंडी (12 नग)",
       "image": "assets/greenVegetables/egg1.jpeg",
       "price": "",
     },
     {
-      "title": "अंडी (halfDozen)",
+      "title": "अंडी (6 नग)",
       "image": "assets/greenVegetables/egg2.jpeg",
       "price": "",
     },
@@ -105,7 +102,7 @@ class _EggsScreenState extends State<EggsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // 
+      //
       body: Column(
         children: [
           AnimatedTextKit(
@@ -127,7 +124,7 @@ class _EggsScreenState extends State<EggsScreen> {
           ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(11.0),
               child: Consumer<CartProvider>(
                 builder: (context, cartProvider, child) {
                   return GridView.builder(
@@ -179,6 +176,16 @@ class _EggsScreenState extends State<EggsScreen> {
                                   color: Colors.green,
                                 ),
                               ),
+                            
+                              //  Text(
+                              //     eggItems[index]["title"]=='अंडी (12 नग)'?
+                              //   '(१ डझन)':'(१/२ डझन)',
+                              //   style: const TextStyle(
+                              //     fontSize: 18,
+                              //     fontWeight: FontWeight.bold,
+                              //     color: Colors.green,
+                              //   ),
+                              // ),
                               Text(
                                 eggItems[index]["price"]!,
                                 style: const TextStyle(

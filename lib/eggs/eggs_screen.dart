@@ -2,7 +2,6 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gromore_application/cart/addToCartScreen.dart';
-import 'package:gromore_application/cart/cartScreen.dart';
 import 'package:provider/provider.dart';
 
 class EggsScreen extends StatefulWidget {
@@ -61,9 +60,9 @@ class _EggsScreenState extends State<EggsScreen> {
 
           // Directly updating the prices inside eggItems
           for (var item in eggItems) {
-            if (item["title"] == "अंडी (12 नग)") {
+            if (item["title"] == "गावरान अंडी (12 नग)") {
               item["price"] = "₹${fetchedPrices["oneDozen"] ?? "N/A"}";
-            } else if (item["title"] == "अंडी (6 नग)") {
+            } else if (item["title"] == "गावरान अंडी (6 नग)") {
               item["price"] = "₹${fetchedPrices["halfDozen"] ?? "N/A"}";
             }
           }
@@ -81,12 +80,12 @@ class _EggsScreenState extends State<EggsScreen> {
   // List to store only two eggs items
   final List<Map<String, String>> eggItems = [
     {
-      "title": "अंडी (12 नग)",
+      "title": "गावरान अंडी (12 नग)",
       "image": "assets/greenVegetables/egg1.jpeg",
       "price": "",
     },
     {
-      "title": "अंडी (6 नग)",
+      "title": "गावरान अंडी (6 नग)",
       "image": "assets/greenVegetables/egg2.jpeg",
       "price": "",
     },
@@ -177,15 +176,7 @@ class _EggsScreenState extends State<EggsScreen> {
                                 ),
                               ),
                             
-                              //  Text(
-                              //     eggItems[index]["title"]=='अंडी (12 नग)'?
-                              //   '(१ डझन)':'(१/२ डझन)',
-                              //   style: const TextStyle(
-                              //     fontSize: 18,
-                              //     fontWeight: FontWeight.bold,
-                              //     color: Colors.green,
-                              //   ),
-                              // ),
+                            
                               Text(
                                 eggItems[index]["price"]!,
                                 style: const TextStyle(

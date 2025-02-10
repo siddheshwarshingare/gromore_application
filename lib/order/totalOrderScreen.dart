@@ -10,12 +10,20 @@ class AllOrdersScreen extends StatefulWidget {
 }
 
 class _AllOrdersScreenState extends State<AllOrdersScreen> {
+  // Function to update order status
+  Future<void> _updateOrderStatus(String orderId, bool newStatus) async {
+    await FirebaseFirestore.instance.collection('orders').doc(orderId).update({
+      'orderStatus': newStatus,
+    });
+    setState(() {}); // Refresh the UI
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('सर्व ऑर्डर्स', style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold)),
+        title: const Text('सर्व ऑर्डर्स', style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.green,
       ),
       body: FutureBuilder<QuerySnapshot>(
@@ -38,10 +46,12 @@ class _AllOrdersScreenState extends State<AllOrdersScreen> {
           return ListView(
             padding: const EdgeInsets.all(10),
             children: orders.map((order) {
+              final orderId = order.id; // Firestore document ID
               final orderItems = List<Map<String, dynamic>>.from(order['items']);
               final orderDate = (order['orderDate'] as Timestamp).toDate();
               final formattedDate = DateFormat('MM/dd/yyyy, hh:mm a').format(orderDate);
-              
+              final bool orderStatus = order['orderStatus']; // Current status
+
               return Card(
                 margin: const EdgeInsets.only(bottom: 10),
                 elevation: 5,
@@ -60,9 +70,15 @@ class _AllOrdersScreenState extends State<AllOrdersScreen> {
                         'ग्राहकाचे नाव: ${order['customerName'] ?? "Unknown"}',
                         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'ग्राहकाच मोबाईल नंबर : ${order['mobileNumber'] ?? "Unknown"}',
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 10),
                       Text(
                         'पत्ता: ${order['customerAddress'] ?? "No Address"}',
-                        style: const TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
                       ...orderItems.map((item) {
@@ -78,13 +94,38 @@ class _AllOrdersScreenState extends State<AllOrdersScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(' टोटल (Total):',
+                          const Text('टोटल (Total):',
                               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                           Text('₹${order['totalPrice']}',
                               style: const TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green)),
                         ],
                       ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Order Status:',
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                          Switch(
+                            value: orderStatus,
+                            activeColor: Colors.green,
+                            inactiveThumbColor: Colors.red,
+                            onChanged: (newValue) {
+                              _updateOrderStatus(orderId, newValue);
+                            },
+                          ),
+                            Text(
+                        orderStatus ? 'Completed' : 'In Process',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: orderStatus ? Colors.green : Colors.red,
+                        ),
+                      ),
+                        ],
+                      ),
+                    
                     ],
                   ),
                 ),

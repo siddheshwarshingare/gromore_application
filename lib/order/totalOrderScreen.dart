@@ -70,17 +70,22 @@ class _AllOrdersScreenState extends State<AllOrdersScreen> {
                         'ग्राहकाचे नाव: ${order['customerName'] ?? "Unknown"}',
                         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
+
                       const SizedBox(height: 10),
                       Text(
                         'ग्राहकाच मोबाईल नंबर : ${order['mobileNumber'] ?? "Unknown"}',
                         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Text(
-                        'पत्ता: ${order['customerAddress'] ?? "No Address"}',
+                        const SizedBox(height: 10),
+                       Text(
+                        'ग्राहकाच मोबाईल नंबर : ${order['mobileNumber'] ?? "Unknown"}',
                         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
-                      const SizedBox(height: 10),
+                        const SizedBox(height: 10),
+
+                   
+                     // const SizedBox(height: 10),
                       ...orderItems.map((item) {
                         return ListTile(
                           title: Text(item['title'],

@@ -204,7 +204,7 @@ class _LoginscreenState extends State<loginWithMobileNumber> {
                                      SharedPreferences prefs = await SharedPreferences.getInstance();
                                           prefs.setString("mobileNumber", mobileNumber);
                                     // Successful login
-                                    Navigator.push(
+                                    Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>

@@ -172,7 +172,7 @@ class _LanguageselectorState extends State<Languageselector>
                   width: 200,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                           builder: (context) => Loginscreen(),

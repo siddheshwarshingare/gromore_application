@@ -15,7 +15,7 @@ class _SplashscreenState extends State<Splashscreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
   final List<String> _animations = [
-    'assets/animation/vegetable2.json',
+    'assets/animation/vegeatble5.json',
     'assets/animation/vegetable4.json',
   ];
   String? userName = '';
@@ -63,10 +63,13 @@ class _SplashscreenState extends State<Splashscreen> {
   void initState() {
     super.initState();
 
-    Future.delayed(Duration.zero, () {
+    Future.delayed(
+      Duration.zero, () 
+    {
       _navigateToNextScreen();
       _startAutoSlide();
-    });
+    }
+    );
 
     // Navigate to LoginScreen after 6 seconds
     Future.delayed(const Duration(seconds: 2), () {

@@ -243,7 +243,7 @@ class _LoginscreenState extends State<Loginscreen> {
                                           prefs.setString("userName", username);
                                           prefs.setString("passWord", password);
                                           // Navigate to the next screen if login is successful
-                                          Navigator.push(
+                                          Navigator.pushReplacement(
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) =>

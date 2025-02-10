@@ -43,12 +43,15 @@ class CartProvider with ChangeNotifier {
     }
     notifyListeners();
   }
+int get cartItemCount {
+  return _cartItems.fold<int>(0, (sum, item) => sum + (item['quantity'] ?? 0)as int);
+}
 
-  int get cartItemCount {
-    int count = 0;
-    for (var item in _cartItems) {
-      count += (item['quantity'] ?? 0) as int; // Casting to int
-    }
-    return count;
-  }
+  // int get cartItemCount {
+  //   int count = 0;
+  //   for (var item in _cartItems) {
+  //     count += (item['quantity'] ?? 0) as int; // Casting to int
+  //   }
+  //   return count;
+  // }
 }

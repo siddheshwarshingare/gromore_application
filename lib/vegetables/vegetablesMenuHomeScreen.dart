@@ -163,8 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
             "gobi": fetchedPrices["gobiVegetablesPrice"] ?? "N/A",
             "pattagobi": fetchedPrices["pattagobiVegetablesPrice"] ?? "N/A",
             "valachyashenga":
-                fetchedPrices["valachyashengaVegetablesPrice"] ?? "N/A"
-                
+                fetchedPrices["valachyashengaVegetablesPrice"] ?? "N/A"   
           };
 
           // Mapping between Hindi titles and the corresponding vegetable keys
@@ -355,7 +354,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(
                     height: 130,
                     child: Image(
-                      image: AssetImage('assets/greenVegetables/vegetable.png'),
+                      image: AssetImage('assets/animation/pp.png'),
                     ),
                   )
                 ],
@@ -622,10 +621,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         cartItem.isNotEmpty ? cartItem['quantity'] ?? 0 : 0;
 
                     return GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(
-                            context, _filteredItems[index]["vegetablesName"]);
-                      },
+                      // onTap: () {
+                      //   Navigator.pushNamed(
+                      //       context, _filteredItems[index]["vegetablesName"]);
+                      // },
                       child: Card(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
@@ -644,18 +643,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               fit: BoxFit.fill,
                             ),
                             const SizedBox(height: 10),
-                            Row(
-                              children: [
-                                Text(
-                                  '    250 ग्राम (पावकीलो)',
-                                  style: TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.pink.shade400,
-                                  ),
-                                ),
-                              ],
-                            ),
+                            
                             Text(
                               '${_filteredItems[index]["title"]}',
                               style: const TextStyle(
@@ -664,6 +652,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                 color: Colors.green,
                               ),
                             ),
+                             Text(
+                                  '   250 ग्राम (पावकीलो)',
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.pink.shade400,
+                                  ),
+                                ),
                             Text(
                               _filteredItems[index]["price"],
                               style: const TextStyle(

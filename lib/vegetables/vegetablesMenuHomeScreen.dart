@@ -221,8 +221,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
- 
-
   Future<void> fetchOfferDetails() async {
     try {
       DocumentSnapshot snapshot = await FirebaseFirestore.instance
@@ -412,8 +410,8 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 10),
             ListTile(
               leading: const Image(
-                  image: AssetImage('assets/greenVegetables/profile.gif'),
-                  ),
+                image: AssetImage('assets/greenVegetables/profile.gif'),
+              ),
               title: const Text(
                 'प्रोफाइल',
                 style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
@@ -481,8 +479,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     debugPrint(
                       'Instagram Tapped',
                     );
-                    Uri instaurl = Uri.parse(
-                        'instagram://user?username=rajelove99');
+                    Uri instaurl =
+                        Uri.parse('instagram://user?username=rajelove99');
                     _launchUrl(instaurl);
                   },
                   icon: const FaIcon(
@@ -597,28 +595,38 @@ class _HomeScreenState extends State<HomeScreen> {
           Consumer<CartProvider>(
             builder: (context, cartProvider, child) {
               return Expanded(
-                child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.6,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                  ),
-                  itemCount: _filteredItems.length,
-                  itemBuilder: (context, index) {
-                    // Use the title from _filteredItems as it is the filtered list
-                    var filteredItem = _filteredItems[index];
+                child: _filteredItems.isEmpty
+                    ? Center(
+                        child: Text(
+                          "भाज्या अवैलेबल नाहीत",
+                          style: TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red,
+                          ),
+                        ),
+                      )
+                    : GridView.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.6,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                        ),
+                        itemCount: _filteredItems.length,
+                        itemBuilder: (context, index) {
+                          var filteredItem = _filteredItems[index];
 
-                    // Safely find the cart item with a matching title
-                    var cartItem = cartProvider.cartItems.firstWhere(
-                      (cartItem) => cartItem['title'] == filteredItem['title'],
-                      orElse: () =>
-                          {}, // Return an empty map if no matching item is found
-                    );
+                          var cartItem = cartProvider.cartItems.firstWhere(
+                            (cartItem) =>
+                                cartItem['title'] == filteredItem['title'],
+                            orElse: () => {},
+                          );
 
-                    // Safely access the quantity
-                    int currentCount =
-                        cartItem.isNotEmpty ? cartItem['quantity'] ?? 0 : 0;
+                          int currentCount = cartItem.isNotEmpty
+                              ? cartItem['quantity'] ?? 0
+                              : 0;
 
                     return GestureDetector(
                       // onTap: () {

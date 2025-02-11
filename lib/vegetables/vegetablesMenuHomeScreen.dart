@@ -2,12 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:gromore_application/about/aboutUs.dart';
 import 'package:gromore_application/cart/addToCartScreen.dart';
 import 'package:gromore_application/cart/cartScreen.dart';
 import 'package:gromore_application/contact/contact_us.dart';
 import 'package:gromore_application/eggs/eggs_screen.dart';
 import 'package:gromore_application/order/order_screen.dart';
 import 'package:gromore_application/order/totalOrderScreen.dart';
+import 'package:gromore_application/review/reviewScreen.dart';
+import 'package:gromore_application/review/userReviewScreen.dart';
 import 'package:gromore_application/userProfileScreen.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -203,7 +206,8 @@ class _HomeScreenState extends State<HomeScreen> {
             }
           }
         });
-      } else {
+      } 
+      else {
         print("No data found in Firestore.");
         setState(() => isLoading = false);
       }
@@ -329,7 +333,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => CartScreen(),
+                      builder: (context) => const CartScreen(),
                     ),
                   );
                 },
@@ -384,11 +388,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => CartScreen(),
+                    builder: (context) => const CartScreen(),
                   ), // Navigate to CartScreen
                 );
               },
             ),
+            
             const SizedBox(height: 10),
             ListTile(
               leading: const Image(
@@ -440,6 +445,57 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.pushNamed(context, '/contact');
               },
             ),
+           ListTile(
+              leading: const Image(
+                image: AssetImage('assets/animation/review.gif'),
+              ),
+              title: const Text(
+                'अभिप्राय',
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+              ),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MoodReviewScreen(),
+                    ));
+                Navigator.pushNamed(context, '/contact');
+              },
+            ),
+             ListTile(
+              leading: const Image(
+                image: AssetImage('assets/animation/reviewhistory.gif'),
+              ),
+              title: const Text(
+                'अभिप्राय हिस्ट्री',
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+              ),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UserReviewsScreen(),
+                    ));
+                Navigator.pushNamed(context, '/contact');
+              },
+            ),
+              ListTile(
+              leading: const Image(
+                image: AssetImage('assets/animation/boy.gif'),
+              ),
+              title: const Text(
+                'About us',
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+              ),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AboutUsScreen(),
+                    ));
+                Navigator.pushNamed(context, '/contact');
+              },
+            ),
             const SizedBox(
               height: 250,
             ),
@@ -474,6 +530,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     size: 32.0,
                   ),
                 ),
+               
                 IconButton(
                   onPressed: () {
                     debugPrint(
@@ -489,6 +546,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     size: 32.0,
                   ),
                 ),
+
               ],
             ),
             const SizedBox(
@@ -574,13 +632,13 @@ class _HomeScreenState extends State<HomeScreen> {
             displayFullTextOnTap: true,
             stopPauseOnTap: true,
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           TextField(
             cursorHeight: 25,
             controller: _searchController,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'इथे भाज्या मराठी अक्षरांमध्ये शोधा...',
               hintStyle: TextStyle(color: Colors.black, fontSize: 35),
               border: OutlineInputBorder(),
@@ -596,7 +654,7 @@ class _HomeScreenState extends State<HomeScreen> {
             builder: (context, cartProvider, child) {
               return Expanded(
                 child: _filteredItems.isEmpty
-                    ? Center(
+                    ? const Center(
                         child: Text(
                           "भाज्या अवैलेबल नाहीत",
                           style: TextStyle(
@@ -629,11 +687,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               : 0;
 
                     return GestureDetector(
-                      // onTap: () {
-                      //   Navigator.pushNamed(
-                      //       context, _filteredItems[index]["vegetablesName"]);
-                      // },
-                      child: Card(
+                     
+                      child: 
+                      Card(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),

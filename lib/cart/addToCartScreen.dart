@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class CartProvider with ChangeNotifier {
   List<Map<String, dynamic>> _cartItems = [];
 
@@ -15,37 +17,52 @@ class CartProvider with ChangeNotifier {
     return total;
   }
 
-  void addToCart(Map<String, dynamic> item) {
-    // Check if item already exists in cart
-    final existingItemIndex =
-        _cartItems.indexWhere((cartItem) => cartItem['title'] == item['title']);
-    if (existingItemIndex >= 0) {
-      // If item already exists, increase its quantity
-      _cartItems[existingItemIndex]['quantity']++;
+  // Future<double> get discountedTotalPrice async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   final double? decimal = prefs.getDouble('discount');
+  //   print("111111111111111ttttttttttttttt$decimal");
+  //   double total = 0.0;
+  //   for (var item in cartItems) {
+  //     final price = double.tryParse(item['price'].substring(1)) ?? 0.0;
+  //     total += price * (item['quantity'] ?? 0);
+  //   }
+  //   double discount = total * 0.15;
+  //   // double discount = total * decimal!; // 15% Discount
+  //   return total - discount; // Final price after discount
+  // }
+
+  void addToCart(Map<String, dynamic> product) {
+    // Check if the product already exists in the cart based on its title
+    int index = _cartItems
+        .indexWhere((element) => element['title'] == product['title']);
+    if (index != -1) {
+      // Increase the quantity for the existing vegetable
+      _cartItems[index]['quantity'] =
+          (_cartItems[index]['quantity'] as int) + 1;
     } else {
-      // If item doesn't exist, add it to the cart with a quantity of 1
-      _cartItems.add({...item, 'quantity': 1});
+      // Add as a new unique entry with initial quantity 1
+      _cartItems.add({...product, 'quantity': 1});
     }
     notifyListeners();
   }
 
-  void removeFromCart(Map<String, dynamic> item) {
-    final existingItemIndex =
-        _cartItems.indexWhere((cartItem) => cartItem['title'] == item['title']);
-    if (existingItemIndex >= 0) {
-      if (_cartItems[existingItemIndex]['quantity'] > 1) {
-        // If quantity is more than 1, just reduce the quantity
-        _cartItems[existingItemIndex]['quantity']--;
+  void removeFromCart(Map<String, dynamic> product) {
+    int index = _cartItems
+        .indexWhere((element) => element['title'] == product['title']);
+    if (index != -1) {
+      int currentQuantity = _cartItems[index]['quantity'] as int;
+      if (currentQuantity > 1) {
+        _cartItems[index]['quantity'] = currentQuantity - 1;
       } else {
-        // If quantity is 1, remove the item from the cart completely
-        _cartItems.removeAt(existingItemIndex);
+        _cartItems.removeAt(index);
       }
+      notifyListeners();
     }
-    notifyListeners();
   }
-int get cartItemCount {
-  return _cartItems.fold<int>(0, (sum, item) => sum + (item['quantity'] ?? 0)as int);
-}
+
+  int get cartItemCount {
+    return _cartItems.length;
+  }
 
   // int get cartItemCount {
   //   int count = 0;

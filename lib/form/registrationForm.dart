@@ -17,8 +17,7 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
   final TextEditingController addressController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
 
   bool isSubmitting = false;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -30,14 +29,15 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Center(
-            child: Text(
-          applocalizations!.registrationForm,
-          style: const TextStyle(
-            fontSize: 30,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
+          child: Text(
+            applocalizations!.registrationForm,
+            style: const TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
           ),
-        )),
+        ),
       ),
       body: Stack(
         children: [
@@ -56,11 +56,8 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Colors.purple,
-                  Colors.purpleAccent,
-                  Colors.purple,
-                  Colors.deepPurpleAccent,
-                  Colors.deepPurple,
+                  Color.fromARGB(255, 94, 181, 225),
+                  Color.fromARGB(255, 160, 192, 206),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -68,7 +65,6 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
             ),
             height: MediaQuery.of(context).size.height,
           ),
-          // Form Content
           SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Center(
@@ -78,53 +74,37 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 20),
-                    // Center(
-                    //   child: Text(
-                    //     applocalizations!.registrationForm,
-                    //     style: const TextStyle(
-                    //       fontSize: 30,
-                    //       fontWeight: FontWeight.bold,
-                    //       color: Colors.black,
-                    //     ),
-                    //   ),
-                    // ),
-                    // const SizedBox(height: 20),
 
-                    // Name Field
-
+                    // Name Field (Allows Marathi & English)
                     TextFormField(
                       controller: nameController,
                       decoration: _inputDecoration(applocalizations.name),
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(RegExp(
-                            r'^[a-zA-Z ]*$')), // Only alphabets and space
+                          r'^[\u0900-\u097F\u0020a-zA-Z]*$', // Marathi & English letters, spaces
+                        )),
                       ],
-                      validator: (value) => value == null || value.isEmpty
-                          ? applocalizations.nameisrequired
-                          : null,
+                      validator: (value) =>
+                          value == null || value.isEmpty ? applocalizations.nameisrequired : null,
                     ),
 
                     const SizedBox(height: 15),
 
-                    // Mobile Field
+                    // Mobile Field (Only Numbers)
                     TextFormField(
                       controller: mobileController,
-                      decoration:
-                          _inputDecoration(applocalizations.mobileNumber),
+                      decoration: _inputDecoration(applocalizations.mobileNumber),
                       keyboardType: TextInputType.phone,
                       inputFormatters: [
-                        FilteringTextInputFormatter
-                            .digitsOnly, // Allow only digits
-                        LengthLimitingTextInputFormatter(
-                            10), // Limit to 10 digits
+                        FilteringTextInputFormatter.digitsOnly, // Allow only digits
+                        LengthLimitingTextInputFormatter(10), // Limit to 10 digits
                       ],
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return applocalizations.mobileNumberisrequired;
                         }
                         if (value.length != 10) {
-                          return applocalizations
-                              .enteravalid10digitmobilenumber;
+                          return applocalizations.enteravalid10digitmobilenumber;
                         }
                         return null;
                       },
@@ -132,13 +112,17 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
 
                     const SizedBox(height: 15),
 
-                    // Username Field
+                    // Username Field (Allows Marathi & English)
                     TextFormField(
                       controller: usernameController,
                       decoration: _inputDecoration(applocalizations.username),
-                      validator: (value) => value == null || value.isEmpty
-                          ? applocalizations.usernameisrequired
-                          : null,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(
+                          r'^[\u0900-\u097F\u0020a-zA-Z0-9]*$', // Marathi, English & Numbers
+                        )),
+                      ],
+                      validator: (value) =>
+                          value == null || value.isEmpty ? applocalizations.usernameisrequired : null,
                     ),
                     const SizedBox(height: 15),
 
@@ -152,8 +136,7 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
                           return applocalizations.passwordisrequired;
                         }
                         if (value.length < 6) {
-                          return applocalizations
-                              .passwordmustbeatleast6characterslong;
+                          return applocalizations.passwordmustbeatleast6characterslong;
                         }
                         return null;
                       },
@@ -164,8 +147,7 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
                     TextFormField(
                       controller: confirmPasswordController,
                       obscureText: true,
-                      decoration:
-                          _inputDecoration(applocalizations.confirmPassword),
+                      decoration: _inputDecoration(applocalizations.confirmPassword),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return applocalizations.confirmPasswordisrequired;
@@ -178,14 +160,18 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
                     ),
                     const SizedBox(height: 15),
 
-                    // Address Field
+                    // Address Field (Allows Marathi & English)
                     TextFormField(
                       controller: addressController,
                       decoration: _inputDecoration(applocalizations.address),
                       maxLines: 3,
-                      validator: (value) => value == null || value.isEmpty
-                          ? applocalizations.addressisrequired
-                          : null,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(
+                          r'^[\u0900-\u097F\u0020a-zA-Z0-9,.-]*$', // Marathi, English, Numbers, basic punctuation
+                        )),
+                      ],
+                      validator: (value) =>
+                          value == null || value.isEmpty ? applocalizations.addressisrequired : null,
                     ),
                     const SizedBox(height: 30),
 
@@ -195,22 +181,19 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
                         onPressed: isSubmitting
                             ? null
                             : () {
-                                if (_formKey.currentState?.validate() ??
-                                    false) {
+                                if (_formKey.currentState?.validate() ?? false) {
                                   setState(() {
                                     isSubmitting = true;
                                   });
                                   storeDataToFirebase();
-                                  Future.delayed(const Duration(seconds: 2),
-                                      () {
+                                  Future.delayed(const Duration(seconds: 2), () {
                                     setState(() {
                                       isSubmitting = false;
                                     });
 
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
-                                        content: Text(
-                                            'Form submitted successfully!'),
+                                        content: Text('Form submitted successfully!'),
                                       ),
                                     );
                                     Navigator.pop(context);
@@ -232,8 +215,7 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
                         ),
                         child: isSubmitting
                             ? const CircularProgressIndicator(
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                               )
                             : Text(
                                 applocalizations.submit,
@@ -263,14 +245,6 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
         borderRadius: BorderRadius.circular(10),
         borderSide: const BorderSide(color: Colors.white),
       ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: Colors.white),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: Colors.orange),
-      ),
     );
   }
 
@@ -281,12 +255,8 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
         "mobileNumber": mobileController.text.trim(),
         "userName": usernameController.text.trim(),
         "passWord": passwordController.text.trim(),
-        "confirmPassword": confirmPasswordController.text.trim(),
         "address": addressController.text.trim(),
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Data added successfully!')),
-      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to add data: $e')),

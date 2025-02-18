@@ -11,61 +11,117 @@ class OrderScreen extends StatefulWidget {
 }
 
 class _OrderScreenState extends State<OrderScreen> {
-  String? result = ''; // To store the logged-in user's ID (userName or mobileNumber)
-
-  // Fetch the result (userId) from SharedPreferences
-  Future<void> _getUserId() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final storedUserName = prefs.getString('userName');
-    final storedMobileNumber = prefs.getString('mobileNumber');
-    
-    // Determine whether to use userName or mobileNumber
-    setState(() {
-      result = storedUserName ?? storedMobileNumber;
-    });
-  }
+  String? result = ''; // To store the logged-in user's ID
+  List<Map<String, dynamic>> ordersList = []; // Store orders locally
+  List<Map<String, dynamic>> filteredOrdersList = []; // Store filtered orders
+  DateTime? selectedDate;
 
   @override
   void initState() {
     super.initState();
-    _getUserId(); // Fetch user ID when the screen is initialized
+    _getUserId();
+  }
+
+  // Fetch user ID from SharedPreferences
+  Future<void> _getUserId() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final storedUserName = prefs.getString('userName');
+    final storedMobileNumber = prefs.getString('mobileNumber');
+
+    setState(() {
+      result = storedUserName ?? storedMobileNumber;
+    });
+
+    if (result != null && result!.isNotEmpty) {
+      _fetchOrders();
+    }
+  }
+
+  // Fetch orders from Firestore and store them in a list
+  Future<void> _fetchOrders() async {
+    try {
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('orders')
+          .where('userId', isEqualTo: result)
+          .get();
+
+      List<Map<String, dynamic>> fetchedOrders = snapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        data['orderDate'] = (data['orderDate'] as Timestamp).toDate(); // Convert timestamp to DateTime
+        return data;
+      }).toList();
+
+      // Sort orders by orderDate in descending order
+      fetchedOrders.sort((a, b) => b['orderDate'].compareTo(a['orderDate']));
+
+      setState(() {
+        ordersList = fetchedOrders;
+        filteredOrdersList = fetchedOrders; // Initially, show all orders
+      });
+    } catch (e) {
+      print("Error fetching orders: $e");
+    }
+  }
+
+  // Filter orders based on selected date
+  void _filterOrdersByDate(DateTime selectedDate) {
+    setState(() {
+      filteredOrdersList = ordersList.where((order) {
+        DateTime orderDate = order['orderDate'];
+        return orderDate.year == selectedDate.year &&
+            orderDate.month == selectedDate.month &&
+            orderDate.day == selectedDate.day;
+      }).toList();
+    });
+  }
+
+  // Show date picker and filter orders based on the selected date
+  Future<void> _selectDate(BuildContext context) async {
+    DateTime initialDate = DateTime.now();
+    DateTime firstDate = DateTime(2000); // Start date for the date picker
+    DateTime lastDate = DateTime.now(); // End date for the date picker
+
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: firstDate,
+      lastDate: lastDate,
+    );
+
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+      });
+      _filterOrdersByDate(picked);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-     
-      body: result == null || result == ''  // Check if result is still null or empty
+      appBar: AppBar(
+        title: const Text("Orders"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.calendar_today),
+            onPressed: () {
+              _selectDate(context); // Trigger date picker when clicked
+            },
+          ),
+        ],
+      ),
+      body: result == null || result == ''
           ? const Center(child: CircularProgressIndicator())
-          : FutureBuilder<QuerySnapshot>(
-              // Query orders filtered by the user's ID (result)
-              future: FirebaseFirestore.instance
-                  .collection('orders')
-                  .where('userId', isEqualTo: result)  // Filter orders by userId (either userName or mobileNumber)
-                  .get(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                }
-
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return const Center(child: Text('No orders placed yet.'));
-                }
-
-                final orders = snapshot.data!.docs;
-
-                return ListView.builder(
-                  itemCount: orders.length,
+          : filteredOrdersList.isEmpty
+              ? const Center(child: Text('No orders found for the selected date.'))
+              : ListView.builder(
+                  itemCount: filteredOrdersList.length,
                   itemBuilder: (context, index) {
-                    final order = orders[index];
+                    final order = filteredOrdersList[index];
                     final orderItems = List<Map<String, dynamic>>.from(order['items']);
-                    final orderDate = (order['orderDate'] as Timestamp).toDate();
-                    final formattedDate = DateFormat('MM/dd/yyyy, hh:mm a').format(orderDate);
+                    final formattedDate = DateFormat('MM/dd/yyyy, hh:mm a').format(order['orderDate']);
+                    final bool orderStatus = order['orderStatus'] ?? false;
 
                     return Card(
                       margin: const EdgeInsets.all(10),
@@ -76,7 +132,8 @@ class _OrderScreenState extends State<OrderScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(' तारीख: $formattedDate', // Use formatted date
+                            Text(
+                              'तारीख: $formattedDate',
                               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                             ),
                             const SizedBox(height: 10),
@@ -95,14 +152,22 @@ class _OrderScreenState extends State<OrderScreen> {
                                 Text('₹${order['totalPrice']}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green)),
                               ],
                             ),
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                const Text('Order Status  :  ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                                Text(
+                                  orderStatus ? "Completed" : "In Process",
+                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 233, 61, 61)),
+                                ),
+                              ],
+                            ),
                           ],
                         ),
                       ),
                     );
                   },
-                );
-              },
-            ),
+                ),
     );
   }
 }

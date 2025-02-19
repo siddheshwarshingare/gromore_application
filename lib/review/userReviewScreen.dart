@@ -65,48 +65,62 @@ class _UserReviewsScreenState extends State<UserReviewsScreen> {
 
           var reviews = snapshot.data!.docs;
 
-          return ListView.builder(
-            itemCount: reviews.length,
-            itemBuilder: (context, index) {
-              var review = reviews[index];
-              String formattedDate = formatTimestamp(review['timestamp']);
+          return Column(
+            children: [
+              // Display review count at the top
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "Total Reviews: ${reviews.length}",
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: reviews.length,
+                  itemBuilder: (context, index) {
+                    var review = reviews[index];
+                    String formattedDate = formatTimestamp(review['timestamp']);
 
-              return Card(
-                elevation: 5,
-                margin: const EdgeInsets.symmetric(vertical: 8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
+                    return Card(
+                      elevation: 5,
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: ListTile(
+                        leading: Text(
+                          review['emoji'],
+                          style: const TextStyle(fontSize: 30),
+                        ),
+                        title: Text(
+                          review['reflection'],
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "User: ${review['name'] ?? 'Unknown'}",
+                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                            ),
+                            Text(
+                              "Mobile: ${review['mobileNumber'] ?? 'N/A'}",
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                            Text(
+                              "Date: $formattedDate", // DD/MM/YYYY format
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 ),
-                child: ListTile(
-                  leading: Text(
-                    review['emoji'],
-                    style: const TextStyle(fontSize: 30),
-                  ),
-                  title: Text(
-                    review['reflection'],
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "User: ${review['name'] ?? 'Unknown'}",
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                      ),
-                      Text(
-                        "Mobile: ${review['mobileNumber'] ?? 'N/A'}",
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                      Text(
-                        "Date: $formattedDate", // DD/MM/YYYY format
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
+              ),
+            ],
           );
         },
       ),

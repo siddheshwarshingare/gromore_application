@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gromore_application/admin/adminDashboard.dart';
 import 'package:gromore_application/login/loginWithMobileNumber.dart';
 import 'package:gromore_application/form/registrationForm.dart';
 import 'package:gromore_application/vegetables/vegetablesMenuHomeScreen.dart';
@@ -226,20 +227,19 @@ class _LoginscreenState extends State<Loginscreen> {
                                 child: SliderButton(
                                   action: () async {
                                     HapticFeedback.mediumImpact();
-                                    String username = _usernameController.text;
-                                    String password = _passwordController.text;
+                                    String username = _usernameController.text.trim();
+                                    String password = _passwordController.text.trim();
                                     print("1111111111==$username");
                                     print("1111111111==$password");
                                     if (_formKey.currentState!.validate()) {
                                       setState(() {
                                         _isLoading = true;
                                       });
-                                      String? loginResult =
-                                          await login(username, password);
-                                
-                                      if (loginResult != null) {
-                                        if (loginResult == password) {
-                                          SharedPreferences prefs = await SharedPreferences.getInstance();
+                                      
+                                    if(username=="Raje@1234" && password=="Raje@12345"){
+                                      SharedPreferences prefs =
+                                              await SharedPreferences
+                                                  .getInstance();
                                           prefs.setString("userName", username);
                                           prefs.setString("passWord", password);
                                           // Navigate to the next screen if login is successful
@@ -247,7 +247,27 @@ class _LoginscreenState extends State<Loginscreen> {
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) =>
-                                                   HomeScreen()),
+                                                   AdminDashboard()),
+                                          );
+                                    }
+else{
+
+ String? loginResult =
+                                          await login(username, password);
+                                   
+                                      if (loginResult != null) {
+                                        if (loginResult == password) {
+                                          SharedPreferences prefs =
+                                              await SharedPreferences
+                                                  .getInstance();
+                                          prefs.setString("userName", username);
+                                          prefs.setString("passWord", password);
+                                          // Navigate to the next screen if login is successful
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    HomeScreen()),
                                           );
                                         } else {
                                           // Show error message if login fails
@@ -270,7 +290,9 @@ class _LoginscreenState extends State<Loginscreen> {
                                           ),
                                         );
                                       }
-                                
+
+}
+                                     
                                       setState(() {
                                         _isLoading = false;
                                       });
@@ -294,42 +316,51 @@ class _LoginscreenState extends State<Loginscreen> {
                                 ),
                               ),
                             ),
-                            SizedBox(height: 10,),
-                            Center(child: Text(applocalizations.or,style: TextStyle(color: Colors.pink,fontSize: 16),)),
-                          SizedBox(height: 10,),
-                            //Login With Mobile Number 
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Center(
+                                child: Text(
+                              applocalizations.or,
+                              style:
+                                  TextStyle(color: Colors.pink, fontSize: 16),
+                            )),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            //Login With Mobile Number
 
                             Padding(
                               padding: const EdgeInsets.only(left: 20),
                               child: ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const loginWithMobileNumber (),
-                                      ),
-                                    );
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                      foregroundColor: Colors.black,
-                                      backgroundColor: Colors.grey.shade200,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(15),
-                                      ),
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 15, horizontal: 30),
-                                      elevation: 10,
-                                      shadowColor: Colors.black),
-                                  child: Text(
-                                    applocalizations.loginWithMobileNumber,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                      letterSpacing: 1.2,
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const loginWithMobileNumber(),
                                     ),
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.black,
+                                    backgroundColor: Colors.grey.shade200,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 15, horizontal: 30),
+                                    elevation: 10,
+                                    shadowColor: Colors.black),
+                                child: Text(
+                                  applocalizations.loginWithMobileNumber,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    letterSpacing: 1.2,
                                   ),
                                 ),
+                              ),
                             ),
                             const SizedBox(height: 20),
                             Center(

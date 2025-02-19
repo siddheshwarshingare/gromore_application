@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gromore_application/admin/adminDashboard.dart';
 import 'package:gromore_application/language/languageSelector.dart';
 import 'package:gromore_application/vegetables/vegetablesMenuHomeScreen.dart';
 import 'package:lottie/lottie.dart';
@@ -32,6 +33,14 @@ class _SplashscreenState extends State<Splashscreen> {
 
     // Navigate based on login status
     if (isLoggedIn) {
+
+      // This login is for admin only 
+      
+      userName=="Raje@1234"&&passWord=="Raje@12345"? 
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) =>  AdminDashboard()),
+      ):
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => HomeScreen()),
@@ -54,7 +63,6 @@ class _SplashscreenState extends State<Splashscreen> {
       mobileNumber = prefs.getString("mobileNumber");
       result=  userName == null ? mobileNumber : userName;
     });
-
     // Check if the username is not null or empty
     return result != null;
   }

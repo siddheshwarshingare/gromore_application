@@ -24,30 +24,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
         
         title: const Text("Admin Dashboard"),
         automaticallyImplyLeading: true, // ✅ Fix for missing drawer button
-        actions: [
-          Container(
-            width: 130,
-            margin: const EdgeInsets.all(10),
-            child: ElevatedButton(
-              onPressed: () {
-                HapticFeedback.mediumImpact();
-                alertdialogBox(context);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.redAccent,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 10),
-              ),
-              child: const Text('Logout', style: TextStyle(fontSize: 16)),
-            ),
-          ),
-        ],
+       
       ),
       
-            drawer: Drawer(
+      drawer: Drawer(
         backgroundColor: Colors.white,
         child: ListView(
           children: [
@@ -151,6 +131,27 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 Navigator.pushNamed(context, '/contact');
               },
             ),
+
+            SizedBox(height: 200,),
+             Container(
+              width: 60,
+              margin: const EdgeInsets.all(15),
+              child: ElevatedButton(
+                onPressed: () {
+                  HapticFeedback.mediumImpact();
+                  alertdialogBox(context);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.redAccent,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                ),
+                child: const Text('Logout', style: TextStyle(fontSize: 16)),
+              ),
+            ),
           ],  
         ),
       ),
@@ -204,7 +205,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                 (route) => false,
                               );
                             },
-                      child: Container(
+                      child: 
+                      Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: Colors.red,
@@ -218,7 +220,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           ),
                         ),
                       ),
-                    ),
+                    )
                   ],
                 ),
                 if (_isLoading)

@@ -14,10 +14,7 @@ class _VegetablePriceScreenState extends State<VegetablePriceScreen> {
   bool isEditing = false;
   bool isSubmitting = false;
 
-  // Store prices
   Map<String, String> vegetablePrices = {};
-
-  // Store controllers for editing
   final Map<String, TextEditingController> controllers = {};
 
   @override
@@ -26,35 +23,27 @@ class _VegetablePriceScreenState extends State<VegetablePriceScreen> {
     _fetchExistingPrices();
   }
 
-  // Fetch prices from Firestore
   Future<void> _fetchExistingPrices() async {
     try {
       final doc = await firestore.collection('VegetablesPrice').doc('vegetablePrices').get();
-      
       if (doc.exists && doc.data() != null) {
         setState(() {
-          vegetablePrices = Map<String, String>.from(doc.data() ?? {}); 
+          vegetablePrices = Map<String, String>.from(doc.data() ?? {});
           controllers.clear();
           vegetablePrices.forEach((key, value) {
             controllers[key] = TextEditingController(text: value);
           });
         });
       } else {
-        // Handle case when Firestore has no data
-        setState(() {
-          vegetablePrices = {}; // Ensure it's not null
-        });
+        setState(() => vegetablePrices = {});
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error fetching data: $e')));
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      setState(() => isLoading = false);
     }
   }
 
-  // Save updated prices to Firestore
   Future<void> _handleSubmit() async {
     if (_formKey.currentState?.validate() ?? false) {
       setState(() => isSubmitting = true);
@@ -73,6 +62,69 @@ class _VegetablePriceScreenState extends State<VegetablePriceScreen> {
       } finally {
         setState(() => isSubmitting = false);
       }
+    }
+  }
+
+  void _showAddVegetableDialog() {
+    TextEditingController nameController = TextEditingController();
+    TextEditingController priceController = TextEditingController();
+
+    showDialog(
+      
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.greenAccent,
+        title: const Text("Add New Vegetable",style: TextStyle(color: Colors.pink),),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextFormField(
+              controller: nameController,
+              decoration: const InputDecoration(labelText: "Vegetable Name"),
+              validator: (value) => (value == null || value.isEmpty) ? "Enter vegetable name" : null,
+            ),
+            const SizedBox(height: 10),
+            TextFormField(
+              controller: priceController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: "Price"),
+              validator: (value) => (value == null || value.isEmpty) ? "Enter price" : null,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              _addNewVegetable(nameController.text.trim(), priceController.text.trim());
+              Navigator.pop(context);
+            },
+            child: const Text("Add"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _addNewVegetable(String name, String price) async {
+    if (name.isEmpty || price.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please enter valid details")));
+      return;
+    }
+
+    setState(() {
+      vegetablePrices[name] = price;
+      controllers[name] = TextEditingController(text: price);
+    });
+
+    try {
+      await firestore.collection('VegetablesPrice').doc('vegetablePrices').set(vegetablePrices);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Vegetable added successfully!")));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Failed to add vegetable: $e")));
     }
   }
 
@@ -100,10 +152,20 @@ class _VegetablePriceScreenState extends State<VegetablePriceScreen> {
                 ),
               ),
             ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(right: 100),
+        child: SizedBox(
+          width: 140,
+          child: FloatingActionButton(
+            onPressed: _showAddVegetableDialog,
+            child: Text("Add Vegetables")
+            // const Icon(Icons.add),
+          ),
+        ),
+      ),
     );
   }
 
-  // Widget for each row (show price + edit button)
   Widget _buildVegetablePriceRow(String key) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -127,7 +189,6 @@ class _VegetablePriceScreenState extends State<VegetablePriceScreen> {
     );
   }
 
-  // Submit button
   Widget _buildSubmitButton() {
     return ElevatedButton(
       onPressed: isSubmitting ? null : _handleSubmit,
@@ -135,17 +196,10 @@ class _VegetablePriceScreenState extends State<VegetablePriceScreen> {
     );
   }
 
-  // Format key names for display
   String _formatVegetableName(String key) {
-    // Remove 'VegetablesPrice' suffix
     String formattedKey = key.replaceAll("VegetablesPrice", "");
-
-    // Insert space between lowercase and uppercase letters
     formattedKey = formattedKey.replaceAllMapped(RegExp(r'([a-z])([A-Z])'), (match) => '${match[1]} ${match[2]}');
-
-    // Capitalize the first letter of the key
     formattedKey = formattedKey.replaceFirstMapped(RegExp(r'^[a-z]'), (match) => match.group(0)!.toUpperCase());
-
     return formattedKey;
   }
 

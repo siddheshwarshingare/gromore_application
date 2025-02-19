@@ -42,6 +42,10 @@
      "enterShepuVegetablesPrice" : "Enter Shepu Vegetables Price",
      "enterBhendiVegetablesPrice" : "Enter Bhendi Vegetables Price",
      "enterChukaVegetablesPrice" : "Enter Chuka Vegetables Price",
-     "enterKandeVegetablesPrice" : "Enter Kande Vegetables Price"
-    
+     "enterKandeVegetablesPrice" : "Enter Kande Vegetables Price",
+   "enterAlluVegetablesPrice" : "Enter Allu Vegetables Price",
+     "enterGobiVegetablesPrice" : "Enter Gobi Vegetables Price",
+     "enterPattagobiVegetablesPrice" : "Enter Pattgobi Vegetables Price",
+     "enterValachyashengaVegetablesPrice" : "Enter Valachyashenga Vegetables Price",
+     "enterVangeVegetablesPrice" : "Enter Vange Vegetables Price"  
 }

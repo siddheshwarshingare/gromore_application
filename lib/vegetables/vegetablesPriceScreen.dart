@@ -25,7 +25,10 @@ class _VegetablePriceScreenState extends State<VegetablePriceScreen> {
 
   Future<void> _fetchExistingPrices() async {
     try {
-      final doc = await firestore.collection('VegetablesPrice').doc('vegetablePrices').get();
+      final doc = await firestore
+          .collection('VegetablesPrice')
+          .doc('vegetablePrices')
+          .get();
       if (doc.exists && doc.data() != null) {
         setState(() {
           vegetablePrices = Map<String, String>.from(doc.data() ?? {});
@@ -38,7 +41,8 @@ class _VegetablePriceScreenState extends State<VegetablePriceScreen> {
         setState(() => vegetablePrices = {});
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error fetching data: $e')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error fetching data: $e')));
     } finally {
       setState(() => isLoading = false);
     }
@@ -54,11 +58,16 @@ class _VegetablePriceScreenState extends State<VegetablePriceScreen> {
       });
 
       try {
-        await firestore.collection('VegetablesPrice').doc('vegetablePrices').set(updatedPrices);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Prices updated successfully!')));
+        await firestore
+            .collection('VegetablesPrice')
+            .doc('vegetablePrices')
+            .set(updatedPrices);
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Prices updated successfully!')));
         setState(() => isEditing = false);
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to update: $e')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Failed to update: $e')));
       } finally {
         setState(() => isSubmitting = false);
       }
@@ -69,49 +78,97 @@ class _VegetablePriceScreenState extends State<VegetablePriceScreen> {
     TextEditingController nameController = TextEditingController();
     TextEditingController priceController = TextEditingController();
 
-    showDialog(
-      
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.greenAccent,
-        title: const Text("Add New Vegetable",style: TextStyle(color: Colors.pink),),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextFormField(
-              controller: nameController,
-              decoration: const InputDecoration(labelText: "Vegetable Name"),
-              validator: (value) => (value == null || value.isEmpty) ? "Enter vegetable name" : null,
+   showDialog(
+  context: context,
+  builder: (context) => AlertDialog(
+    backgroundColor: Colors.yellow.shade100,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+    title: const Text(
+      "Add New Vegetable",
+      textAlign: TextAlign.center,
+      style: TextStyle(
+        color: Colors.pink,
+        fontSize: 22,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+    content: SizedBox(
+      width: MediaQuery.of(context).size.width * 0.8, // Increases width
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextFormField(
+            controller: nameController,
+            decoration: InputDecoration(
+              labelText: "Vegetable Name",
+              labelStyle: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.deepPurple,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              filled: true,
+              fillColor: Colors.white,
             ),
-            const SizedBox(height: 10),
-            TextFormField(
-              controller: priceController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: "Price"),
-              validator: (value) => (value == null || value.isEmpty) ? "Enter price" : null,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel"),
+            validator: (value) =>
+                (value == null || value.isEmpty) ? "Enter vegetable name" : null,
           ),
-          ElevatedButton(
-            onPressed: () {
-              _addNewVegetable(nameController.text.trim(), priceController.text.trim());
-              Navigator.pop(context);
-            },
-            child: const Text("Add"),
+          const SizedBox(height: 15),
+          TextFormField(
+            controller: priceController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              labelText: "Price",
+              labelStyle: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.deepPurple,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              filled: true,
+              fillColor: Colors.white,
+            ),
+            validator: (value) =>
+                (value == null || value.isEmpty) ? "Enter price" : null,
           ),
         ],
       ),
-    );
+    ),
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.pop(context),
+        style: TextButton.styleFrom(
+          foregroundColor: Colors.red,
+          textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        child: const Text("Cancel"),
+      ),
+      ElevatedButton(
+        onPressed: () {
+          _addNewVegetable(
+              nameController.text.trim(), priceController.text.trim());
+          Navigator.pop(context);
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.green,
+          foregroundColor: Colors.white,
+          textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+        child: const Text("Add"),
+      ),
+    ],
+  ),
+);
+
   }
 
   Future<void> _addNewVegetable(String name, String price) async {
     if (name.isEmpty || price.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please enter valid details")));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Please enter valid details")));
       return;
     }
 
@@ -121,17 +178,31 @@ class _VegetablePriceScreenState extends State<VegetablePriceScreen> {
     });
 
     try {
-      await firestore.collection('VegetablesPrice').doc('vegetablePrices').set(vegetablePrices);
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Vegetable added successfully!")));
+      await firestore
+          .collection('VegetablesPrice')
+          .doc('vegetablePrices')
+          .set(vegetablePrices);
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Vegetable added successfully!")));
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Failed to add vegetable: $e")));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Failed to add vegetable: $e")));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Vegetable Prices")),
+      backgroundColor: Colors.yellowAccent.shade100,
+      appBar: AppBar(
+          backgroundColor: Colors.green,
+          title: const Text(
+            "Vegetable Prices",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 25,
+            ),
+          )),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : Padding(
@@ -157,10 +228,9 @@ class _VegetablePriceScreenState extends State<VegetablePriceScreen> {
         child: SizedBox(
           width: 140,
           child: FloatingActionButton(
-            onPressed: _showAddVegetableDialog,
-            child: Text("Add Vegetables")
-            // const Icon(Icons.add),
-          ),
+              onPressed: _showAddVegetableDialog, child: Text("Add Vegetables")
+              // const Icon(Icons.add),
+              ),
         ),
       ),
     );
@@ -168,6 +238,8 @@ class _VegetablePriceScreenState extends State<VegetablePriceScreen> {
 
   Widget _buildVegetablePriceRow(String key) {
     return Card(
+      color: Colors.brown.shade100,
+      elevation: 7,
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: ListTile(
         title: Text(_formatVegetableName(key)),
@@ -176,7 +248,9 @@ class _VegetablePriceScreenState extends State<VegetablePriceScreen> {
                 controller: controllers[key],
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(hintText: "Enter Price"),
-                validator: (value) => (value == null || value.isEmpty) ? "Enter a valid price" : null,
+                validator: (value) => (value == null || value.isEmpty)
+                    ? "Enter a valid price"
+                    : null,
               )
             : Text("₹${vegetablePrices[key]}"),
         trailing: isEditing
@@ -192,14 +266,18 @@ class _VegetablePriceScreenState extends State<VegetablePriceScreen> {
   Widget _buildSubmitButton() {
     return ElevatedButton(
       onPressed: isSubmitting ? null : _handleSubmit,
-      child: isSubmitting ? const CircularProgressIndicator() : const Text("Save Prices"),
+      child: isSubmitting
+          ? const CircularProgressIndicator()
+          : const Text("Save Prices"),
     );
   }
 
   String _formatVegetableName(String key) {
     String formattedKey = key.replaceAll("VegetablesPrice", "");
-    formattedKey = formattedKey.replaceAllMapped(RegExp(r'([a-z])([A-Z])'), (match) => '${match[1]} ${match[2]}');
-    formattedKey = formattedKey.replaceFirstMapped(RegExp(r'^[a-z]'), (match) => match.group(0)!.toUpperCase());
+    formattedKey = formattedKey.replaceAllMapped(
+        RegExp(r'([a-z])([A-Z])'), (match) => '${match[1]} ${match[2]}');
+    formattedKey = formattedKey.replaceFirstMapped(
+        RegExp(r'^[a-z]'), (match) => match.group(0)!.toUpperCase());
     return formattedKey;
   }
 

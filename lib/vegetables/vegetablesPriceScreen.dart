@@ -78,91 +78,94 @@ class _VegetablePriceScreenState extends State<VegetablePriceScreen> {
     TextEditingController nameController = TextEditingController();
     TextEditingController priceController = TextEditingController();
 
-   showDialog(
-  context: context,
-  builder: (context) => AlertDialog(
-    backgroundColor: Colors.yellow.shade100,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-    title: const Text(
-      "Add New Vegetable",
-      textAlign: TextAlign.center,
-      style: TextStyle(
-        color: Colors.pink,
-        fontSize: 22,
-        fontWeight: FontWeight.bold,
-      ),
-    ),
-    content: SizedBox(
-      width: MediaQuery.of(context).size.width * 0.8, // Increases width
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextFormField(
-            controller: nameController,
-            decoration: InputDecoration(
-              labelText: "Vegetable Name",
-              labelStyle: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.deepPurple,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              filled: true,
-              fillColor: Colors.white,
-            ),
-            validator: (value) =>
-                (value == null || value.isEmpty) ? "Enter vegetable name" : null,
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.yellow.shade100,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          "Add New Vegetable",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.pink,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
           ),
-          const SizedBox(height: 15),
-          TextFormField(
-            controller: priceController,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: "Price",
-              labelStyle: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.deepPurple,
+        ),
+        content: SizedBox(
+          width: MediaQuery.of(context).size.width * 0.8, // Increases width
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: nameController,
+                decoration: InputDecoration(
+                  labelText: "Vegetable Name",
+                  labelStyle: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.deepPurple,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+                validator: (value) => (value == null || value.isEmpty)
+                    ? "Enter vegetable name"
+                    : null,
               ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+              const SizedBox(height: 15),
+              TextFormField(
+                controller: priceController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: "Price",
+                  labelStyle: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.deepPurple,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+                validator: (value) =>
+                    (value == null || value.isEmpty) ? "Enter price" : null,
               ),
-              filled: true,
-              fillColor: Colors.white,
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.red,
+              textStyle:
+                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
-            validator: (value) =>
-                (value == null || value.isEmpty) ? "Enter price" : null,
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              _addNewVegetable(
+                  nameController.text.trim(), priceController.text.trim());
+              Navigator.pop(context);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              foregroundColor: Colors.white,
+              textStyle:
+                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            child: const Text("Add"),
           ),
         ],
       ),
-    ),
-    actions: [
-      TextButton(
-        onPressed: () => Navigator.pop(context),
-        style: TextButton.styleFrom(
-          foregroundColor: Colors.red,
-          textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        ),
-        child: const Text("Cancel"),
-      ),
-      ElevatedButton(
-        onPressed: () {
-          _addNewVegetable(
-              nameController.text.trim(), priceController.text.trim());
-          Navigator.pop(context);
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.green,
-          foregroundColor: Colors.white,
-          textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        ),
-        child: const Text("Add"),
-      ),
-    ],
-  ),
-);
-
+    );
   }
 
   Future<void> _addNewVegetable(String name, String price) async {
@@ -224,13 +227,39 @@ class _VegetablePriceScreenState extends State<VegetablePriceScreen> {
               ),
             ),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(right: 100),
-        child: SizedBox(
-          width: 140,
-          child: FloatingActionButton(
-              onPressed: _showAddVegetableDialog, child: Text("Add Vegetables")
-              // const Icon(Icons.add),
+        padding: const EdgeInsets.only(right: 100), 
+        child: Container(
+          height: 70,
+          width: 160,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.green.shade700,
+                Colors.greenAccent.shade400
+              ], 
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(30), 
+            boxShadow: [
+              const BoxShadow(
+                color: Colors.black26,
+                blurRadius: 10,
+                offset: const Offset(3, 5),
               ),
+            ],
+          ),
+          child: FloatingActionButton.extended(
+            onPressed: _showAddVegetableDialog,
+            icon: const Icon(Icons.add, color: Colors.white),
+            label: const Text(
+              "Add Vegetables",
+              style:
+                  TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+            ),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+          ),
         ),
       ),
     );
@@ -242,7 +271,10 @@ class _VegetablePriceScreenState extends State<VegetablePriceScreen> {
       elevation: 7,
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: ListTile(
-        title: Text(_formatVegetableName(key)),
+        title: Text(
+          _formatVegetableName(key),
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         subtitle: isEditing
             ? TextFormField(
                 controller: controllers[key],
@@ -252,7 +284,10 @@ class _VegetablePriceScreenState extends State<VegetablePriceScreen> {
                     ? "Enter a valid price"
                     : null,
               )
-            : Text("₹${vegetablePrices[key]}"),
+            : Text(
+                "₹${vegetablePrices[key]}",
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
         trailing: isEditing
             ? null
             : IconButton(

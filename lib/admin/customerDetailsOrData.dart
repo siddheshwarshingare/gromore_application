@@ -8,11 +8,9 @@ class CustomerDetailsScreen extends StatefulWidget {
 
 class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-  // List to store all customer details
   List<Map<String, dynamic>> customerDetailsList = [];
-  
   bool isLoading = true;
+  bool showPasswords = false; // Toggle password visibility
 
   @override
   void initState() {
@@ -23,10 +21,9 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
   // Fetch all customer details from Firestore
   Future<void> _fetchCustomerDetails() async {
     try {
-      // Fetch all documents from 'CustomerDetails' collection
-      QuerySnapshot querySnapshot = await firestore.collection('CustomerDetails').get();
-      
-      // Iterate over all documents and add them to the list
+      QuerySnapshot querySnapshot =
+          await firestore.collection('CustomerDetails').get();
+
       setState(() {
         customerDetailsList = querySnapshot.docs.map((doc) {
           return {
@@ -37,55 +34,169 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
             'passWord': doc['passWord'],
           };
         }).toList();
-        isLoading = false; // Stop loading once the data is fetched
+        isLoading = false;
       });
     } catch (e) {
       setState(() {
-        isLoading = false; // Error occurred, stop loading
+        isLoading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error fetching data: $e')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error fetching data: $e')));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 83, 214, 214),
+      extendBodyBehindAppBar: true, // Allows the background to extend behind AppBar
       appBar: AppBar(
-        backgroundColor:  Colors.green,
-        title: Center(child: const Text('Customer Details',style: TextStyle(fontWeight: FontWeight.bold,),)),
+        backgroundColor: Colors.green,
+        elevation: 0,
+        centerTitle: true,
+        title: const Text(
+          'Customer Details',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22, color: Colors.black),
+        ),
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator()) // Loading indicator
-          : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ListView.builder(
-                itemCount: customerDetailsList.length,
-                itemBuilder: (context, index) {
-                  var customer = customerDetailsList[index];
-                  return Card(
-                    elevation: 10,
-                    color: Color.fromARGB(255, 241, 78, 206),
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    child: ListTile(
-                      title: Text('Customre Name : ${customer['name']}',style: TextStyle(fontWeight: FontWeight.bold,),),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Username: ${customer['userName']}',style: TextStyle(fontWeight: FontWeight.bold,),),
-                          SizedBox(height: 4,),
-                          Text('Address: ${customer['address']}',style: TextStyle(fontWeight: FontWeight.bold,),),
-                           SizedBox(height: 4,),
-                          Text('Mobile Number: ${customer['mobileNumber']}',style: TextStyle(fontWeight: FontWeight.bold,),),
-                           SizedBox(height: 4,),
-                          Text('Password: ${customer['passWord']}',style: TextStyle(fontWeight: FontWeight.bold,),),
-                        ],
-                      ),
-                    ),
-                  );
-                },
+      body: Stack(
+        children: [
+          // Soft Gradient Background
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xFFFEECE2), // Light cream
+                  Color(0xFFFFD8A8)  // Warm orange
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
             ),
+          ),
+
+          isLoading
+              ? const Center(child: CircularProgressIndicator(color: Colors.orange))
+              : Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: ListView.builder(
+                    itemCount: customerDetailsList.length,
+                    itemBuilder: (context, index) {
+                      var customer = customerDetailsList[index];
+
+                      return Card(
+                        elevation: 8,
+                        margin: const EdgeInsets.symmetric(vertical: 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        color: const Color(0xFFFDF6EC), // Light Beige
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.all(16),
+                          leading: CircleAvatar(
+                            radius: 30,
+                            backgroundColor: Colors.deepOrangeAccent.shade100,
+                            child: Text(
+                              customer['name'][0].toUpperCase(),
+                              style: const TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.deepOrange,
+                              ),
+                            ),
+                          ),
+                          title: Text(
+                            customer['name'],
+                            style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87),
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 6),
+                              Row(
+                                children: [
+                                  const Icon(Icons.person, size: 18, color: Colors.brown),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    "Username: ${customer['userName']}",
+                                    style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.black54),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  const Icon(Icons.location_on, size: 18, color: Colors.green),
+                                  const SizedBox(width: 5),
+                                  Expanded(
+                                    child: Text(
+                                      "Address: ${customer['address']}",
+                                      style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black54),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  const Icon(Icons.phone, size: 18, color: Colors.blueAccent),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    "Mobile: ${customer['mobileNumber']}",
+                                    style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.black54),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  const Icon(Icons.lock, size: 18, color: Colors.red),
+                                  const SizedBox(width: 5),
+                                  Expanded(
+                                    child: Text(
+                                      showPasswords
+                                          ? "Password: ${customer['passWord']}"
+                                          : "Password: •••••••",
+                                      style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black54),
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: Icon(
+                                      showPasswords ? Icons.visibility : Icons.visibility_off,
+                                      size: 20,
+                                      color: Colors.grey,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        showPasswords = !showPasswords;
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+        ],
+      ),
     );
   }
 }

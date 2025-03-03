@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
@@ -6,24 +7,18 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gromore_application/about/aboutUs.dart';
 import 'package:gromore_application/admin/adminDashboard.dart';
-import 'package:gromore_application/admin/customerDetailsOrData.dart';
-import 'package:gromore_application/admin/offerDetailsScreen.dart';
 import 'package:gromore_application/cart/addToCartScreen.dart';
 import 'package:gromore_application/cart/cartScreen.dart';
-import 'package:gromore_application/connectivity/connectivityService.dart';
-import 'package:gromore_application/connectivity/networkError.dart';
 import 'package:gromore_application/contact/contact_us.dart';
 import 'package:gromore_application/eggs/eggs_screen.dart';
 import 'package:gromore_application/login/loginScreen.dart';
 import 'package:gromore_application/order/order_screen.dart';
-import 'package:gromore_application/order/totalOrderScreen.dart';
 import 'package:gromore_application/review/reviewScreen.dart';
-import 'package:gromore_application/review/userReviewScreen.dart';
 import 'package:gromore_application/userProfileScreen.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
+
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -38,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   List<Map<String, dynamic>> _filteredItems = [];
   bool _isLoading = false;
+  GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
 
   final List<Map<String, dynamic>> menuItems = [
     {
@@ -256,14 +252,14 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() => isLoading = false);
     }
   }
-
-  Future<void> _launchUrl(Uri url) async {
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
-    } else {
-      debugPrint("Could not launch $url");
-    }
+Future<void> _launchUrl(Uri url) async {
+  if (await canLaunchUrl(url)) {
+    await launchUrl(url, mode: LaunchMode.inAppBrowserView);
+  } else {
+    debugPrint("Could not launch $url");
   }
+}
+
 
   Future<void> fetchOfferDetails() async {
     try {
@@ -412,7 +408,13 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.pushNamed(context, '/tttt');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => HomeScreen(),
+                  ), // Navigate to CartScreen
+                );
+                // Navigator.pushNamed(context, '/tttt');
               },
             ),
             // const SizedBox(height: 10),
@@ -434,24 +436,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             // const SizedBox(height: 10),
-            // ListTile(
-            //   leading: const Image(
-            //       image: AssetImage('assets/greenVegetables/cart.gif')),
-            //   title: const Text(
-            //     'ऑर्डर हिस्ट्री',
-            //     style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-            //   ),
-            //   onTap: () {
-            //     Navigator.push(
-            //         context,
-            //         MaterialPageRoute(
-            //           builder: (context) => const AllOrdersScreen(),
 
-            //           // OrderScreen(),
-            //         ));
-            //   },
-            // ),
-            // const SizedBox(height: 10),
             ListTile(
               leading: const Image(
                 image: AssetImage('assets/greenVegetables/profile.gif'),
@@ -485,7 +470,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             ListTile(
-              leading: const Image(
+              leading:  Image(
                 image: AssetImage('assets/animation/review.gif'),
               ),
               title: Text(
@@ -496,35 +481,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AdminDashboard(),
+                      builder: (context) => MoodReviewScreen(),
                     ));
                 Navigator.pushNamed(context, '/contact');
               },
             ),
 
-            // ListTile(
-            //   leading: const Image(
-            //     image: AssetImage('assets/animation/reviewhistory.gif'),
-            //   ),
-            //   title: const Text(
-            //     'अभिप्राय हिस्ट्री',
-            //     style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-            //   ),
-            //   onTap: () {
-            //     Navigator.push(
-            //         context,
-            //         MaterialPageRoute(
-            //           builder: (context) => UserReviewsScreen(),
-            //         ));
-            //     Navigator.pushNamed(context, '/contact');
-            //   },
-            // ),
             ListTile(
               leading: const Image(
                 image: AssetImage('assets/animation/boy.gif'),
               ),
               title: const Text(
-                'About us',
+                'आमच्याबद्दल',
                 style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
               onTap: () {
@@ -536,13 +504,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.pushNamed(context, '/contact');
               },
             ),
-           
+
             const SizedBox(
               height: 100,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
+               
+               
                 IconButton(
                   onPressed: () {
                     final Uri whatsappGroupUrl = Uri.parse(
@@ -577,7 +547,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       'Instagram Tapped',
                     );
                     Uri instaurl =
-                        Uri.parse('instagram://user?username=rajelove99');
+                        Uri.parse
+                        (
+
+                          'https://www.instagram.com/_u/rajelove99/'
+                         
+                        );
                     _launchUrl(instaurl);
                   },
                   icon: const FaIcon(
@@ -591,7 +566,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(
               height: 20,
             ),
-             Container(
+            Container(
               width: 60,
               margin: const EdgeInsets.all(10),
               child: ElevatedButton(
@@ -618,31 +593,31 @@ class _HomeScreenState extends State<HomeScreen> {
               child: CircularProgressIndicator(),
             )
           : _buildScreenBody(),
-      bottomNavigationBar: BottomNavigationBar(
-        // selectedLabelStyle: TextStyle(fontSize: 25),
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.black,
-        type: BottomNavigationBarType.fixed,
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.grass,
-              size: 30,
-              color: Colors.black,
-            ),
-            label: 'भाजी',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.egg, size: 30),
-            label: 'अंडी',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list, size: 30),
-            label: 'ऑर्डर',
-          ),
+    
+    
+      bottomNavigationBar: CurvedNavigationBar(
+        color: Colors.grey.shade300,
+        key: _bottomNavigationKey,
+        index: 0,
+        items: <Widget>[
+          Icon(Icons.grass, size: 30, color: Colors.black),
+          Icon(Icons.egg, size: 30, color: Colors.black),
+          Icon(Icons.list, size: 30, color: Colors.black),
         ],
+
+
+        backgroundColor: Colors.white,
+        
+        animationCurve: Curves.fastEaseInToSlowEaseOut,
+        animationDuration: Duration(milliseconds: 300
+        ),
+        onTap: (index) {
+            HapticFeedback.mediumImpact(); 
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        letIndexChange: (index) => true,
       ),
     );
   }

@@ -126,6 +126,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
   @override
   Widget build(BuildContext context) {
+    
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
     return Scaffold(
       // backgroundColor: Colors.brown.shade400,
       appBar: AppBar(
@@ -152,11 +155,15 @@ class _AdminDashboardState extends State<AdminDashboard> {
               ),
             ),
             ListTile(
-              leading: const Image(
-                  image: AssetImage('assets/animation/vegetables.gif')),
-              title: const Text(
+              leading: SizedBox(
+                 height: 40,
+                width: 40,
+                child: const Image(
+                    image: AssetImage('assets/animation/vegetables.gif')),
+              ),
+              title:  Text(
                 'Vegetables Price',
-                style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: width/20, fontWeight: FontWeight.bold),
               ),
               onTap: () {
                 Navigator.push(
@@ -170,12 +177,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
               },
             ),
             ListTile(
-              leading: const Image(
-                image: AssetImage('assets/animation/online-order.gif'),
+              leading: SizedBox(
+                 height: 40,
+                width: 40,
+                child: const Image(
+                  image: AssetImage('assets/animation/online-order.gif'),
+                ),
               ),
-              title: const Text(
+              title:  Text(
                 'Order History',
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: width/20, fontWeight: FontWeight.bold),
               ),
               onTap: () {
                 Navigator.push(
@@ -188,12 +199,15 @@ class _AdminDashboardState extends State<AdminDashboard> {
               },
             ),
             ListTile(
-              leading: const Image(
-                image: AssetImage('assets/animation/market.gif'),
+              leading: SizedBox( height: 40,
+                width: 40,
+                child: const Image(
+                  image: AssetImage('assets/animation/market.gif'),
+                ),
               ),
-              title: const Text(
+              title:  Text(
                 'Vegetable Quantity',
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: width/20, fontWeight: FontWeight.bold),
               ),
               onTap: () {
                 Navigator.push(
@@ -205,12 +219,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
               },
             ),
             ListTile(
-              leading: const Image(
-                image: AssetImage('assets/animation/rating.gif'),
+              leading: SizedBox(
+                 height: 40,
+                width: 40,
+                child: const Image(
+                  image: AssetImage('assets/animation/rating.gif'),
+                ),
               ),
-              title: const Text(
+              title:  Text(
                 'Review History',
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: width/20, fontWeight: FontWeight.bold),
               ),
               onTap: () {
                 Navigator.push(
@@ -222,12 +240,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
               },
             ),
             ListTile(
-              leading: const Image(
-                image: AssetImage('assets/animation/customer-care.gif'),
+              leading: SizedBox(
+                 height: 40,
+                width: 40,
+                child: const Image(
+                  image: AssetImage('assets/animation/customer-care.gif'),
+                ),
               ),
-              title: const Text(
+              title:  Text(
                 'Customer Details',
-                style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: width/20, fontWeight: FontWeight.bold),
               ),
               onTap: () {
                 Navigator.push(
@@ -239,12 +261,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
               },
             ),
             ListTile(
-              leading: const Image(
-                image: AssetImage('assets/animation/shopping-bag.gif'),
+              leading: SizedBox(
+                 height: 40,
+                width: 40,
+                child: const Image(
+                  image: AssetImage('assets/animation/shopping-bag.gif'),
+                ),
               ),
-              title: const Text(
+              title:  Text(
                 'Offer Details',
-                style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: width/20, fontWeight: FontWeight.bold),
               ),
               onTap: () {
                 Navigator.push(
@@ -254,6 +280,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     ));
                 Navigator.pushNamed(context, '/contact');
               },
+            ),
+                SizedBox(
+              height: height/3.4,
             ),
             Container(
               width: 60,
@@ -271,7 +300,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 10),
                 ),
-                child: const Text('Logout', style: TextStyle(fontSize: 16)),
+                child:  Text('Logout', style: TextStyle(fontSize: width/20)),
               ),
             ),
           ],
@@ -353,7 +382,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
             ),
     );
   }
-
   void alertdialogBox(BuildContext context) {
     showDialog(
       context: context,

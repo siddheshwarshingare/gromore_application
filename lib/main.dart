@@ -8,7 +8,7 @@ import 'package:gromore_application/language/languageSelector.dart';
 import 'package:gromore_application/splash_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
+//26/03/25 done...raje......
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -24,41 +24,39 @@ void main() async {
     ),
   );
 }
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     final localeProvider = Provider.of<LocaleProvider>(context);
+    final connectivityService = Provider.of<ConnectivityService>(context);
 
-    return Consumer<ConnectivityService>(
-      builder: (context, connectivityService, child) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [
-            Locale('en'),
-            Locale('te'),
-          ],
-          locale: localeProvider.locale,
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-            useMaterial3: true,
-          ),
-          // ✅ UI updates dynamically based on connectivity status
-          home: connectivityService.isConnected ? Splashscreen() : const NetworkError(),
-           builder: (context, child) {
-            return connectivityService.isConnected
-                ? child!
-                : const NetworkError(); // ✅ Shows NetworkError on top of the app
-          },
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en'),
+        Locale('te'),
+      ],
+      locale: localeProvider.locale,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+      home: connectivityService.isConnected ? Splashscreen() : const NetworkError(),
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.0)), // ✅ Fixes text size
+          child: connectivityService.isConnected ? child! : const NetworkError(),
         );
       },
     );
   }
-}
+}  

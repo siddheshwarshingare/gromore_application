@@ -1,6 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
-import 'package:shared_preferences/shared_preferences.dart';
 
 class CartProvider with ChangeNotifier {
   List<Map<String, dynamic>> _cartItems = [];
@@ -16,8 +15,60 @@ class CartProvider with ChangeNotifier {
     }
     return total;
   }
+void updateVegetableQuantity(String title, int newQuantity) async {
+  // Mapping vegetable names to Firestore field names
+  Map<String, String> vegetableFieldMapping = {
+    "मेथी": "methiVegetablesQuantity",
+    "गवार": "gavarVegetablesQuantity",
+    "पालक": "palakVegetablesQuantity",
+    "चवली": "chavaliVegetablesQuantity",
+    "कोथिंबीर": "kothimbirVegetablesQuantity",
+    "शेपू": "shepuVegetablesQuantity",
+    "कंदे": "kandeVegetablesQuantity",
+    "भेंडी": "bhendiVegetablesQuantity",
+    "आलू": "alluVegetablesQuantity",
+    "काकड़ी": "kakdiVegetablesQuantity",
+    "कांदा पथ": "kandaPathVegetablesQuantity",
+    "करले": "karleVegetablesQuantity",
+    "फुलगोबी": "pattagobiVegetablesQuantity",
+    "वालाच्या शेंगा": "valachyashengaVegetablesQuantity",
+  };
 
-  // Future<double> get discountedTotalPrice async {
+  // Check if the title exists in the mapping
+  String? firestoreField = vegetableFieldMapping[title];
+
+  if (firestoreField == null) {
+    print("Error: No mapping found for vegetable $title");
+    return;
+  }
+
+  // Firestore document reference
+  DocumentReference productRef = FirebaseFirestore.instance
+      .collection('VegetablesPrice')
+      .doc('QuantityOfVegetable');
+
+  try {
+    // Fetch the current value from Firestore
+    DocumentSnapshot docSnapshot = await productRef.get();
+    String currentQuantity = docSnapshot[firestoreField] ?? '0kg';
+
+    // Remove 'kg' and convert the remaining string to an integer
+    int currentQuantityValue = int.tryParse(currentQuantity.replaceAll('kg', '')) ?? 0;
+
+    // Add the newQuantity to the current quantity
+    int updatedQuantity = currentQuantityValue + newQuantity;
+
+    // Update the quantity in Firestore
+    await productRef.update({
+      firestoreField: '${updatedQuantity}kg',
+    });
+
+    print("$firestoreField updated to ${updatedQuantity}kg successfully!");
+  } catch (error) {
+    print("Error updating Firestore: $error");
+  }
+}
+// Future<double> get discountedTotalPrice async {
   //   SharedPreferences prefs = await SharedPreferences.getInstance();
   //   final double? decimal = prefs.getDouble('discount');
   //   print("111111111111111ttttttttttttttt$decimal");

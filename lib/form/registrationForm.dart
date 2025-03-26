@@ -20,6 +20,8 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
   final TextEditingController confirmPasswordController = TextEditingController();
 
   bool isSubmitting = false;
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   @override
@@ -27,212 +29,201 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
     final applocalizations = AppLocalizations.of(context);
 
     return Scaffold(
+       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Center(
           child: Text(
             applocalizations!.registrationForm,
             style: const TextStyle(
-              fontSize: 30,
+              fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              color: Colors.white,
+            ),
+          ),
+        ),
+        backgroundColor: Colors.green,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Center(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20),
+
+                // Name Field
+                _buildTextField(
+                  controller: nameController,
+                  labelText: applocalizations.name,
+                  icon: Icons.person,
+                  inputFormatter: FilteringTextInputFormatter.allow(RegExp(r'^[\u0900-\u097F\u0020a-zA-Z]*$')),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) return applocalizations.nameisrequired;
+                    return null;
+                  },
+                ),
+
+                // Mobile Field
+                _buildTextField(
+                  controller: mobileController,
+                  labelText: applocalizations.mobileNumber,
+                  icon: Icons.phone,
+                  
+                  keyboardType: TextInputType.phone,
+                  inputFormatter: FilteringTextInputFormatter.digitsOnly,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) return applocalizations.mobileNumberisrequired;
+                    if (value.length != 10) return applocalizations.enteravalid10digitmobilenumber;
+                    return null;
+                  },
+                ),
+
+                // Username Field
+                _buildTextField(
+                  controller: usernameController,
+                  labelText: applocalizations.username,
+                  icon: Icons.account_circle,
+                  inputFormatter: FilteringTextInputFormatter.allow(RegExp(r'^[\u0900-\u097F\u0020a-zA-Z0-9]*$')),
+                   validator: (value) {
+                    if (value == null || value.isEmpty) return applocalizations.usernameisrequired;
+                    return null;
+                  },
+                ),
+
+                // Password Field with Toggle Visibility
+                _buildPasswordField(
+  controller: passwordController,
+  labelText: applocalizations.password,
+  isPasswordVisible: _isPasswordVisible,
+  validator: (value) {
+    if (value == null || value.isEmpty) {
+      return applocalizations.passwordisrequired;
+    } else if (value.length < 6) {
+      return applocalizations.passwordmustbeatleast6characterslong;
+    }
+    return null;
+  },
+  toggleVisibility: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
+),
+
+
+                // Confirm Password Field with Toggle Visibility
+                _buildPasswordField(
+                  controller: confirmPasswordController,
+                  labelText: applocalizations.confirmPassword,
+                  isPasswordVisible: _isConfirmPasswordVisible,
+                  toggleVisibility: () => setState(() => _isConfirmPasswordVisible = !_isConfirmPasswordVisible),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) return applocalizations.confirmPasswordisrequired;
+                    if (value != passwordController.text) return applocalizations.passwordsdonotmatch;
+                    return null;
+                  },
+                ),
+
+                // Address Field
+                _buildTextField(
+                  controller: addressController,
+                  labelText: applocalizations.address,
+                  icon: Icons.home,
+                  maxLines: 3,
+                  inputFormatter: FilteringTextInputFormatter.allow(RegExp(r'^[\u0900-\u097F\u0020a-zA-Z0-9,.-]*$')),
+                   validator: (value) {
+                    if (value == null || value.isEmpty) return applocalizations.addressisrequired;
+                    return null;
+                  },
+                ),
+
+                const SizedBox(height: 30),
+
+                // Submit Button
+                Center(
+                  child: ElevatedButton(
+                    onPressed: isSubmitting
+                        ? null
+                        : () {
+                            if (_formKey.currentState?.validate() ?? false) {
+                              setState(() => isSubmitting = true);
+                              storeDataToFirebase();
+                              Future.delayed(const Duration(seconds: 2), () {
+                                setState(() => isSubmitting = false);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Form submitted successfully!'),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                                Navigator.pop(context);
+                              });
+                            }
+                          },
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: isSubmitting ? Colors.grey : Colors.orange.shade700,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 45),
+                    ),
+                    child: isSubmitting
+                        ? const CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white))
+                        : Text(
+                            applocalizations.submit,
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                          ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
       ),
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Container(
-              height: double.infinity,
-              width: double.infinity,
-              child: const Image(
-                alignment: Alignment.center,
-                image: AssetImage('assets/color.avif'),
-                fit: BoxFit.fill,
-              ),
-            ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String labelText,
+    required IconData icon,
+    TextInputType keyboardType = TextInputType.text,
+    TextInputFormatter? inputFormatter,
+    int maxLines = 1,
+    String? Function(String?)? validator,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 15),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        maxLines: maxLines,
+        inputFormatters: inputFormatter != null ? [inputFormatter] : [],
+        decoration: _inputDecoration(labelText).copyWith(
+          prefixIcon: Icon(icon, color: Colors.black),
+        ),
+        validator: validator ?? (value) => value == null || value.isEmpty ? 'This field is required' : null,
+      ),
+    );
+  }
+
+  Widget _buildPasswordField({
+    required TextEditingController controller,
+    required String labelText,
+    required bool isPasswordVisible,
+    required VoidCallback toggleVisibility,
+    String? Function(String?)? validator,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 15),
+      child: TextFormField(
+        controller: controller,
+        obscureText: !isPasswordVisible,
+        decoration: _inputDecoration(labelText).copyWith(
+          prefixIcon: const Icon(Icons.lock, color: Colors.black),
+          suffixIcon: IconButton(
+            icon: Icon(isPasswordVisible ? Icons.visibility : Icons.visibility_off, color: Colors.black),
+            onPressed: toggleVisibility,
           ),
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color.fromARGB(255, 94, 181, 225),
-                  Color.fromARGB(255, 160, 192, 206),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-            height: MediaQuery.of(context).size.height,
-          ),
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Center(
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
-
-                    // Name Field (Allows Marathi & English)
-                    TextFormField(
-                      controller: nameController,
-                      decoration: _inputDecoration(applocalizations.name),
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(
-                          r'^[\u0900-\u097F\u0020a-zA-Z]*$', // Marathi & English letters, spaces
-                        )),
-                      ],
-                      validator: (value) =>
-                          value == null || value.isEmpty ? applocalizations.nameisrequired : null,
-                    ),
-
-                    const SizedBox(height: 15),
-
-                    // Mobile Field (Only Numbers)
-                    TextFormField(
-                      controller: mobileController,
-                      decoration: _inputDecoration(applocalizations.mobileNumber),
-                      keyboardType: TextInputType.phone,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly, // Allow only digits
-                        LengthLimitingTextInputFormatter(10), // Limit to 10 digits
-                      ],
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return applocalizations.mobileNumberisrequired;
-                        }
-                        if (value.length != 10) {
-                          return applocalizations.enteravalid10digitmobilenumber;
-                        }
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 15),
-
-                    // Username Field (Allows Marathi & English)
-                    TextFormField(
-                      controller: usernameController,
-                      decoration: _inputDecoration(applocalizations.username),
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(
-                          r'^[\u0900-\u097F\u0020a-zA-Z0-9]*$', // Marathi, English & Numbers
-                        )),
-                      ],
-                      validator: (value) =>
-                          value == null || value.isEmpty ? applocalizations.usernameisrequired : null,
-                    ),
-                    const SizedBox(height: 15),
-
-                    // Password Field
-                    TextFormField(
-                      controller: passwordController,
-                      obscureText: true,
-                      decoration: _inputDecoration(applocalizations.password),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return applocalizations.passwordisrequired;
-                        }
-                        if (value.length < 6) {
-                          return applocalizations.passwordmustbeatleast6characterslong;
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 15),
-
-                    // Confirm Password Field
-                    TextFormField(
-                      controller: confirmPasswordController,
-                      obscureText: true,
-                      decoration: _inputDecoration(applocalizations.confirmPassword),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return applocalizations.confirmPasswordisrequired;
-                        }
-                        if (value != passwordController.text) {
-                          return applocalizations.passwordsdonotmatch;
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 15),
-
-                    // Address Field (Allows Marathi & English)
-                    TextFormField(
-                      controller: addressController,
-                      decoration: _inputDecoration(applocalizations.address),
-                      maxLines: 3,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(
-                          r'^[\u0900-\u097F\u0020a-zA-Z0-9,.-]*$', // Marathi, English, Numbers, basic punctuation
-                        )),
-                      ],
-                      validator: (value) =>
-                          value == null || value.isEmpty ? applocalizations.addressisrequired : null,
-                    ),
-                    const SizedBox(height: 30),
-
-                    // Submit Button
-                    Center(
-                      child: ElevatedButton(
-                        onPressed: isSubmitting
-                            ? null
-                            : () {
-                                if (_formKey.currentState?.validate() ?? false) {
-                                  setState(() {
-                                    isSubmitting = true;
-                                  });
-                                  storeDataToFirebase();
-                                  Future.delayed(const Duration(seconds: 2), () {
-                                    setState(() {
-                                      isSubmitting = false;
-                                    });
-
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Form submitted successfully!'),
-                                      ),
-                                    );
-                                    Navigator.pop(context);
-                                  });
-                                }
-                              },
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.black,
-                          backgroundColor: isSubmitting
-                              ? Colors.grey
-                              : Colors.orange.shade200,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 15, horizontal: 45),
-                          elevation: 10,
-                          shadowColor: Colors.black.withOpacity(0.2),
-                        ),
-                        child: isSubmitting
-                            ? const CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                              )
-                            : Text(
-                                applocalizations.submit,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
-                                  letterSpacing: 1.2,
-                                ),
-                              ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
+        ),
+        validator: validator,
       ),
     );
   }
@@ -240,27 +231,20 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
   InputDecoration _inputDecoration(String labelText) {
     return InputDecoration(
       labelText: labelText,
-      labelStyle: const TextStyle(color: Colors.white),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: Colors.white),
-      ),
+      labelStyle: const TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 14),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Colors.white)),
+      filled: true,
+      //fillColor: Colors.blue.shade900.withOpacity(0.3),
     );
   }
 
   Future<void> storeDataToFirebase() async {
-    try {
-      await firestore.collection('CustomerDetails').add({
-        "name": nameController.text.trim(),
-        "mobileNumber": mobileController.text.trim(),
-        "userName": usernameController.text.trim(),
-        "passWord": passwordController.text.trim(),
-        "address": addressController.text.trim(),
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to add data: $e')),
-      );
-    }
+    await firestore.collection('CustomerDetails').add({
+      "name": nameController.text.trim(),
+      "mobileNumber": mobileController.text.trim(),
+      "userName": usernameController.text.trim(),
+      "passWord": passwordController.text.trim(),
+      "address": addressController.text.trim(),
+    });
   }
 }

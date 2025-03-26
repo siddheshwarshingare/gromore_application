@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:gromore_application/login/loginScreen.dart';
+import 'package:gromore_application/login/logoutDialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -12,6 +12,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   Map<String, dynamic>? userData;
   String? userName, passWord, mobileNumber, documentId;
+  bool _isLoading = false;
   TextEditingController _addressController = TextEditingController();
 
   @override
@@ -127,78 +128,79 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ? const Center(child: CircularProgressIndicator())
           : Padding(
               padding: const EdgeInsets.all(20.0),
-              child: Column(
-                children: [
-                  Container(
-                    height: 500,
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 156, 237, 248),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Card(
-                      elevation: 5,
-                      shape: RoundedRectangleBorder(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Container(
+                      height: 500,
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 156, 237, 248),
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      color: Colors.transparent,
-                      child: Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const SizedBox(height: 20),
-                            _buildProfileRow(
-                                Icons.person, "नाव", userData!['name']),
-                            _buildProfileRow(Icons.account_circle, "वापरकर्त्याचे नाव",
-                                userData!['userName']),
-                            _buildProfileRow(Icons.phone, "मोबाईल",
-                                userData!['mobileNumber']),
-                            _buildEditableProfileRow(
-                                Icons.home, "पत्ता", userData!['address']),
-                          ],
+                      child: Card(
+                        elevation: 5,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        color: Colors.transparent,
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const SizedBox(height: 20),
+                              _buildProfileRow(
+                                  Icons.person, "नाव", userData!['name']),
+                              _buildProfileRow(Icons.account_circle,
+                                  "वापरकर्त्याचे नाव", userData!['userName']),
+                              _buildProfileRow(Icons.phone, "मोबाईल",
+                                  userData!['mobileNumber']),
+                              _buildEditableProfileRow(
+                                  Icons.home, "पत्ता", userData!['address']),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 150,
-                  ),
-                  SizedBox(
-                    height: 50,
-                    width: 200,
-                    child: ElevatedButton(
+                    const SizedBox(
+                      height: 150,
+                    ),
+                    SizedBox(
+                      height: 50,
+                      width: 200,
+                      child: ElevatedButton(
+                          onPressed: () async {
+                            LogoutDialog.show(context);
+                            //  alertdialogBox(context);
+                            SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
 
-
-                        onPressed: () async {
-                          SharedPreferences prefs = await SharedPreferences.getInstance();
-
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const Loginscreen(),
-                              ),
-                              );
-                              prefs.clear();
-                              
-
-                        },
-                        child: const Text(
-                          "लॉगआउट",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                              color: Colors.black),
-                        ),
-                        style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                Colors.green.shade500),
-                            shape: MaterialStateProperty.all<
-                                    RoundedRectangleBorder>(
-                                const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.zero,
-                                    side: BorderSide(color: Colors.green))))),
-                  ),
-                ],
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (context) => const Loginscreen(),
+                            //   ),
+                            // );
+                            // prefs.clear();
+                          },
+                          child: const Text(
+                            "लॉगआउट",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                                color: Colors.black),
+                          ),
+                          style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  Colors.green.shade500),
+                              shape: MaterialStateProperty.all<
+                                      RoundedRectangleBorder>(
+                                  const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.zero,
+                                      side: BorderSide(color: Colors.green))))),
+                    ),
+                  ],
+                ),
               ),
             ),
     );

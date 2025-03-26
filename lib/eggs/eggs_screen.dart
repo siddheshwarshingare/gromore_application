@@ -76,6 +76,25 @@ class _EggsScreenState extends State<EggsScreen> {
       setState(() => isLoading = false);
     }
   }
+void _showItemNotAvailableDialog() {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text("Item Not Available"),
+        content: const Text("The item is currently not available."),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      );
+    },
+  );
+}
 
   // List to store only two eggs items
   final List<Map<String, String>> eggItems = [
@@ -100,16 +119,20 @@ class _EggsScreenState extends State<EggsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double  height = MediaQuery.of(context).size.height;
+   double width = MediaQuery.of(context).size.width;
     return Scaffold(
-      //
+      
       body: Column(
         children: [
+          SizedBox(height: width/90,),
           AnimatedTextKit(
             animatedTexts: [
               TypewriterAnimatedText(
                 offerDetails,
-                textStyle: const TextStyle(
-                  fontSize: 17,
+                textStyle:  TextStyle(
+                  fontSize:  width /25,
+                  //fontSize: 17,
                   fontWeight: FontWeight.bold,
                   color: Colors.red,
                 ),
@@ -128,11 +151,14 @@ class _EggsScreenState extends State<EggsScreen> {
                 builder: (context, cartProvider, child) {
                   return GridView.builder(
                     gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
+                         SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2, // Display 2 cards in a row
-                      childAspectRatio: 0.65,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
+                        childAspectRatio: (width / 500)*0.8,
+                          crossAxisSpacing: (width / 500)*16,
+                          mainAxisSpacing:(width / 500)* 16,
+                      // childAspectRatio: 0.65,
+                      // crossAxisSpacing: 16,
+                      // mainAxisSpacing: 16,
                     ),
                     itemCount: eggItems.length, // Will be 2 items now
                     itemBuilder: (context, index) {
@@ -162,15 +188,18 @@ class _EggsScreenState extends State<EggsScreen> {
                               const SizedBox(height: 10),
                               Image.asset(
                                 eggItems[index]["image"]!,
-                                height: 140,
-                                width: 140,
+                                   height: width*0.34,
+                                    width: width*0.34,
+                                // height: 140,
+                                // width: 140,
                                 fit: BoxFit.fill,
                               ),
                               const SizedBox(height: 10),
                               Text(
                                 eggItems[index]["title"]!,
-                                style: const TextStyle(
-                                  fontSize: 18,
+                                style:  TextStyle(
+                                   fontSize: height / 50,
+                                 // fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.green,
                                 ),
@@ -179,53 +208,76 @@ class _EggsScreenState extends State<EggsScreen> {
                             
                               Text(
                                 eggItems[index]["price"]!,
-                                style: const TextStyle(
-                                  fontSize: 16,
+                                style:  TextStyle(
+                                   fontSize: height / 50,
+                                  //fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.green,
                                 ),
                               ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  IconButton(
-                                    icon: const Icon(Icons.remove),
-                                    onPressed: () {
-                                      if (currentCount > 0) {
-                                        cartProvider
-                                            .removeFromCart(eggItems[index]);
-                                      }
-                                    },
-                                  ),
-                                  AnimatedSwitcher(
-                                    duration: const Duration(milliseconds: 200),
-                                    child: currentCount == 0
-                                        ? const Text(
-                                            "Add",
-                                            key: ValueKey<int>(0),
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          )
-                                        : Text(
-                                            '$currentCount',
-                                            key: ValueKey<int>(currentCount),
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.add),
-                                    onPressed: () {
-                                      cartProvider.addToCart(eggItems[index]);
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ],
+             Row(
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: [
+    GestureDetector(
+      onTap: () {
+        if (currentCount == 0) {
+          cartProvider.addToCart(eggItems[index]);
+        }
+      },
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 200),
+        child: currentCount == 0
+            ? Container(
+                key: ValueKey<int>(0),
+                height: 35,
+                width: 70,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  "Add",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: height / 50,
+                  ),
+                ),
+              )
+            : Row(
+                key: ValueKey<int>(1),
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.remove),
+                    onPressed: () {
+                      if (currentCount > 0) {
+                        cartProvider.removeFromCart(eggItems[index]);
+                      }
+                    },
+                  ),
+                  Text(
+                    '$currentCount',
+                    key: ValueKey<int>(currentCount),
+                    style: TextStyle(
+                      fontSize: height / 50,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.add),
+                    onPressed: () {
+                      cartProvider.addToCart(eggItems[index]);
+                    },
+                  ),
+                ],
+              ),
+      ),
+    ),
+  ],
+),
+                ],
                           ),
                         ),
                       );

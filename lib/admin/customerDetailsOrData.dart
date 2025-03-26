@@ -125,7 +125,7 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
                                         fontSize: 14,
                                         fontWeight: FontWeight.w500,
                                         color: Colors.black54),
-                                  ),
+                                  ),                                
                                 ],
                               ),
                               const SizedBox(height: 4),

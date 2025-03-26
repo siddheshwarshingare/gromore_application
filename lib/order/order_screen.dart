@@ -36,32 +36,44 @@ class _OrderScreenState extends State<OrderScreen> {
       _fetchOrders();
     }
   }
-
+ 
   // Fetch orders from Firestore and store them in a list
-  Future<void> _fetchOrders() async {
-    try {
-      QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('orders')
-          .where('userId', isEqualTo: result)
-          .get();
+ Future<void> _fetchOrders() async {
+  try {
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('orders')
+        .where('userId', isEqualTo: result)
+        .get();
 
-      List<Map<String, dynamic>> fetchedOrders = snapshot.docs.map((doc) {
-        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        data['orderDate'] = (data['orderDate'] as Timestamp).toDate(); // Convert timestamp to DateTime
-        return data;
-      }).toList();
+    List<Map<String, dynamic>> fetchedOrders = snapshot.docs.map((doc) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      data['orderDate'] = (data['orderDate'] as Timestamp).toDate(); // Convert timestamp to DateTime
+      return data;
+    }).toList();
 
-      // Sort orders by orderDate in descending order
-      fetchedOrders.sort((a, b) => b['orderDate'].compareTo(a['orderDate']));
+    // Sort orders by orderDate in descending order
+    fetchedOrders.sort((a, b) => b['orderDate'].compareTo(a['orderDate']));
 
-      setState(() {
-        ordersList = fetchedOrders;
-        filteredOrdersList = fetchedOrders; // Initially, show all orders
-      });
-    } catch (e) {
-      print("Error fetching orders: $e");
-    }
+    // Get today's and yesterday's dates
+    DateTime now = DateTime.now();
+    DateTime today = DateTime(now.year, now.month, now.day);
+    DateTime yesterday = today.subtract(const Duration(days: 1));
+
+    // Filter orders for today and yesterday
+    List<Map<String, dynamic>> initialOrders = fetchedOrders.where((order) {
+      DateTime orderDate = order['orderDate'];
+      DateTime orderDateOnly = DateTime(orderDate.year, orderDate.month, orderDate.day);
+      return orderDateOnly == today || orderDateOnly == yesterday;
+    }).toList();
+
+    setState(() {
+      ordersList = fetchedOrders;
+      filteredOrdersList = initialOrders; // Show only today and yesterday's orders initially
+    });
+  } catch (e) {
+    print("Error fetching orders: $e");
   }
+}
 
   // Filter orders based on selected date
   void _filterOrdersByDate(DateTime selectedDate) {
@@ -98,10 +110,12 @@ class _OrderScreenState extends State<OrderScreen> {
 
   @override
   Widget build(BuildContext context) {
+   double  height = MediaQuery.of(context).size.height;
+   double width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Orders"),
+        title:  Text("Orders",style: TextStyle(fontSize: width/20),),
         actions: [
           IconButton(
             icon: const Icon(Icons.calendar_today),
@@ -134,31 +148,31 @@ class _OrderScreenState extends State<OrderScreen> {
                           children: [
                             Text(
                               'तारीख: $formattedDate',
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                              style:  TextStyle(fontWeight: FontWeight.bold, fontSize: width/ 26),
                             ),
                             const SizedBox(height: 10),
                             ...orderItems.map((item) {
                               return ListTile(
                                 title: Text(item['title'], style: const TextStyle(fontWeight: FontWeight.bold)),
-                                subtitle: Text('Quantity: ${item['quantity']}'),
-                                trailing: Text('₹${item['totalPrice']}', style: const TextStyle(fontSize: 16, color: Colors.green)),
+                                subtitle: Text('Quantity: ${item['quantity']}',style: TextStyle(fontSize:  width/ 31,),),
+                                trailing: Text('₹${item['totalPrice']}', style:  TextStyle(fontSize:  width/ 26, color: Colors.green)),
                               );
                             }).toList(),
                             const Divider(),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text('एकूण:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                                 Text('एकूण:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: width/22)),
                                 Text('₹${order['totalPrice']}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green)),
                               ],
                             ),
                             const SizedBox(height: 10),
                             Row(
                               children: [
-                                const Text('Order Status  :  ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                                 Text('Order Status  :  ', style: TextStyle(fontSize: width/22, fontWeight: FontWeight.bold)),
                                 Text(
                                   orderStatus ? "Completed" : "In Process",
-                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 233, 61, 61)),
+                                  style:  TextStyle(fontSize: width/22, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 233, 61, 61)),
                                 ),
                               ],
                             ),

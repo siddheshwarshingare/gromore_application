@@ -64,7 +64,11 @@ class _VegetablePriceScreenState extends State<VegetablePriceScreen> {
             .set(updatedPrices);
         ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Prices updated successfully!')));
-        setState(() => isEditing = false);
+          setState(() {
+        vegetablePrices = Map.from(updatedPrices); // Update UI
+        isEditing = false;
+      });
+
       } catch (e) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Failed to update: $e')));
@@ -187,6 +191,9 @@ class _VegetablePriceScreenState extends State<VegetablePriceScreen> {
           .set(vegetablePrices);
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Vegetable added successfully!")));
+          setState(() {
+      
+    });
     } catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Failed to add vegetable: $e")));
@@ -227,7 +234,7 @@ class _VegetablePriceScreenState extends State<VegetablePriceScreen> {
               ),
             ),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(right: 100), 
+        padding: const EdgeInsets.only(right: 100,bottom: 50), 
         child: Container(
           height: 70,
           width: 160,

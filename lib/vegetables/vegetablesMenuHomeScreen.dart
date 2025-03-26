@@ -6,24 +6,20 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gromore_application/about/aboutUs.dart';
 import 'package:gromore_application/admin/adminDashboard.dart';
-import 'package:gromore_application/admin/customerDetailsOrData.dart';
-import 'package:gromore_application/admin/offerDetailsScreen.dart';
 import 'package:gromore_application/cart/addToCartScreen.dart';
 import 'package:gromore_application/cart/cartScreen.dart';
-import 'package:gromore_application/connectivity/connectivityService.dart';
-import 'package:gromore_application/connectivity/networkError.dart';
 import 'package:gromore_application/contact/contact_us.dart';
 import 'package:gromore_application/eggs/eggs_screen.dart';
 import 'package:gromore_application/login/loginScreen.dart';
+import 'package:gromore_application/login/logoutDialog.dart';
 import 'package:gromore_application/order/order_screen.dart';
-import 'package:gromore_application/order/totalOrderScreen.dart';
-import 'package:gromore_application/review/reviewScreen.dart';
-import 'package:gromore_application/review/userReviewScreen.dart';
 import 'package:gromore_application/userProfileScreen.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -36,6 +32,9 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isLoading = true;
   String offerDetails = '';
   int _selectedIndex = 0;
+  double height = 0;
+  double width = 0;
+  GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
   List<Map<String, dynamic>> _filteredItems = [];
   bool _isLoading = false;
 
@@ -315,16 +314,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    height = MediaQuery.of(context).size.height;
+    width = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 70,
-        title: const Center(
+        title: Center(
           child: Text.rich(
             TextSpan(
               text: "फ्रेश ",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 34,
+                fontSize: width / 11,
+                // fontSize: 34,
                 color: Colors.black,
               ),
               children: <TextSpan>[
@@ -332,7 +335,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   text: "भाजीपाला",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 35,
+                    fontSize: width / 11,
+                    //fontSize: 35,
                     color: Colors.orange,
                   ),
                 ),
@@ -384,8 +388,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       drawer: Drawer(
         backgroundColor: Colors.white,
-        child: ListView(
-          padding: EdgeInsets.zero,
+        child: Column(
           children: <Widget>[
             const DrawerHeader(
               decoration: BoxDecoration(
@@ -402,213 +405,195 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-            //const SizedBox(height: 10),
-            ListTile(
-              leading: const Image(
-                  image: AssetImage('assets/greenVegetables/home.gif')),
-              title: const Text(
-                'होम',
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  ListTile(
+                    leading: SizedBox(
+                      height: 40,
+                      width: 40,
+                      child: const Image(
+                          image: AssetImage('assets/greenVegetables/home.gif')),
+                    ),
+                    title: Text(
+                      'होम',
+                      style: TextStyle(
+                          fontSize: width / 16, fontWeight: FontWeight.bold),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/tttt');
+                    },
+                  ),
+                  ListTile(
+                    leading: SizedBox(
+                      height: 40,
+                      width: 40,
+                      child: const Image(
+                          image:
+                              AssetImage('assets/greenVegetables/grocery.gif')),
+                    ),
+                    title: Text(
+                      'कार्ट',
+                      style: TextStyle(
+                          fontSize: width / 16, fontWeight: FontWeight.bold),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const CartScreen()));
+                    },
+                  ),
+                  ListTile(
+                    leading: SizedBox(
+                      height: 40,
+                      width: 40,
+                      child: const Image(
+                        image: AssetImage('assets/greenVegetables/profile.gif'),
+                      ),
+                    ),
+                    title: Text(
+                      'प्रोफाइल',
+                      style: TextStyle(
+                          fontSize: width / 16, fontWeight: FontWeight.bold),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ProfileScreen()));
+                    },
+                  ),
+                  ListTile(
+                    leading: SizedBox(
+                      height: 40,
+                      width: 40,
+                      child: Image(
+                        image: AssetImage('assets/animation/review.gif'),
+                      ),
+                    ),
+                    title: Text(
+                      'अभिप्राय',
+                      style: TextStyle(
+                          fontSize: width / 16, fontWeight: FontWeight.bold),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AdminDashboard()));
+                    },
+                  ),
+                  ListTile(
+                    leading: SizedBox(
+                      height: 40,
+                      width: 40,
+                      child: const Image(
+                        image: AssetImage('assets/animation/contact.gif'),
+                      ),
+                    ),
+                    title: Text(
+                      'संपर्क साधा',
+                      style: TextStyle(
+                          fontSize: width / 16, fontWeight: FontWeight.bold),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ContactUs()));
+                    },
+                  ),
+                  ListTile(
+                    leading: SizedBox(
+                      height: 40,
+                      width: 40,
+                      child: const Image(
+                        image: AssetImage('assets/animation/boy.gif'),
+                      ),
+                    ),
+                    title: Text(
+                      'आमच्याबद्दल',
+                      style: TextStyle(
+                          fontSize: width / 16, fontWeight: FontWeight.bold),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AboutUsScreen()));
+                    },
+                  ),
+                ],
               ),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/tttt');
-              },
             ),
-            // const SizedBox(height: 10),
-            ListTile(
-              leading: const Image(
-                  image: AssetImage('assets/greenVegetables/grocery.gif')),
-              title: const Text(
-                'कार्ट',
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                Navigator.pop(context); // Close the Drawer
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const CartScreen(),
-                  ), // Navigate to CartScreen
-                );
-              },
-            ),
-            // const SizedBox(height: 10),
-            // ListTile(
-            //   leading: const Image(
-            //       image: AssetImage('assets/greenVegetables/cart.gif')),
-            //   title: const Text(
-            //     'ऑर्डर हिस्ट्री',
-            //     style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-            //   ),
-            //   onTap: () {
-            //     Navigator.push(
-            //         context,
-            //         MaterialPageRoute(
-            //           builder: (context) => const AllOrdersScreen(),
-
-            //           // OrderScreen(),
-            //         ));
-            //   },
-            // ),
-            // const SizedBox(height: 10),
-            ListTile(
-              leading: const Image(
-                image: AssetImage('assets/greenVegetables/profile.gif'),
-              ),
-              title: const Text(
-                'प्रोफाइल',
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => ProfileScreen()));
-                Navigator.pushNamed(context, '/profile');
-              },
-            ),
-            //const SizedBox(height: 10),
-            ListTile(
-              leading: const Image(
-                image: AssetImage('assets/animation/contact.gif'),
-              ),
-              title: const Text(
-                'संपर्क साधा',
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ContactUs(),
-                    ));
-                Navigator.pushNamed(context, '/contact');
-              },
-            ),
-            ListTile(
-              leading: const Image(
-                image: AssetImage('assets/animation/review.gif'),
-              ),
-              title: Text(
-                'अभिप्राय',
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AdminDashboard(),
-                    ));
-                Navigator.pushNamed(context, '/contact');
-              },
-            ),
-
-            // ListTile(
-            //   leading: const Image(
-            //     image: AssetImage('assets/animation/reviewhistory.gif'),
-            //   ),
-            //   title: const Text(
-            //     'अभिप्राय हिस्ट्री',
-            //     style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-            //   ),
-            //   onTap: () {
-            //     Navigator.push(
-            //         context,
-            //         MaterialPageRoute(
-            //           builder: (context) => UserReviewsScreen(),
-            //         ));
-            //     Navigator.pushNamed(context, '/contact');
-            //   },
-            // ),
-            ListTile(
-              leading: const Image(
-                image: AssetImage('assets/animation/boy.gif'),
-              ),
-              title: const Text(
-                'About us',
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AboutUsScreen(),
-                    ));
-                Navigator.pushNamed(context, '/contact');
-              },
-            ),
-           
-            const SizedBox(
-              height: 100,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            Column(
               children: [
-                IconButton(
-                  onPressed: () {
-                    final Uri whatsappGroupUrl = Uri.parse(
-                        'https://chat.whatsapp.com/L3dnGGUjzvcJok4vQqsoI8');
-                    launchUrl(whatsappGroupUrl,
-                        mode: LaunchMode.externalApplication);
-                  },
-                  icon: const FaIcon(
-                    FontAwesomeIcons.whatsapp,
-                    color: Colors.green,
-                    size: 32.0,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        final Uri whatsappGroupUrl = Uri.parse(
+                            'https://chat.whatsapp.com/L3dnGGUjzvcJok4vQqsoI8');
+                        launchUrl(whatsappGroupUrl,
+                            mode: LaunchMode.externalApplication);
+                      },
+                      icon: const FaIcon(
+                        FontAwesomeIcons.whatsapp,
+                        color: Colors.green,
+                        size: 32.0,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        Uri fburl = Uri.parse(
+                            'https://www.facebook.com/eenadupellipandiriofficial');
+                        _launchUrl(fburl);
+                      },
+                      icon: const FaIcon(
+                        FontAwesomeIcons.facebook,
+                        color: Colors.blue,
+                        size: 32.0,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        Uri instaurl =
+                            Uri.parse('https://www.instagram.com/rajelove99/');
+                        _launchUrl(instaurl);
+                      },
+                      icon: const FaIcon(
+                        FontAwesomeIcons.instagram,
+                        color: Colors.red,
+                        size: 32.0,
+                      ),
+                    ),
+                  ],
                 ),
-                IconButton(
-                  onPressed: () {
-                    debugPrint(
-                      'Facebook Tapped',
-                    );
-                    Uri fburl = Uri.parse(
-                        'https://www.facebook.com/eenadupellipandiriofficial');
-                    _launchUrl(fburl);
-                  },
-                  icon: const FaIcon(
-                    FontAwesomeIcons.facebook,
-                    color: Colors.blue,
-                    size: 32.0,
-                  ),
-                ),
-                IconButton(
-                  onPressed: () {
-                    debugPrint(
-                      'Instagram Tapped',
-                    );
-                    Uri instaurl =
-                        Uri.parse('instagram://user?username=rajelove99');
-                    _launchUrl(instaurl);
-                  },
-                  icon: const FaIcon(
-                    FontAwesomeIcons.instagram,
-                    color: Colors.red,
-                    size: 32.0,
+                Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.all(10),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      HapticFeedback.mediumImpact();
+                      LogoutDialog.show(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.redAccent,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                    ),
+                    child: const Text('Logout', style: TextStyle(fontSize: 16)),
                   ),
                 ),
               ],
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-             Container(
-              width: 60,
-              margin: const EdgeInsets.all(10),
-              child: ElevatedButton(
-                onPressed: () {
-                  HapticFeedback.mediumImpact();
-                  alertdialogBox(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.redAccent,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                ),
-                child: const Text('Logout', style: TextStyle(fontSize: 16)),
-              ),
             ),
           ],
         ),
@@ -618,31 +603,88 @@ class _HomeScreenState extends State<HomeScreen> {
               child: CircularProgressIndicator(),
             )
           : _buildScreenBody(),
-      bottomNavigationBar: BottomNavigationBar(
-        // selectedLabelStyle: TextStyle(fontSize: 25),
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.black,
-        type: BottomNavigationBarType.fixed,
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.grass,
-              size: 30,
-              color: Colors.black,
-            ),
-            label: 'भाजी',
+      // bottomNavigationBar: BottomNavigationBar(
+      //   // selectedLabelStyle: TextStyle(fontSize: 25),
+      //   currentIndex: _selectedIndex,
+      //   selectedItemColor: Colors.black,
+      //   unselectedItemColor: Colors.black,
+      //   type: BottomNavigationBarType.fixed,
+      //   onTap: _onItemTapped,
+      //   items: const [
+      //     BottomNavigationBarItem(
+      //       icon: Icon(
+      //         Icons.grass,
+      //         size: 30,
+      //         color: Colors.black,
+      //       ),
+      //       label: 'भाजी',
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.egg, size: 30),
+      //       label: 'अंडी',
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.list, size: 30),
+      //       label: 'ऑर्डर',
+      //     ),
+      //   ],
+      // ),
+      bottomNavigationBar: CurvedNavigationBar(
+        color: Colors.grey.shade300,
+        key: _bottomNavigationKey,
+        backgroundColor: Colors.white,
+        // buttonBackgroundColor: Color.fromARGB(255, 188, 218, 84),
+        animationDuration: Duration(milliseconds: 200),
+
+        index: 0,
+        items: <Widget>[
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              //Image.asset("assets/splash_screenlogo.jpg",height: 20,width: 40,),
+              Icon(Icons.grass,
+                  size: 30,
+                  color: _selectedIndex == 0 ? Colors.green : Colors.black),
+              Text('भाजी',
+                  style: TextStyle(
+                      fontSize: 12,
+                      color:
+                          _selectedIndex == 0 ? Colors.green : Colors.black)),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.egg, size: 30),
-            label: 'अंडी',
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.egg,
+                  size: 30,
+                  color: _selectedIndex == 1 ? Colors.green : Colors.black),
+              Text('अंडी',
+                  style: TextStyle(
+                      fontSize: 12,
+                      color:
+                          _selectedIndex == 1 ? Colors.green : Colors.black)),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list, size: 30),
-            label: 'ऑर्डर',
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.list,
+                  size: 30,
+                  color: _selectedIndex == 2 ? Colors.green : Colors.black),
+              Text('ऑर्डर',
+                  style: TextStyle(
+                      fontSize: 12,
+                      color:
+                          _selectedIndex == 2 ? Colors.green : Colors.black)),
+            ],
           ),
         ],
+        onTap: (index) => {
+          setState(() {
+            _selectedIndex = index;
+          })
+        },
+        letIndexChange: (index) => true,
       ),
     );
   }
@@ -677,8 +719,8 @@ class _HomeScreenState extends State<HomeScreen> {
             animatedTexts: [
               TypewriterAnimatedText(
                 offerDetails,
-                textStyle: const TextStyle(
-                  fontSize: 17,
+                textStyle: TextStyle(
+                  fontSize: width / 25,
                   fontWeight: FontWeight.bold,
                   color: Colors.red,
                 ),
@@ -696,9 +738,12 @@ class _HomeScreenState extends State<HomeScreen> {
           TextField(
             cursorHeight: 25,
             controller: _searchController,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'इथे भाज्या मराठी अक्षरांमध्ये शोधा...',
-              hintStyle: TextStyle(color: Colors.black, fontSize: 35),
+              hintStyle: TextStyle(
+                color: Colors.black,
+                fontSize: width / 11,
+              ),
               border: OutlineInputBorder(),
             ),
             onChanged: (query) {
@@ -712,23 +757,23 @@ class _HomeScreenState extends State<HomeScreen> {
             builder: (context, cartProvider, child) {
               return Expanded(
                 child: _filteredItems.isEmpty
-                    ? const Center(
+                    ? Center(
                         child: Text(
                           "भाज्या अवैलेबल नाहीत",
                           style: TextStyle(
-                            fontSize: 25,
+                            fontSize: width / 20,
                             fontWeight: FontWeight.bold,
                             color: Colors.red,
                           ),
                         ),
                       )
                     : GridView.builder(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
-                          childAspectRatio: 0.6,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
+                          //childAspectRatio: 0.6,
+                          childAspectRatio: (width / 500) * 0.75,
+                          crossAxisSpacing: (width / 500) * 16,
+                          mainAxisSpacing: (width / 500) * 16,
                         ),
                         itemCount: _filteredItems.length,
                         itemBuilder: (context, index) {
@@ -758,15 +803,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                   const SizedBox(height: 10),
                                   Image.asset(
                                     _filteredItems[index]["image"],
-                                    height: 140,
+                                    //height: 140,
+                                    height: width * 0.34,
                                     width: double.maxFinite,
                                     fit: BoxFit.fill,
                                   ),
                                   const SizedBox(height: 10),
                                   Text(
                                     '${_filteredItems[index]["title"]}',
-                                    style: const TextStyle(
-                                      fontSize: 18,
+                                    style: TextStyle(
+                                      fontSize: height / 50,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.green,
                                     ),
@@ -774,62 +820,88 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Text(
                                     '   250 ग्राम (पावकीलो)',
                                     style: TextStyle(
-                                      fontSize: 17,
+                                      fontSize: width / 25,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.pink.shade400,
                                     ),
                                   ),
                                   Text(
                                     _filteredItems[index]["price"],
-                                    style: const TextStyle(
-                                      fontSize: 16,
+                                    style: TextStyle(
+                                      fontSize: width / 25,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.green,
                                     ),
                                   ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      IconButton(
-                                        icon: const Icon(Icons.remove),
-                                        onPressed: () {
-                                          if (currentCount > 0) {
-                                            cartProvider.removeFromCart(
-                                                menuItems[index]);
-                                          }
-                                        },
-                                      ),
-                                      AnimatedSwitcher(
-                                        duration:
-                                            const Duration(milliseconds: 200),
-                                        child: currentCount == 0
-                                            ? const Text(
-                                                "Add",
-                                                key: ValueKey<int>(0),
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              )
-                                            : Text(
-                                                '$currentCount',
-                                                key:
-                                                    ValueKey<int>(currentCount),
-                                                style: const TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                      ),
-                                      IconButton(
-                                        icon: const Icon(Icons.add),
-                                        onPressed: () {
-                                          cartProvider
-                                              .addToCart(menuItems[index]);
-                                        },
-                                      ),
-                                    ],
+                                  SizedBox(
+                                    height: 4,
                                   ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      if (currentCount == 0) {
+                                        cartProvider
+                                            .addToCart(menuItems[index]);
+                                      }
+                                    },
+                                    child: AnimatedSwitcher(
+                                      duration:
+                                          const Duration(milliseconds: 200),
+                                      child: currentCount == 0
+                                          ? Container(
+                                              key: ValueKey<int>(0),
+                                              height: 35,
+                                              width: 70,
+                                              alignment: Alignment.center,
+                                              decoration: BoxDecoration(
+                                                color: Theme.of(context)
+                                                    .primaryColor,
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              child: const Text(
+                                                "Add",
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16),
+                                              ),
+                                            )
+                                          : Row(
+                                              key: ValueKey<int>(1),
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                IconButton(
+                                                  icon:
+                                                      const Icon(Icons.remove),
+                                                  onPressed: () {
+                                                    if (currentCount > 0) {
+                                                      cartProvider
+                                                          .removeFromCart(
+                                                              menuItems[index]);
+                                                    }
+                                                  },
+                                                ),
+                                                Text(
+                                                  '$currentCount',
+                                                  key: ValueKey<int>(
+                                                      currentCount),
+                                                  style: TextStyle(
+                                                    fontSize: width / 25,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                IconButton(
+                                                  icon: const Icon(Icons.add),
+                                                  onPressed: () {
+                                                    cartProvider.addToCart(
+                                                        menuItems[index]);
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                    ),
+                                  )
                                 ],
                               ),
                             ),
@@ -858,7 +930,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     "Logout Confirmation",
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  content: const Text("Are you sure you want to logout?"),
+                  content: const Text(
+                      "तुम्हाला खात्री आहे की तुम्ही लॉगआउट करू इच्छिता?"),
                   actions: [
                     TextButton(
                       onPressed: _isLoading

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gromore_application/cart/addToCartScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:gromore_application/cart/addToCartScreen.dart';
 
 class CartScreen extends StatefulWidget {
   final List<Map<String, dynamic>>? orderItems;
@@ -27,13 +27,56 @@ class _CartScreenState extends State<CartScreen> {
   String? customerName;
   String? custmerMobilenumber;
   String? customerAddress;
+  double? discount;
+  double? totalPrice = 0.0; // Ensure totalPrice is double
+  double? discountAmount = 0.0; // Calculate discount
+  double? finalPrice = 0.0;
+  double? vegetablePrice = 0.0;
+  double temp = 0.00;
+  Future<void> fetchOfferDetails() async {
+    try {
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance
+          .collection('OfferDetails')
+          .doc('discount') // Ensure this is the correct Firestore document ID
+          .get();
+
+      if (snapshot.exists) {
+        // Perform the asynchronous operations first
+        double fetchedDiscount =
+            double.tryParse(snapshot["discountt"].toString()) ?? 0.0;
+        print("Fetched Discount: $fetchedDiscount");
+
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setDouble('discount', fetchedDiscount);
+        print("Fetched Discount:34343434 $fetchedDiscount");
+
+        // Now update the state synchronously
+        setState(() {
+          discount = fetchedDiscount;
+        });
+      } else {
+        setState(() {
+          discount = 0.0;
+        });
+      }
+    } catch (e) {
+      print('Error fetching offer details: $e');
+      setState(() {
+        discount = 0.0;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       _checkLoginStatus();
-
+      await fetchOfferDetails();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      print('asjflsdjkflsjkdfjk${prefs.getDouble('discount')}');
+      print("111111111111111111111111 ==${discount}");
       // Initialize cart items only once after the first frame
       Future.microtask(() {
         final cartProvider = Provider.of<CartProvider>(context, listen: false);
@@ -61,26 +104,28 @@ class _CartScreenState extends State<CartScreen> {
     try {
       List<Map<String, dynamic>> orderItems =
           cartProvider.cartItems.map((item) {
-        final priceString = item['price'] ?? '₹0';
-        final price =
-            double.tryParse(priceString.replaceAll(RegExp(r'[^\d.]'), '')) ??
-                0.0;
-
+        final price = double.tryParse(item['price'].substring(1)) ?? 0.0;
         return {
           'title': item['title'],
           'quantity': item['quantity'],
-          'totalPrice': price,
+          'totalPrice': price * (item['quantity'] ?? 0),
         };
       }).toList();
+
+      double finalOrderPrice = cartProvider.totalPrice!;
+      if (discount != null && discount != 0 && finalOrderPrice > 100) {
+        finalOrderPrice -= (finalOrderPrice * (discount! / 100));
+      }
 
       await FirebaseFirestore.instance.collection('orders').add({
         'userId': result,
         'customerName': customerName,
         'customerAddress': customerAddress,
         'items': orderItems,
-        'totalPrice': cartProvider.totalPrice,
+        'totalPrice': finalOrderPrice,
         'mobileNumber': custmerMobilenumber,
         'orderDate': Timestamp.now(),
+        'orderStatus': false,
       });
 
       showDialog(
@@ -105,25 +150,6 @@ class _CartScreenState extends State<CartScreen> {
         },
       );
     } catch (e) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            content: const Text("Failed to place order, please try again.",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 19)),
-            actions: <Widget>[
-              TextButton(
-                child: const Text("OK",
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
       print("Error placing order: $e");
     }
   }
@@ -132,7 +158,6 @@ class _CartScreenState extends State<CartScreen> {
   Future<void> _checkLoginStatus() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    // Retrieve the username from SharedPreferences
     setState(() {
       userName = prefs.getString('userName');
       passWord = prefs.getString('passWord');
@@ -182,129 +207,59 @@ class _CartScreenState extends State<CartScreen> {
     }
   }
 
-  // Handle editing the cart item
-  void _editCartItem(Map<String, dynamic> item) {
-    // Logic to edit the item in the cart
+  void _showOrderConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) {
-        TextEditingController quantityController =
-            TextEditingController(text: item['quantity'].toString());
-
+      builder: (BuildContext dialogContext) {
+        // Use dialogContext for closing dialog
         return AlertDialog(
-          title: Text('Edit ${item['title']}'),
-          content: TextField(
-            controller: quantityController,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-              labelText: 'Quantity',
-            ),
-          ),
-          actions: [
+          title: const Text("आर्डर कन्फर्म करा",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+          content: const Text("तुम्ही खरेदी निश्चित करू इच्छिता का?",
+              style: TextStyle(fontSize: 18)),
+          actions: <Widget>[
             TextButton(
+              child: const Text("नाही",
+                  style: TextStyle(fontSize: 18, color: Colors.red)),
               onPressed: () {
-                final updatedQuantity = int.tryParse(quantityController.text);
-                if (updatedQuantity != null && updatedQuantity > 0) {
-                  setState(() {
-                    item['quantity'] = updatedQuantity;
-                  });
-                  Navigator.of(context).pop();
-                }
+                Navigator.of(dialogContext)
+                    .pop(); // Close the confirmation popup
               },
-              child: const Text('Update'),
             ),
             TextButton(
+              child: const Text("हो",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(dialogContext).pop(); // Close the popup first
+
+                // Delay execution to avoid invalid context issue
+                Future.delayed(Duration(milliseconds: 100), () {
+                  placeOrderAndStoreInFirebase(context);
+                });
               },
-              child: const Text('Cancel'),
             ),
           ],
         );
       },
     );
   }
-void _showOrderConfirmationDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text("आर्डर कन्फर्म करा",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-        content: const Text("तुम्ही खरेदी निश्चित करू इच्छिता का?",
-            style: TextStyle(fontSize: 18)),
-        actions: <Widget>[
-          TextButton(
-            child: const Text("नाही",
-                style: TextStyle(fontSize: 18, color: Colors.red)),
-            onPressed: () {
-              Navigator.of(context).pop(); // Close the popup
-            },
-          ),
-          TextButton(
-            child: const Text("हो",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            onPressed: () {
-              Navigator.of(context).pop(); // Close confirmation popup
-              placeOrderAndStoreInFirebase(context); // Proceed with order
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
-
-  // Update the Firestore database after modifying the cart
-  Future<void> updateOrderInFirestore() async {
-    if (widget.orderItems == null || widget.orderItems!.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("No items to update")),
-      );
-      return;
-    }
-
-    try {
-      double totalPrice = 0.0;
-
-      for (var item in widget.orderItems!) {
-        final priceString =
-            item['price'] ?? '₹0'; // Default to ₹0 if price is null
-        final price =
-            double.tryParse(priceString.replaceAll(RegExp(r'[^\d.]'), '')) ??
-                0.0;
-        final quantity = item['quantity'] ?? 0;
-        totalPrice += price * quantity;
-      }
-
-      await FirebaseFirestore.instance
-          .collection('orders')
-          .doc(widget.orderId)
-          .update({
-        'items': widget.orderItems,
-        'totalPrice': totalPrice,
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Order updated successfully")),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error updating order: $e")),
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     final cartProvider = Provider.of<CartProvider>(context);
-
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
     // Initialize the cart with orderItems passed from the previous screen
     if (widget.orderItems != null && widget.orderItems!.isNotEmpty) {
       cartProvider.cartItems.clear();
       cartProvider.cartItems.addAll(widget.orderItems!);
       cartProvider.notifyListeners();
     }
+
+    // Calculate discount and final price
+    totalPrice = cartProvider.totalPrice;
+    discountAmount = (totalPrice! * (discount ?? 0) / 100);
+    finalPrice = totalPrice! - discountAmount!;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -338,10 +293,16 @@ void _showOrderConfirmationDialog(BuildContext context) {
               itemCount: cartProvider.cartItems.length,
               itemBuilder: (context, index) {
                 final item = cartProvider.cartItems[index];
+
                 final price =
                     double.tryParse(item['price'].substring(1)) ?? 0.0;
                 final totalPrice = price * (item['quantity'] ?? 0);
-
+                // print(item['title'].contains('अंडी'));
+                bool isEgg = item['title'].contains('अंडी');
+                // if (!isEgg) {
+                //   temp += totalPrice;
+                // }
+                print("|||||||||||||||||||||||||||||||||||||||||||||$temp");
                 return ListTile(
                   title: Text(item['title'],
                       style: const TextStyle(color: Colors.black)),
@@ -363,17 +324,12 @@ void _showOrderConfirmationDialog(BuildContext context) {
                         },
                       ),
                       Text(item['quantity'].toString(),
-                          style: const TextStyle(color: Colors.black)),
+                          style: const TextStyle(
+                              color: Colors.black, fontSize: 16)),
                       IconButton(
                         icon: Icon(Icons.add, color: Colors.green[600]),
                         onPressed: () {
                           cartProvider.addToCart(item);
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.edit, color: Colors.blue),
-                        onPressed: () {
-                          _editCartItem(item); // Edit item when clicked
                         },
                       ),
                     ],
@@ -384,41 +340,96 @@ void _showOrderConfirmationDialog(BuildContext context) {
       bottomNavigationBar: cartProvider.cartItems.isEmpty
           ? null
           : BottomAppBar(
-              color: Colors.green[50],
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Total: ₹${cartProvider.totalPrice.toStringAsFixed(2)}',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green[700],
+              height: (discount != null && discount != 0 && totalPrice! > 200)
+                  ? width / 1.9
+                  : width / 1.9,
+              child: Column(
+                children: [
+                  // Show discount only if totalPrice > 100 and discount is not zero
+
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Total Price',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: width / 25,
+                          ),
+                        ),
+                        Text('₹${totalPrice!.toStringAsFixed(2)}',
+                            style:
+                                const TextStyle(fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  ),
+
+                  if (discount != null && discount != 0 && totalPrice! > 200)
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          //  Text("${temp}"),
+                          Text(
+                            'Discount ($discount %)',
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                              fontSize: width / 29,
+                            ),
+                          ),
+                          Text('-₹${discountAmount!.toStringAsFixed(2)}',
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
+                        ],
+                        // print("______________________${temp}");
                       ),
                     ),
-                  ElevatedButton(
-  onPressed: () {
-    _showOrderConfirmationDialog(context);
-  },
-  style: ButtonStyle(
-    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-      RoundedRectangleBorder(
-        borderRadius: BorderRadius.zero,
-        side: BorderSide(color: Colors.green),
-      ),
-    ),
-  ),
-  child: const Text('ऑर्डर करा',
-      style: TextStyle(
-          color: Colors.black,
-          fontSize: 19,
-          fontWeight: FontWeight.bold)),
-),
-
-                  ],
-                ),
+                  Text(
+                      "************************************************************"),
+                  if (discount != null && discount != 0 && totalPrice! > 200)
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Final Price',
+                            style: TextStyle(
+                                // fontSize: 16,
+                                fontSize: width / 25,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Text('₹${finalPrice!.toStringAsFixed(2)}',
+                              style: TextStyle(
+                                  //fontSize: 18,
+                                  fontSize: width / 25,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green)),
+                        ],
+                      ),
+                    ),
+                  SizedBox(
+                    height: 50,
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        HapticFeedback.mediumImpact();
+                        _showOrderConfirmationDialog(context);
+                      },
+                      child: Text(
+                        'ऑर्डर करा',
+                        style: TextStyle(
+                          //fontSize: 20
+                          fontSize: width / 22,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
     );

@@ -1,14 +1,19 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gromore_application/admin/adminDashboard.dart';
+import 'package:gromore_application/login/commenclasses/apiconstant.dart';
+import 'package:gromore_application/login/commenclasses/deviceUtils.dart';
 import 'package:gromore_application/login/loginWithMobileNumber.dart';
 import 'package:gromore_application/form/registrationForm.dart';
+import 'package:gromore_application/login/models/loginModle.dart';
 import 'package:gromore_application/vegetables/vegetablesMenuHomeScreen.dart';
 import 'package:slider_button/slider_button.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:http/http.dart' as http;
 class Loginscreen extends StatefulWidget {
   const Loginscreen({super.key});
 
@@ -25,33 +30,147 @@ class _LoginscreenState extends State<Loginscreen> {
   String userName = '';
   String passWord = '';
 
-  Future<String?> login(String userName, String passWord) async {
+  // Future<String?> login(String userName, String passWord) async {
+  //   try {
+  //     // Fetch user details from Firestore based on the userName
+  //     QuerySnapshot userSnapshot = await FirebaseFirestore.instance
+  //         .collection('CustomerDetails')
+  //         .where('userName', isEqualTo: userName)
+  //         .get();
+
+  //     print("rrrrrrrr${userSnapshot}");
+
+  //     if (userSnapshot.docs.isNotEmpty) {
+  //       // If user exists, check the password
+  //       var userDoc = userSnapshot.docs.first;
+  //       Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+
+  //       // Check if the passwords match
+  //       if (userData['passWord'] == passWord) {
+  //         return userData['passWord']; // Password matches, return success
+  //       } else {
+  //         return 'Invalid password'; // Password mismatch error
+  //       }
+  //     } else {
+  //       return 'Username does not exist'; // No user found with this username
+  //     }
+  //   } catch (e) {
+  //     print('Login error: $e');
+  //     return 'Error occurred during login'; // Error handling
+  //   }
+  // }
+
+
+  Future<void> _login(BuildContext context, String userAgent) async {
+    final String username = _usernameController.text;
+    final String password = _passwordController.text;
+
+    String apiUrl = Apiconstants.loginapi;
+    setState(() {
+      _isLoading = true;
+    });
+
     try {
-      // Fetch user details from Firestore based on the userName
-      QuerySnapshot userSnapshot = await FirebaseFirestore.instance
-          .collection('CustomerDetails')
-          .where('userName', isEqualTo: userName)
-          .get();
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        body: json.encode({'login': username, 'password': password}),
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent': userAgent,
+          'Content-Type': 'application/json',
+        },
+      );
+      print('Response Headers--------->${response.headers}');
+      print('Response Body--------->${response.body}');
+      print('Response Statuscode--------->${response.statusCode}');
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> loginDataJson = json.decode(response.body);
 
-      print("rrrrrrrr${userSnapshot}");
+        // Create Loginmodel object from API response
+      final loginData = LoginModel.fromJson(loginDataJson);
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('phoneNo', loginData.user?.phone ?? '');
+        await prefs.setString(
+            'token', loginData.token ?? ''); // Save user token
+        await prefs.setString('username', username); // Save username/email
+        await prefs.setInt('id', loginData.user?.id ?? 0); // Save user ID
+        await prefs.setString('name', loginData.user?.name ?? '');
+        await prefs.setString(
+              'user_type', loginData.user?.userType ?? ''); // Save user type
+        await prefs.setString('email', loginData.user?.email ?? '');
+        print('LOGIN USER--------->>>>>>>>>${loginData.user?.userType}');
+        // Navigate to Homepage
 
-      if (userSnapshot.docs.isNotEmpty) {
-        // If user exists, check the password
-        var userDoc = userSnapshot.docs.first;
-        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
-
-        // Check if the passwords match
-        if (userData['passWord'] == passWord) {
-          return userData['passWord']; // Password matches, return success
-        } else {
-          return 'Invalid password'; // Password mismatch error
-        }
+        loginData.user?.userType == 'admin'
+            ? Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>  AdminDashboard(),
+                ),
+              )
+            : loginData.user?.userType == 'supplier'
+                ? Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AdminDashboard(
+                          // loginmodel: loginData,
+                          ),
+                    ),
+                  )
+                : Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => HomeScreen (    
+                      ),
+                    ),
+                  );
       } else {
-        return 'Username does not exist'; // No user found with this username
+        setState(() {
+          _isLoading = false;
+        });
+        print(response.statusCode);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+            ),
+            backgroundColor: Colors.red,
+            duration: const Duration(milliseconds: 700),
+            content: Title(
+              color: Colors.redAccent,
+              child: const Center(
+                child: Text(
+                  "Invalid credentials",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ),
+        );
       }
     } catch (e) {
-      print('Login error: $e');
-      return 'Error occurred during login'; // Error handling
+      setState(() {
+        _isLoading = false;
+      });
+      print("CatchBlock => $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+          ),
+          backgroundColor: Colors.red,
+          duration: const Duration(milliseconds: 700),
+          content: Title(
+            color: Colors.redAccent,
+            child: Center(
+              child: Text(
+                "$e An error occurred. Please try again later.",
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ),
+      );
     }
   }
 
@@ -98,6 +217,30 @@ class _LoginscreenState extends State<Loginscreen> {
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
+                        ),
+                      ),
+                    ),
+                     Padding(
+                      padding:
+                          const EdgeInsets.only(top: 560, left: 10, right: 10),
+                      child: Text('Powered by Gromore Farming',
+                        //'  ${applocalizations!.welcomeToOurGromoreFarming}🙏 ',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 236, 104, 27),
+                        ),
+                      ),
+                    ),
+                      Padding(
+                      padding:
+                          const EdgeInsets.only(top: 6, left: 40, right: 40),
+                      child: Text('Developed by Siddheshwar Shingare',
+                        //'  ${applocalizations!.welcomeToOurGromoreFarming}🙏 ',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 236, 104, 27),
                         ),
                       ),
                     ),
@@ -226,73 +369,78 @@ class _LoginscreenState extends State<Loginscreen> {
                                 width: 230,
                                 child: SliderButton(
                                   action: () async {
-                                   HapticFeedback.mediumImpact();
-                                    String username = _usernameController.text.trim();
-                                    String password = _passwordController.text.trim();
+                                    HapticFeedback.mediumImpact();
+                                    String username =
+                                        _usernameController.text.trim();
+                                    String password =
+                                        _passwordController.text.trim();
                                     print("1111111111==$username");
                                     print("1111111111==$password");
                                     if (_formKey.currentState!.validate()) {
+                                       // Get user agent after form validation
+                                       String userAgent = await DeviceInfoUtil.getUserAgent(
+                              Theme.of(context).platform);
+                                _login(context, userAgent);
                                       setState(() {
                                         _isLoading = true;
                                       });
-                                      
-                                    if(username=="Raje@1234" && password=="Raje@12345"){
-                                      SharedPreferences prefs =
-                                              await SharedPreferences
-                                                  .getInstance();
-                                          prefs.setString("userName", username);
-                                          prefs.setString("passWord", password);
-                                          // Navigate to the next screen if login is successful
-                                          Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                   AdminDashboard()),
-                                          );
-                                    }
-else{
+                                      // if (username == "Raje@1234" &&
+                                      //     password == "Raje@12345") {
+                                      //   SharedPreferences prefs =
+                                      //       await SharedPreferences
+                                      //           .getInstance();
+                                      //   prefs.setString("userName", username);
+                                      //   prefs.setString("passWord", password);
+                                      //   // Navigate to the next screen if login is successful
+                                      //   Navigator.pushReplacement(
+                                      //     context,
+                                      //     MaterialPageRoute(
+                                      //         builder: (context) =>
+                                      //             AdminDashboard()),
+                                      //   );
+                                      // } else {
+                                      //   String? loginResult =
+                                      //       await login(username, password);
 
- String? loginResult =
-                                          await login(username, password);
-                                   
-                                      if (loginResult != null) {
-                                        if (loginResult == password) {
-                                          SharedPreferences prefs =
-                                              await SharedPreferences
-                                                  .getInstance();
-                                          prefs.setString("userName", username);
-                                          prefs.setString("passWord", password);
-                                          // Navigate to the next screen if login is successful
-                                          Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    HomeScreen()),
-                                          );
-                                        } else {
-                                          // Show error message if login fails
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              content: Text(loginResult),
-                                              backgroundColor: Colors.red,
-                                            ),
-                                          );
-                                        }
-                                      } else {
-                                        // Show generic error if something went wrong
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                                "An error occurred, please try again."),
-                                            backgroundColor: Colors.red,
-                                          ),
-                                        );
-                                      }
+                                      //   if (loginResult != null) {
+                                      //     if (loginResult == password) {
+                                      //       SharedPreferences prefs =
+                                      //           await SharedPreferences
+                                      //               .getInstance();
+                                      //       prefs.setString(
+                                      //           "userName", username);
+                                      //       prefs.setString(
+                                      //           "passWord", password);
+                                      //       // Navigate to the next screen if login is successful
+                                      //       Navigator.pushReplacement(
+                                      //         context,
+                                      //         MaterialPageRoute(
+                                      //             builder: (context) =>
+                                      //                 HomeScreen()),
+                                      //       );
+                                      //     } else {
+                                      //       // Show error message if login fails
+                                      //       ScaffoldMessenger.of(context)
+                                      //           .showSnackBar(
+                                      //         SnackBar(
+                                      //           content: Text(loginResult),
+                                      //           backgroundColor: Colors.red,
+                                      //         ),
+                                      //       );
+                                      //     }
+                                      //   } else {
+                                      //     // Show generic error if something went wrong
+                                      //     ScaffoldMessenger.of(context)
+                                      //         .showSnackBar(
+                                      //       SnackBar(
+                                      //         content: Text(
+                                      //             "An error occurred, please try again."),
+                                      //         backgroundColor: Colors.red,
+                                      //       ),
+                                      //     );
+                                      //   }
+                                      // }
 
-}
-                                     
                                       setState(() {
                                         _isLoading = false;
                                       });
@@ -400,8 +548,10 @@ else{
                     ),
                   ),
                 ),
+                Text('tttttttttttttttt')
               ],
             ),
+            
           ],
         ),
       ),

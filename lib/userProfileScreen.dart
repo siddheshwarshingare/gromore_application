@@ -1,8 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gromore_application/login/commenclasses/apiconstant.dart';
 import 'package:gromore_application/login/logoutDialog.dart';
+import 'package:gromore_application/login/models/usermodel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'package:cloud_firestore/cloud_firestore.dart';// if you have it in a separate file
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -10,9 +14,10 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  Map<String, dynamic>? userData;
+  UserModel? userData;
   String? userName, passWord, mobileNumber, documentId;
   bool _isLoading = false;
+  String tokenForAPI = '';
   TextEditingController _addressController = TextEditingController();
 
   @override
@@ -23,45 +28,62 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> fetchUserDetails() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    userName = prefs.getString('userName');
-    passWord = prefs.getString('passWord');
-    mobileNumber = prefs.getString("mobileNumber");
+    tokenForAPI = prefs.getString('token') ?? '';
+    print("Token => $tokenForAPI");
 
-    if (passWord != null) {
-      try {
-        QuerySnapshot querySnapshot;
+    String apiUrl = Apiconstants.fetchUserDetails;
 
-        if (userName != null && userName!.isNotEmpty) {
-          querySnapshot = await FirebaseFirestore.instance
-              .collection('CustomerDetails')
-              .where('userName', isEqualTo: userName)
-              .where('passWord', isEqualTo: passWord)
-              .get();
-        } else if (mobileNumber != null && mobileNumber!.isNotEmpty) {
-          querySnapshot = await FirebaseFirestore.instance
-              .collection('CustomerDetails')
-              .where('mobileNumber', isEqualTo: mobileNumber)
-              .where('passWord', isEqualTo: passWord)
-              .get();
-        } else {
-          print("No valid login credentials found!");
-          return;
-        }
+    setState(() {
+      _isLoading = true;
+    });
 
-        if (querySnapshot.docs.isNotEmpty) {
-          setState(() {
-            userData = querySnapshot.docs.first.data() as Map<String, dynamic>;
-            documentId = querySnapshot.docs.first.id;
-            _addressController.text = userData!['address'] ?? "";
-          });
-        } else {
-          print("User not found!");
-        }
-      } catch (e) {
-        print("Error fetching user data: $e");
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Authorization': 'Bearer $tokenForAPI',
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      print('Response Statuscode: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseBody = json.decode(response.body);
+
+        setState(() {
+          userData = UserModel.fromJson(responseBody);
+          _addressController.text = userData?.address ?? '';
+          _isLoading = false;
+        });
+
+        print("User Data: $userData");
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+        print("Error: ${response.statusCode}");
       }
-    } else {
-      print("Password is missing in SharedPreferences");
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      print("Error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+          ),
+          backgroundColor: Colors.red,
+          duration: const Duration(milliseconds: 700),
+          content: Center(
+            child: Text(
+              "$e\nAn error occurred. Please try again later.",
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+      );
     }
   }
 
@@ -75,7 +97,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           .update({'address': newAddress});
 
       setState(() {
-        userData!['address'] = newAddress;
+        userData?.address = newAddress;
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -149,55 +171,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               const SizedBox(height: 20),
-                              _buildProfileRow(
-                                  Icons.person, "नाव", userData!['name']),
-                              _buildProfileRow(Icons.account_circle,
-                                  "वापरकर्त्याचे नाव", userData!['userName']),
-                              _buildProfileRow(Icons.phone, "मोबाईल",
-                                  userData!['mobileNumber']),
-                              _buildEditableProfileRow(
-                                  Icons.home, "पत्ता", userData!['address']),
+                              _buildProfileRow(Icons.person, "नाव", userData?.name ?? ''),
+                              _buildProfileRow(Icons.account_circle, "वापरकर्त्याचे नाव", userData?.username ?? ''),
+                              _buildProfileRow(Icons.phone, "मोबाईल", userData?.phone ?? ''),
+                              _buildEditableProfileRow(Icons.home, "पत्ता", userData?.address ?? ''),
                             ],
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(
-                      height: 150,
-                    ),
+                    const SizedBox(height: 150),                
                     SizedBox(
                       height: 50,
                       width: 200,
                       child: ElevatedButton(
-                          onPressed: () async {
-                            LogoutDialog.show(context);
-                            //  alertdialogBox(context);
-                            SharedPreferences prefs =
-                                await SharedPreferences.getInstance();
-
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (context) => const Loginscreen(),
-                            //   ),
-                            // );
-                            // prefs.clear();
-                          },
-                          child: const Text(
-                            "लॉगआउट",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                                color: Colors.black),
+                        onPressed: () async {
+                          LogoutDialog.show(context);
+                          SharedPreferences prefs = await SharedPreferences.getInstance();
+                          // prefs.clear(); // Optional
+                        },
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(Colors.green.shade500),
+                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                            const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.zero,
+                              side: BorderSide(color: Colors.green),
+                            ),
                           ),
-                          style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  Colors.green.shade500),
-                              shape: MaterialStateProperty.all<
-                                      RoundedRectangleBorder>(
-                                  const RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.zero,
-                                      side: BorderSide(color: Colors.green))))),
+                        ),
+                        child: const Text(
+                          "लॉगआउट",
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -230,11 +236,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const SizedBox(width: 16),
           Text(
             "$title: ",
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Colors.black87,
-            ),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black87),
           ),
           Expanded(
             child: Text(
@@ -257,11 +259,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const SizedBox(width: 16),
           Text(
             "$title: ",
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Colors.black87,
-            ),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black87),
           ),
           Expanded(
             child: Text(

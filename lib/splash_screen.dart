@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gromore_application/admin/adminDashboard.dart';
 import 'package:gromore_application/language/languageSelector.dart';
+import 'package:gromore_application/login/loginScreen.dart';
 import 'package:gromore_application/vegetables/vegetablesMenuHomeScreen.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -32,52 +33,81 @@ class _SplashscreenState extends State<Splashscreen> {
     bool isLoggedIn = await _checkLoginStatus();
 
     // Navigate based on login status
-    if (isLoggedIn) {
+    // if (isLoggedIn) {
+    //   // This login is for admin only
 
-      // This login is for admin only 
-      
-      userName=="Raje@1234"&&passWord=="Raje@12345"? 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) =>  AdminDashboard()),
-      ):
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => HomeScreen()),
-      );
-    } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const Languageselector()),
-      );
-    }
+    //   userName == "Raje@1234" && passWord == "Raje@12345"
+    //       ? Navigator.pushReplacement(
+    //           context,
+    //           MaterialPageRoute(builder: (_) => AdminDashboard()),
+    //         )
+    //       : Navigator.pushReplacement(
+    //           context,
+    //           MaterialPageRoute(builder: (_) => HomeScreen()),
+    //         );
+    // } else {
+    //   Navigator.pushReplacement(
+    //     context,
+    //     MaterialPageRoute(builder: (_) => const Languageselector()),
+    //   );
+    // }
   }
 
   Future<bool> _checkLoginStatus() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userToken = prefs.getString('token');
+    String? userType = prefs.getString('user_type');
 
+    if (userToken != null && userToken.isNotEmpty) {
+      // Navigate to the respective home page based on user type
+      if (!mounted) return false; // Ensure the widget is still in the tree
+      if (userType == "admin") {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) =>HomeScreen()),
+        );
+      } else if (userType == "supplier") {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => AdminDashboard()),
+        );
+        
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
+       
+      }
+       return true;
+    } else {
+      // Navigate to the login page
+      if (!mounted) return false;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) =>  Languageselector()),
+      );
+      return false;
+    }
     // Retrieve the username from SharedPreferences
-    setState(() {
-      userName = prefs.getString('userName');
-      passWord = prefs.getString('passWord');
-      mobileNumber = prefs.getString("mobileNumber");
-      result=  userName == null ? mobileNumber : userName;
-    });
-    // Check if the username is not null or empty
-    return result != null;
+    // setState(() {
+    //   userName = prefs.getString('userName');
+    //   passWord = prefs.getString('passWord');
+    //   mobileNumber = prefs.getString("mobileNumber");
+    //   result=  userName == null ? mobileNumber : userName;
+    // });
+    // // Check if the username is not null or empty
+    // return result != null;
   }
 
   @override
   void initState() {
     super.initState();
 
-    Future.delayed(
-      Duration.zero, () 
-    {
+    Future.delayed(Duration.zero, () {
       _navigateToNextScreen();
       _startAutoSlide();
-    }
-    );
+    });
 
     // Navigate to LoginScreen after 6 seconds
     Future.delayed(const Duration(seconds: 2), () {

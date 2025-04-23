@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -5,11 +8,15 @@ import 'package:flutter/services.dart';
 import 'package:gromore_application/admin/customerDetailsOrData.dart';
 import 'package:gromore_application/admin/offerDetailsScreen.dart';
 import 'package:gromore_application/admin/vegetablesQuantityScreen.dart';
+import 'package:gromore_application/login/commenclasses/apiconstant.dart';
 import 'package:gromore_application/login/loginScreen.dart';
+import 'package:gromore_application/login/logoutDialog.dart';
 import 'package:gromore_application/order/totalOrderScreen.dart';
 import 'package:gromore_application/review/userReviewScreen.dart';
 import 'package:gromore_application/vegetables/vegetablesPriceScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'package:device_info_plus/device_info_plus.dart';
 
 class AdminDashboard extends StatefulWidget {
   @override
@@ -18,7 +25,9 @@ class AdminDashboard extends StatefulWidget {
 
 class _AdminDashboardState extends State<AdminDashboard> {
   bool isLoading = false;
+
   bool _isLoading = false;
+  String token = '';
   List<Map<String, String>> vegetableData = [];
 
   Map<String, String> titleToKeyMap = {
@@ -124,9 +133,74 @@ class _AdminDashboardState extends State<AdminDashboard> {
     });
   }
 
+  Future<String?> getDeviceIdToLogout() async {
+    String apiUrl = Apiconstants.getDevices;
+    final response = await http.get(
+      Uri.parse(apiUrl),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> devices = json.decode(response.body);
+
+      // return the ID of the first device (or any logic you prefer)
+      for (var device in devices) {
+        if (device['id'].toString() != "CURRENT_DEVICE_ID") {
+          return device['id'].toString();
+        }
+      }
+    }
+
+    return null;
+  }
+
+//logout
+
+  Future<void> logoutFromOtherDevices() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token') ?? '';
+    String apiUrl = Apiconstants.logoutDevices;
+
+    var headers = {
+      'Authorization': 'Bearer $token',
+      'Accept': 'application/json'
+    };
+
+    // Replace this with actual device ID you want to logout
+    final deviceId = await getDeviceIdToLogout(); // implement logic if needed
+
+    if (deviceId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("No device to logout.")),
+      );
+      return;
+    }
+
+    final request = http.Request(
+      'DELETE',
+      Uri.parse('$apiUrl/$deviceId'),
+    );
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Logged out device ID: $deviceId")),
+      );
+    } else {
+      print(response.reasonPhrase);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to logout device.")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -139,31 +213,37 @@ class _AdminDashboardState extends State<AdminDashboard> {
         backgroundColor: Colors.white,
         child: ListView(
           children: [
-            const DrawerHeader(
+           DrawerHeader(
               decoration: BoxDecoration(
                 color: Colors.white,
               ),
               child: Column(
+               
                 children: [
-                  SizedBox(
+                  Container(
                     height: 130,
-                    child: Image(
-                      image: AssetImage('assets/animation/pp.png'),
+                    child: Transform.scale(
+                      scale: 1.3,
+                      child: Image(
+                        image: AssetImage('assets/animation/pp.png',),fit:BoxFit.fill,
+                      ),
                     ),
                   )
                 ],
               ),
             ),
+          
             ListTile(
               leading: SizedBox(
-                 height: 40,
+                height: 40,
                 width: 40,
                 child: const Image(
                     image: AssetImage('assets/animation/vegetables.gif')),
               ),
-              title:  Text(
+              title: Text(
                 'Vegetables Price',
-                style: TextStyle(fontSize: width/20, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: width / 20, fontWeight: FontWeight.bold),
               ),
               onTap: () {
                 Navigator.push(
@@ -178,15 +258,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
             ),
             ListTile(
               leading: SizedBox(
-                 height: 40,
+                height: 40,
                 width: 40,
                 child: const Image(
                   image: AssetImage('assets/animation/online-order.gif'),
                 ),
               ),
-              title:  Text(
+              title: Text(
                 'Order History',
-                style: TextStyle(fontSize: width/20, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: width / 20, fontWeight: FontWeight.bold),
               ),
               onTap: () {
                 Navigator.push(
@@ -199,15 +280,17 @@ class _AdminDashboardState extends State<AdminDashboard> {
               },
             ),
             ListTile(
-              leading: SizedBox( height: 40,
+              leading: SizedBox(
+                height: 40,
                 width: 40,
                 child: const Image(
                   image: AssetImage('assets/animation/market.gif'),
                 ),
               ),
-              title:  Text(
+              title: Text(
                 'Vegetable Quantity',
-                style: TextStyle(fontSize: width/20, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: width / 20, fontWeight: FontWeight.bold),
               ),
               onTap: () {
                 Navigator.push(
@@ -220,15 +303,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
             ),
             ListTile(
               leading: SizedBox(
-                 height: 40,
+                height: 40,
                 width: 40,
                 child: const Image(
                   image: AssetImage('assets/animation/rating.gif'),
                 ),
               ),
-              title:  Text(
+              title: Text(
                 'Review History',
-                style: TextStyle(fontSize: width/20, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: width / 20, fontWeight: FontWeight.bold),
               ),
               onTap: () {
                 Navigator.push(
@@ -241,15 +325,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
             ),
             ListTile(
               leading: SizedBox(
-                 height: 40,
+                height: 40,
                 width: 40,
                 child: const Image(
                   image: AssetImage('assets/animation/customer-care.gif'),
                 ),
               ),
-              title:  Text(
+              title: Text(
                 'Customer Details',
-                style: TextStyle(fontSize: width/20, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: width / 20, fontWeight: FontWeight.bold),
               ),
               onTap: () {
                 Navigator.push(
@@ -262,15 +347,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
             ),
             ListTile(
               leading: SizedBox(
-                 height: 40,
+                height: 40,
                 width: 40,
                 child: const Image(
                   image: AssetImage('assets/animation/shopping-bag.gif'),
                 ),
               ),
-              title:  Text(
+              title: Text(
                 'Offer Details',
-                style: TextStyle(fontSize: width/20, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: width / 20, fontWeight: FontWeight.bold),
               ),
               onTap: () {
                 Navigator.push(
@@ -281,8 +367,24 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 Navigator.pushNamed(context, '/contact');
               },
             ),
-                SizedBox(
-              height: height/3.4,
+            ListTile(
+              leading: Icon(Icons.devices, color: Colors.deepPurple),
+              title: Text(
+                'Active Devices',
+                style: TextStyle(
+                  fontSize: width / 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ActiveDeviceScreen()),
+                );
+              },
+            ),
+            SizedBox(
+              height: height / 4.4,
             ),
             Container(
               width: 60,
@@ -300,7 +402,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 10),
                 ),
-                child:  Text('Logout', style: TextStyle(fontSize: width/20)),
+                child: Text('Logout', style: TextStyle(fontSize: width / 20)),
               ),
             ),
           ],
@@ -382,6 +484,92 @@ class _AdminDashboardState extends State<AdminDashboard> {
             ),
     );
   }
+
+  // logout method
+  Future<void> _logout(BuildContext context) async {
+    String apiUrl = Apiconstants.logOut;
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      print("1111111111111111111$token");
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        body: null,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+      );
+
+      if (response.statusCode == 200) {
+        Navigator.pop;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Logout sucessfully")),
+        );
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const Loginscreen(),
+          ),
+          (route) => false, // This condition removes all previous routes
+        );
+        print("Logged Out");
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+        print(response.statusCode);
+        print(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+            ),
+            backgroundColor: Colors.red,
+            duration: const Duration(milliseconds: 700),
+            content: Title(
+              color: Colors.redAccent,
+              child: const Center(
+                child: Text(
+                  "Can't Logout",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+          ),
+          backgroundColor: Colors.red,
+          duration: const Duration(milliseconds: 700),
+          content: Title(
+            color: Colors.redAccent,
+            child: const Center(
+              child: Text(
+                "An error occurred. Please try again later.",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   void alertdialogBox(BuildContext context) {
     showDialog(
       context: context,
@@ -413,21 +601,29 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       onTap: _isLoading
                           ? null
                           : () async {
-                              setState(() => _isLoading = true);
                               SharedPreferences prefs =
                                   await SharedPreferences.getInstance();
-                              await prefs.clear();
-                              await Future.delayed(
-                                  const Duration(milliseconds: 1500));
-                              Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => Loginscreen()),
-                                (route) => false,
-                              );
+                              setState(() {
+                                _isLoading = true;
+                                token = prefs.getString('token') ?? 'NA';
+                              });
+                              // SharedPreferences prefs =
+                              //     await SharedPreferences.getInstance();
+                              // await prefs.clear();
+                             // await _logout(context);
+                             LogoutDialog.show(context);
+                             // await prefs.clear();
+
+                              // await Future.delayed(
+                              //     const Duration(milliseconds: 1500));
+                              // Navigator.pushAndRemoveUntil(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //       builder: (_) => Loginscreen()),
+                              //   (route) => false,
+                              // );
                             },
-                      child: 
-                      Container(
+                      child: Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: Colors.red,
@@ -461,6 +657,121 @@ class _AdminDashboardState extends State<AdminDashboard> {
           },
         );
       },
+    );
+  }
+}
+
+class ActiveDeviceScreen extends StatefulWidget {
+  @override
+  _ActiveDeviceScreenState createState() => _ActiveDeviceScreenState();
+}
+
+class _ActiveDeviceScreenState extends State<ActiveDeviceScreen> {
+  List<dynamic> devices = [];
+  bool isLoading = true;
+  String? currentDeviceId;
+  String token = '';
+
+  @override
+  void initState() {
+    super.initState();
+    initialize();
+  }
+
+  Future<void> initialize() async {
+    await getCurrentDeviceId();
+    await fetchDevices();
+  }
+
+  Future<void> getCurrentDeviceId() async {
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    if (Platform.isAndroid) {
+      var androidInfo = await deviceInfo.androidInfo;
+      currentDeviceId = androidInfo.id; // Unique ID on Android
+    } else if (Platform.isIOS) {
+      var iosInfo = await deviceInfo.iosInfo;
+      currentDeviceId = iosInfo.identifierForVendor; // Unique ID on iOS
+    }
+  }
+
+  Future<void> fetchDevices() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    token = prefs.getString('token') ?? '';
+
+    String apiUrl = Apiconstants.getDevices;
+    final response = await http.get(
+      Uri.parse(apiUrl),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      },
+    );
+    print('22222222222222222222222222222222222${response.statusCode}');
+    print('22222222222222222222222222222222222${token}');
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      setState(() {
+        devices = data['devices'];
+        print(
+            '22222222222222222222222222222222222===================${devices}');
+        isLoading = false;
+      });
+    } else {
+      setState(() => isLoading = false);
+      print("Failed to fetch devices: ${response.body}");
+    }
+  }
+
+  Future<void> logoutDevice(String deviceId) async {
+    String apiUrl = Apiconstants.logoutDevices;
+    print("11111111111111111111111${Uri.parse('$apiUrl$deviceId')}");
+    print("tttttttttttttttttttttttttttt$token");
+    final response = await http.delete(
+      Uri.parse('$apiUrl/$deviceId'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Logged out device ID: $deviceId")),
+      );
+      fetchDevices(); // Refresh list
+    } else {
+      print("Logout failed: ${response.body}");
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Active Devices")),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : devices.isEmpty
+              ? Center(child: Text("No devices found"))
+              : ListView.builder(
+                  itemCount: devices.length,
+                  itemBuilder: (context, index) {
+                    final device = devices[index];
+                    bool isCurrentDevice = device['id'] == currentDeviceId;
+                    return ListTile(
+                      leading: Icon(Icons.device_hub),
+                      title: Text(device['name']),
+                      subtitle: Text("ID: ${device['id']}"),
+                      trailing: isCurrentDevice
+                          ? Text("This Device")
+                          : IconButton(
+                              icon: Icon(Icons.logout, color: Colors.red),
+                              onPressed: () {
+                                logoutDevice(device['id'].toString());
+                              },
+                            ),
+                    );
+                  },
+                ),
     );
   }
 }

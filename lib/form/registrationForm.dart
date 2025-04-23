@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
+import 'package:gromore_application/login/commenclasses/apiconstant.dart';
 
+import 'package:http/http.dart' as http;
 class CustomFormScreen extends StatefulWidget {
   const CustomFormScreen({Key? key}) : super(key: key);
 
@@ -22,7 +26,83 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
   bool isSubmitting = false;
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+  bool _isLoading = false;
+  //String _selectedUserType = 'Customer'; // Default user type
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  Future<void> _registerUser(BuildContext context) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final String apiUrl = Apiconstants.adduser;
+
+    try {
+      // Get the current platform
+      // final TargetPlatform platform = defaultTargetPlatform;
+
+      // Fetch the user agent dynamically
+      // final String userAgent = await DeviceInfoUtil.getUserAgent(platform);
+
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: json.encode({
+          "name": nameController.text,
+          "username": usernameController.text,
+          "phone": mobileController.text,
+
+          "password": passwordController.text,
+          "password_confirmation": confirmPasswordController.text,
+          "user_type": 3, // Include selected user type
+        }),
+      );
+      print(
+        json.encode({
+          "name": nameController.text,
+          "username": usernameController.text,
+          "phone": mobileController.text,
+
+          "password": passwordController.text,
+          "password_confirmation": confirmPasswordController.text,
+          "user_type": 3, // Include selected user type
+        }),
+      );
+      if (response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Registration successful!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        // Navigate back after successful registration
+        Navigator.pop(context, 'User added successfully');
+      } else {
+        final errorData = json.decode(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Registration failed: ${errorData['message']}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('An error occurred. Please try again later.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +165,7 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
                   controller: usernameController,
                   labelText: applocalizations.username,
                   icon: Icons.account_circle,
-                  inputFormatter: FilteringTextInputFormatter.allow(RegExp(r'^[\u0900-\u097F\u0020a-zA-Z0-9]*$')),
+                  inputFormatter: FilteringTextInputFormatter.allow(RegExp(r'^[\u0900-\u097F a-zA-Z0-9\\/@#&()-_]*$')),
                    validator: (value) {
                     if (value == null || value.isEmpty) return applocalizations.usernameisrequired;
                     return null;
@@ -100,7 +180,7 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
   validator: (value) {
     if (value == null || value.isEmpty) {
       return applocalizations.passwordisrequired;
-    } else if (value.length < 6) {
+    } else if (value.length < 8) {
       return applocalizations.passwordmustbeatleast6characterslong;
     }
     return null;
@@ -145,17 +225,19 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
                         : () {
                             if (_formKey.currentState?.validate() ?? false) {
                               setState(() => isSubmitting = true);
-                              storeDataToFirebase();
-                              Future.delayed(const Duration(seconds: 2), () {
-                                setState(() => isSubmitting = false);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Form submitted successfully!'),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
-                                Navigator.pop(context);
-                              });
+                              //Creating the  new user 
+                              _registerUser(context);
+                             // storeDataToFirebase();
+                              // Future.delayed(const Duration(seconds: 2), () {
+                              //   setState(() => isSubmitting = false);
+                              //   ScaffoldMessenger.of(context).showSnackBar(
+                              //     const SnackBar(
+                              //       content: Text('Form submitted successfully!'),
+                              //       backgroundColor: Colors.green,
+                              //     ),
+                              //   );
+                              //   Navigator.pop(context);
+                              // });
                             }
                           },
                     style: ElevatedButton.styleFrom(

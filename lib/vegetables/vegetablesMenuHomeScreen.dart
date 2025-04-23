@@ -10,13 +10,14 @@ import 'package:gromore_application/cart/addToCartScreen.dart';
 import 'package:gromore_application/cart/cartScreen.dart';
 import 'package:gromore_application/contact/contact_us.dart';
 import 'package:gromore_application/eggs/eggs_screen.dart';
+import 'package:gromore_application/login/commenclasses/apiconstant.dart';
 import 'package:gromore_application/login/loginScreen.dart';
 import 'package:gromore_application/login/logoutDialog.dart';
 import 'package:gromore_application/order/order_screen.dart';
 import 'package:gromore_application/userProfileScreen.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
@@ -34,6 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   double height = 0;
   double width = 0;
+    String token = '';
   GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
   List<Map<String, dynamic>> _filteredItems = [];
   bool _isLoading = false;
@@ -307,6 +309,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+     Future.microtask(() =>
+      Provider.of<CartProvider>(context, listen: false).loadCartFromLocal());
     fetchOfferDetails();
     fetchVegetablePrices();
     _filteredItems = menuItems;
@@ -552,7 +556,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       onPressed: () {
                         Uri fburl = Uri.parse(
                             'https://www.facebook.com/eenadupellipandiriofficial');
-                        _launchUrl(fburl);
+                        launchUrl(fburl,mode: LaunchMode.externalApplication);
                       },
                       icon: const FaIcon(
                         FontAwesomeIcons.facebook,
@@ -564,7 +568,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       onPressed: () {
                         Uri instaurl =
                             Uri.parse('https://www.instagram.com/rajelove99/');
-                        _launchUrl(instaurl);
+                        launchUrl(instaurl,mode: LaunchMode.externalApplication);
                       },
                       icon: const FaIcon(
                         FontAwesomeIcons.instagram,
@@ -949,17 +953,18 @@ class _HomeScreenState extends State<HomeScreen> {
                           ? null
                           : () async {
                               setState(() => _isLoading = true);
-                              SharedPreferences prefs =
-                                  await SharedPreferences.getInstance();
-                              await prefs.clear();
-                              await Future.delayed(
-                                  const Duration(milliseconds: 1500));
-                              Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => Loginscreen()),
-                                (route) => false,
-                              );
+                             // _logout(context);
+                              // SharedPreferences prefs =
+                              //     await SharedPreferences.getInstance();
+                              // await prefs.clear();
+                              // await Future.delayed(
+                              //     const Duration(milliseconds: 1500));
+                              // Navigator.pushAndRemoveUntil(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //       builder: (_) => Loginscreen()),
+                              //   (route) => false,
+                              // );
                             },
                       child: Container(
                         padding: const EdgeInsets.all(10),

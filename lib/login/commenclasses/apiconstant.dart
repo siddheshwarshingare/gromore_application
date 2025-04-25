@@ -16,6 +16,11 @@ class Apiconstants {
   static String getDevices = '$domain/devices';
 
   static String logoutDevices = '$domain/logout-device';
+  
+  //Get Vegetables  list
+  static String getVegetableList = '$domain/admin/vegetables';
+
+  static String addNewVegetable = '$domain/admin/vegetables';
 
 // // Mines
 //   static String mainGateExit = '$domain/main-gate-exit';

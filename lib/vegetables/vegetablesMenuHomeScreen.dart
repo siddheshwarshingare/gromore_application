@@ -555,7 +555,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     IconButton(
                       onPressed: () {
                         Uri fburl = Uri.parse(
-                            'https://www.facebook.com/eenadupellipandiriofficial');
+                            'https://www.facebook.com/people/GroMorvegetabales/61575428691516');
                         launchUrl(fburl,mode: LaunchMode.externalApplication);
                       },
                       icon: const FaIcon(

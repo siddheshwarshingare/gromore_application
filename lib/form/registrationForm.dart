@@ -54,10 +54,10 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
           "name": nameController.text,
           "username": usernameController.text,
           "phone": mobileController.text,
-
           "password": passwordController.text,
           "password_confirmation": confirmPasswordController.text,
           "user_type": 3, // Include selected user type
+           "address": addressController.text,
         }),
       );
       print(
@@ -65,7 +65,6 @@ class _CustomFormScreenState extends State<CustomFormScreen> {
           "name": nameController.text,
           "username": usernameController.text,
           "phone": mobileController.text,
-
           "password": passwordController.text,
           "password_confirmation": confirmPasswordController.text,
           "user_type": 3, // Include selected user type

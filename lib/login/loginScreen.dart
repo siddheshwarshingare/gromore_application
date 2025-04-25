@@ -14,6 +14,7 @@ import 'package:slider_button/slider_button.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+
 class Loginscreen extends StatefulWidget {
   const Loginscreen({super.key});
 
@@ -60,7 +61,6 @@ class _LoginscreenState extends State<Loginscreen> {
   //   }
   // }
 
-
   Future<void> _login(BuildContext context, String userAgent) async {
     final String username = _usernameController.text;
     final String password = _passwordController.text;
@@ -87,7 +87,7 @@ class _LoginscreenState extends State<Loginscreen> {
         final Map<String, dynamic> loginDataJson = json.decode(response.body);
 
         // Create Loginmodel object from API response
-      final loginData = LoginModel.fromJson(loginDataJson);
+        final loginData = LoginModel.fromJson(loginDataJson);
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('phoneNo', loginData.user?.phone ?? '');
         await prefs.setString(
@@ -96,7 +96,7 @@ class _LoginscreenState extends State<Loginscreen> {
         await prefs.setInt('id', loginData.user?.id ?? 0); // Save user ID
         await prefs.setString('name', loginData.user?.name ?? '');
         await prefs.setString(
-              'user_type', loginData.user?.userType ?? ''); // Save user type
+            'user_type', loginData.user?.userType ?? ''); // Save user type
         await prefs.setString('email', loginData.user?.email ?? '');
         print('LOGIN USER--------->>>>>>>>>${loginData.user?.userType}');
         // Navigate to Homepage
@@ -105,7 +105,7 @@ class _LoginscreenState extends State<Loginscreen> {
             ? Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>  AdminDashboard(),
+                  builder: (context) => AdminDashboard(),
                 ),
               )
             : loginData.user?.userType == 'supplier'
@@ -120,8 +120,7 @@ class _LoginscreenState extends State<Loginscreen> {
                 : Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => HomeScreen (    
-                      ),
+                      builder: (context) => HomeScreen(),
                     ),
                   );
       } else {
@@ -216,28 +215,28 @@ class _LoginscreenState extends State<Loginscreen> {
                         style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: Colors.pink,
                         ),
                       ),
                     ),
-                     Padding(
-                      padding:
-                          const EdgeInsets.only(top: 560, left: 10, right: 10),
-                      child: Text('Powered by Gromore Farming',
+                    const Padding(
+                      padding: EdgeInsets.only(top: 560, left: 50, right: 10),
+                      child: Text(
+                        'Powered by Gromore Farming',
                         //'  ${applocalizations!.welcomeToOurGromoreFarming}🙏 ',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: Color.fromARGB(255, 236, 104, 27),
                         ),
                       ),
                     ),
-                      Padding(
-                      padding:
-                          const EdgeInsets.only(top: 6, left: 40, right: 40),
-                      child: Text('Developed by Siddheshwar Shingare',
+                    const Padding(
+                      padding: EdgeInsets.only(top: 6, left: 40, right: 40),
+                      child: Text(
+                        'Developed by Siddheshwar Shingare',
                         //'  ${applocalizations!.welcomeToOurGromoreFarming}🙏 ',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: Color.fromARGB(255, 236, 104, 27),
@@ -377,10 +376,11 @@ class _LoginscreenState extends State<Loginscreen> {
                                     print("1111111111==$username");
                                     print("1111111111==$password");
                                     if (_formKey.currentState!.validate()) {
-                                       // Get user agent after form validation
-                                       String userAgent = await DeviceInfoUtil.getUserAgent(
-                              Theme.of(context).platform);
-                                _login(context, userAgent);
+                                      // Get user agent after form validation
+                                      String userAgent =
+                                          await DeviceInfoUtil.getUserAgent(
+                                              Theme.of(context).platform);
+                                      _login(context, userAgent);
                                       setState(() {
                                         _isLoading = true;
                                       });
@@ -449,7 +449,7 @@ class _LoginscreenState extends State<Loginscreen> {
                                   },
                                   label: Center(
                                     child: _isLoading
-                                        ? CircularProgressIndicator() // Show loading spinner while logging in
+                                        ? const CircularProgressIndicator() // Show loading spinner while logging in
                                         : Text(
                                             applocalizations.login,
                                             style: const TextStyle(
@@ -464,16 +464,16 @@ class _LoginscreenState extends State<Loginscreen> {
                                 ),
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 10,
                             ),
                             Center(
                                 child: Text(
                               applocalizations.or,
-                              style:
-                                  TextStyle(color: Colors.pink, fontSize: 16),
+                              style: const TextStyle(
+                                  color: Colors.pink, fontSize: 16),
                             )),
-                            SizedBox(
+                            const SizedBox(
                               height: 10,
                             ),
                             //Login With Mobile Number
@@ -548,10 +548,8 @@ class _LoginscreenState extends State<Loginscreen> {
                     ),
                   ),
                 ),
-                Text('tttttttttttttttt')
-              ],
+               ],
             ),
-            
           ],
         ),
       ),
@@ -569,7 +567,7 @@ class _LoginscreenState extends State<Loginscreen> {
       _isLoading = true;
     });
     await Future.delayed(const Duration(seconds: 1));
-
+   
     if (username == "admin" && password == "admin") {
       return Navigator.pushReplacement(
         context,
@@ -580,7 +578,7 @@ class _LoginscreenState extends State<Loginscreen> {
     } else {
       setState(() {
         _isLoading = false;
-      });
+      }); 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           shape: RoundedRectangleBorder(
@@ -598,4 +596,5 @@ class _LoginscreenState extends State<Loginscreen> {
       );
     }
   }
+
 }

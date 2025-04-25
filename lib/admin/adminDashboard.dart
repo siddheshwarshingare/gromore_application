@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
+import 'package:gromore_application/admin/addNewVegetables.dart';
 import 'package:gromore_application/admin/customerDetailsOrData.dart';
 import 'package:gromore_application/admin/offerDetailsScreen.dart';
 import 'package:gromore_application/admin/vegetablesQuantityScreen.dart';
@@ -367,6 +368,29 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 Navigator.pushNamed(context, '/contact');
               },
             ),
+           ListTile(
+  leading: SizedBox(
+    height: 40,
+    width: 40,
+    child: const Image(
+      image: AssetImage('assets/animation/shopping-bag.gif'),
+    ),
+  ),
+  title: Text(
+    'Add New Vegetable',
+    style: TextStyle(fontSize: width / 20, fontWeight: FontWeight.bold),
+  ),
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddNewVegetables(adminToken: token),
+      ),
+    );
+  },
+),
+
+            
             ListTile(
               leading: Icon(Icons.devices, color: Colors.deepPurple),
               title: Text(
